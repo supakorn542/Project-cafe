@@ -5,7 +5,7 @@ import { Admin } from '../interfaces/admin';
 import { Category } from '../interfaces/category';
 
 export const getProducts = async (): Promise<Product[]> => {
-  const productsCol = collection(db, 'product');
+  const productsCol = collection(db, 'Products');
   const productSnapshot = await getDocs(productsCol);
 
   // ใช้ getDoc เพื่อดึงข้อมูลจาก reference admin_id และ category_id
@@ -35,7 +35,7 @@ export const getProducts = async (): Promise<Product[]> => {
       admin_id: admin_id || '', // ใช้ค่า ID ที่ดึงมา
       category_id: category_id || '', // ใช้ค่า ID ที่ดึงมา
       description: data.description || '',
-      price: data.price || 0,
+      base_price: data.base_price || 0,
       product_name: data.product_name || ''
     } as Product;
   }));

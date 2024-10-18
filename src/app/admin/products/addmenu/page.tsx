@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createProduct } from "../lib/services/addProduct";
-import { getCategories } from "../lib/services/getCategory";
+import { createProduct } from "../../../lib/services/addProduct";
+import { getCategories } from "../../../lib/services/getCategory";
 
 const AddProductForm = () => {
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState("");
   const [adminId, setAdminId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
   const [categories, setCategories] = useState<
     { id: string; category_name: string }[]
   >([]);
@@ -29,7 +28,7 @@ const AddProductForm = () => {
     e.preventDefault();
     await createProduct({
       admin_id: "SdVAeQFloBoDUfQ65bt6",
-      category_id: "5pzZsKMKeTcvYh2qQhIb",
+      category_id: selectedCategory,
       description,
       price,
       product_name: productName,
