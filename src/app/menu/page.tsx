@@ -1,18 +1,39 @@
+"use client"
+
 import { Product } from '../lib/interfaces/product';
 import { Admin } from '../lib/interfaces/admin';
 import { Category } from '../lib/interfaces/category';
 import { getProducts, getAdmins, getCategories } from '../lib/services/getProduct';
+import { deleteProduct } from '../lib/services/deleteProduct';
+import { useState, useEffect } from 'react';
 
-const MenuPage = async () => {
-  const products = await getProducts();
-  const admins = await getAdmins();
-  const categories = await getCategories();
+const MenuPage = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [admins, setAdmins] = useState<Admin[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const productsData = await getProducts();
+      const adminsData = await getAdmins();
+      const categoriesData = await getCategories();
+      setProducts(productsData);
+      setAdmins(adminsData);
+      setCategories(categoriesData);
+    };
+    
+    fetchData();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    await deleteProduct(id);
+    // Optionally, update the state to reflect the deletion
+    setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
+  };
 
   const adminMap = Object.fromEntries(admins.map(admin => [admin.id, `${admin.firstname} ${admin.lastname}`]));
   const categoryMap = Object.fromEntries(categories.map(category => [category.id, category.category_name]));
 
-
- 
   return (
     <div>
       <h1>Product List</h1>
@@ -23,9 +44,11 @@ const MenuPage = async () => {
             <br />
             Description: {product.description}
             <br />
-            Admin: {adminMap[product.admin_id] || 'Unknown'} {/* ใช้ admin_id จาก product */}
+            Admin: {adminMap[product.admin_id] || 'Unknown'}
             <br />
-            Category: {categoryMap[product.category_id] || 'Unknown'} {/* ใช้ category_id จาก product */}
+            Category: {categoryMap[product.category_id] || 'Unknown'}
+            <br />
+            <button onClick={() => handleDelete(product.id)}>Delete</button> {/* Pass product.id */}
           </li>
         ))}
       </ul>
