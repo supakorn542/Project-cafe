@@ -3,6 +3,6 @@ export interface Product {
     admin_id: string;    // ID ของผู้ดูแลระบบ
     category_id: string; // ID ของหมวดหมู่
     description: string; // คำอธิบายผลิตภัณฑ์
-    price: number;       // ราคา
+    base_price: number;       // ราคา
     product_name: string; // ชื่อผลิตภัณฑ์
   }

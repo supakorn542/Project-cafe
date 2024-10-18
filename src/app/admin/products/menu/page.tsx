@@ -1,17 +1,17 @@
 "use client"
 
-import { Product } from '../lib/interfaces/product';
-import { Admin } from '../lib/interfaces/admin';
-import { Category } from '../lib/interfaces/category';
-import { getProducts, getAdmins, getCategories } from '../lib/services/getProduct';
-import { deleteProduct } from '../lib/services/deleteProduct';
+import { Product } from '../../../lib/interfaces/product';
+import { Admin } from '../../../lib/interfaces/admin';
+import { Category } from '../../../lib/interfaces/category';
+import { getProducts, getAdmins, getCategories } from '../../../lib/services/getProduct';
+import { deleteProduct } from '../../../lib/services/deleteProduct';
 import { useState, useEffect } from 'react';
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-
+  console.log("product :",products)
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await getProducts();
@@ -40,7 +40,7 @@ const MenuPage = () => {
       <ul>
         {products.map((product, index) => (
           <li key={index}>
-            <strong>{product.product_name}</strong>: {product.price} ฿
+            <strong>{product.product_name}</strong>: {product.base_price} ฿
             <br />
             Description: {product.description}
             <br />
