@@ -2,29 +2,32 @@ import { collection, addDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase'; // อ้างอิง Firebase
 
 // ฟังก์ชันสำหรับการสร้างข้อมูลผลิตภัณฑ์ใหม่
-export const createProduct = async (product: {
-  admin_id: string; // รับค่าเป็น string แต่จะเปลี่ยนเป็น reference
-  category_id: string; // รับค่าเป็น string แต่จะเปลี่ยนเป็น reference
+
+export const createProduct = async (productData: {
+  admin_id: string;
+  category_id: string;
   description: string;
   price: number;
   product_name: string;
 }) => {
   try {
-    // สร้าง reference ของ admin และ category
-    const adminRef = doc(db, 'admin', product.admin_id);
-    const categoryRef = doc(db, 'category', product.category_id);
-
-    // เพิ่มข้อมูลผลิตภัณฑ์ใหม่ในคอลเลกชัน 'products'
-    const docRef = await addDoc(collection(db, 'product'), {
-      admin_id: adminRef || undefined, // เก็บเป็น reference
-      category_id: categoryRef, // เก็บเป็น reference
-      description: product.description,
-      price: product.price,
-      product_name: product.product_name
+      // สร้าง reference ของ admin และ category
+      const adminRef = doc(db, 'admin', productData.admin_id);
+      const categoryRef = doc(db, 'category', productData.category_id);
+    // บันทึกข้อมูล product ลง Firestore
+    const docRef = await addDoc(collection(db, "products"), {
+      admin_id: adminRef,
+      category_id: categoryRef,
+      description: productData.description,
+      price: productData.price,
+      product_name: productData.product_name,
     });
-
-    console.log('Document written with ID: ', docRef.id); // แสดง ID ของเอกสารที่เพิ่มเข้ามา
+    return docRef; // คืนค่า DocumentReference ซึ่งมี id ของ product ที่สร้างขึ้น
   } catch (e) {
-    console.error('Error adding document: ', e); // แสดงข้อผิดพลาดถ้ามี
+    console.error("Error adding document: ", e);
+    throw e;
   }
 };
+
+
+  
