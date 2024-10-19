@@ -51,7 +51,7 @@ const Navbar = () => {
                     </ul>
                     <ul className="flex items-center space-x-3">
                         <li className="border-2 border-white rounded-full px-3 bg-white text-black text-lg font-semibold"><Link href="/">Sign in</Link></li>
-                        <li className="border-2 border-white rounded-full px-3 bg-tranparent text-white text-lg font-semibold"><Link href="/">Sign up</Link></li>
+                        <li className="border-2 border-white rounded-full px-3 bg-tranparent text-black text-lg font-semibold"><Link href="/">Sign up</Link></li>
                     </ul>
                 </div>
             </div>
