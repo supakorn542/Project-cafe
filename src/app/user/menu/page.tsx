@@ -1,17 +1,17 @@
 "use client"
 
-import { Product } from '../../../lib/interfaces/product';
-import { Admin } from '../../../lib/interfaces/admin';
-import { Category } from '../../../lib/interfaces/category';
-import { getProducts, getAdmins, getCategories } from '../../../lib/services/getProduct';
-import { deleteProduct } from '../../../lib/services/deleteProduct';
+import { Product } from '../../lib/interfaces/product';
+import { Admin } from '../../lib/interfaces/admin';
+import { Category } from '../../lib/interfaces/category';
+import { getProducts, getAdmins, getCategories } from '../../lib/services/getProduct';
+import { deleteProduct } from '../../lib/services/deleteProduct';
 import { useState, useEffect } from 'react';
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  console.log("product :",products)
+  
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await getProducts();
@@ -25,13 +25,11 @@ const MenuPage = () => {
     fetchData();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    await deleteProduct(id);
-    // Optionally, update the state to reflect the deletion
-    setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
+  const handleAddtocart = async (id: string) => {
+
   };
 
-  const adminMap = Object.fromEntries(admins.map(admin => [admin.id, `${admin.firstname} ${admin.lastname}`]));
+  
   const categoryMap = Object.fromEntries(categories.map(category => [category.id, category.category_name]));
 
   return (
@@ -44,10 +42,9 @@ const MenuPage = () => {
             <br />
             Description: {product.description}
             <br />
-            <br />
             Category: {categoryMap[product.category_id] || 'Unknown'}
             <br />
-            <button onClick={() => handleDelete(product.id)}>Delete</button> {/* Pass product.id */}
+            <button onClick={() => handleAddtocart(product.id)}>add to cart</button> {/* Pass product.id */}
           </li>
         ))}
       </ul>

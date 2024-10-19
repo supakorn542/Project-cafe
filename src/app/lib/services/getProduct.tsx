@@ -5,7 +5,7 @@ import { Admin } from '../interfaces/admin';
 import { Category } from '../interfaces/category';
 
 export const getProducts = async (): Promise<Product[]> => {
-  const productsCol = collection(db, 'Products');
+  const productsCol = collection(db, 'products');
   const productSnapshot = await getDocs(productsCol);
 
   // ใช้ getDoc เพื่อดึงข้อมูลจาก reference admin_id และ category_id
