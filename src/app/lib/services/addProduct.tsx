@@ -7,7 +7,7 @@ export const createProduct = async (productData: {
   admin_id: string;
   category_id: string;
   description: string;
-  price: number;
+  base_price: number;
   product_name: string;
 }) => {
   try {
@@ -19,7 +19,7 @@ export const createProduct = async (productData: {
       admin_id: adminRef,
       category_id: categoryRef,
       description: productData.description,
-      price: productData.price,
+      base_price: productData.base_price,
       product_name: productData.product_name,
     });
     return docRef; // คืนค่า DocumentReference ซึ่งมี id ของ product ที่สร้างขึ้น
