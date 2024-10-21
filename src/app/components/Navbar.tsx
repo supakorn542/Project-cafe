@@ -3,11 +3,18 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image"
+import { signOut } from "firebase/auth";
+import { auth } from "../lib/firebase";
+import { useAuth } from "../context/authContext";
+import { useRouter } from "next/navigation"; 
 
 
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
+
+    const { user,setUser } = useAuth(); 
+    const router = useRouter();
 
     useEffect(() => {
         const handleScroll = (): void => {
@@ -22,6 +29,17 @@ const Navbar = () => {
             document.removeEventListener("scroll", handleScroll);
         };
     }, [scrolled]);
+
+    const handleSignOut = async () => {
+      try {
+        await signOut(auth);
+        setUser(null);
+        localStorage.setItem('signOut', 'true'); 
+        router.push("/");
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
+    };
 
     return (
         <nav className={`sticky top-0 left-0 right-0 transition-all duration-300 z-50 ${
@@ -50,9 +68,33 @@ const Navbar = () => {
                         </li>
                     </ul>
                     <ul className="flex items-center space-x-3">
-                        <li className="border-2 border-white rounded-full px-3 bg-white text-black text-lg font-semibold"><Link href="/">Sign in</Link></li>
-                        <li className="border-2 border-white rounded-full px-3 bg-tranparent text-black text-lg font-semibold"><Link href="/">Sign up</Link></li>
-                    </ul>
+            {user ? (
+              <>
+                <li className="text-lg font-semibold text-black">
+                  <span>Welcome, {user.email}</span>
+                </li>
+                <li>
+                  <button
+                    onClick={handleSignOut}
+                    className="border-2 border-white rounded-full px-3 bg-white text-black text-lg font-semibold"
+                  >
+                    Sign Out
+                  </button>
+                </li>
+              </>
+            ) : (
+             
+                
+              <>
+                <li className="border-2 border-white rounded-full px-3 bg-white text-black text-lg font-semibold">
+                  <Link href="/signin">Sign in</Link>
+                </li>
+                <li className="border-2 border-white rounded-full px-3 bg-transparent text-black text-lg font-semibold">
+                  <Link href="/signup">Sign up</Link>
+                </li>
+              </>
+            )}
+          </ul>
                 </div>
             </div>
         </nav>
