@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { FormEvent, useState } from "react";
 import {
@@ -6,16 +6,17 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "../lib/firebase"; 
+import { auth } from "../lib/firebase";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../context/authContext";
 
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const router = useRouter();
+  const { setUser } = useAuth();
 
-  
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault();
     try {
@@ -24,26 +25,31 @@ const SignIn = () => {
         email,
         password
       );
-      const user = userCredential.user;
-      console.log("User signed in:", user);
-      router.push("/user"); 
+      if (userCredential.user) {
+        console.log("User signed in:", userCredential.user);
+        setUser(userCredential.user);
+        router.push("/user");
+      } else {
+        throw new Error("No user returned");
+      }
     } catch (error: any) {
       console.error("Error signing in:", error);
-      setError(error.message); 
+      setError(error?.message || "An unexpected error occurred.");
     }
   };
 
-  
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
       console.log("User signed in with Google:", user);
-      router.push("/user"); 
+      setUser(user);
+      router.push("/user");
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
-      setError(error.message); 
+      setError(error?.message || "An unexpected error occurred.");
     }
   };
 
