@@ -1,4 +1,4 @@
-import { db } from "../firebase"; // ไฟล์ firebase สำหรับ config ของ Firestore
+import { db } from "../lib/firebase"; // ไฟล์ firebase สำหรับ config ของ Firestore
 import { collection, addDoc, doc } from "firebase/firestore"; 
 
 export const addCoffeeOption = async (data: {

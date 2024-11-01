@@ -15,7 +15,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
+
 
 // คำสั่ง run emulators
 //firebase emulators:start --import ./firebase-export --export-on-exit ./firebase-export
@@ -24,7 +24,7 @@ const db = getFirestore(app);
 connectFirestoreEmulator(db, '127.0.0.1', 8080);
 
 const auth = getAuth(app);
-connectAuthEmulator(auth, "http://127.0.0.1:9099");
+// connectAuthEmulator(auth, "http://127.0.0.1:9099");
 
 
 

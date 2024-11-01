@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCategories } from "../../../lib/services/getCategory";
-import { addCoffeeOption } from "../../../lib/services/addcoffeeOption"; 
-import { createProduct } from "../../../lib/services/addProduct"; // ฟังก์ชันสำหรับบันทึก product
+import { getCategories } from "../../../services/getCategory";
+import { addCoffeeOption } from "../../../services/addcoffeeOption"; 
+import { createProduct } from "../../../services/addProduct"; // ฟังก์ชันสำหรับบันทึก product
 
 const AddProductForm = () => {
   const [productName, setProductName] = useState("");

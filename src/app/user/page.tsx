@@ -4,8 +4,8 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/authContext";
-import withAuth from "../utils/withAuth";
-import { User } from "../lib/interfaces/user";
+import ProtectedRoute from "../utils/protectedRoute";
+import { User } from "../interfaces/user";
 
 function Profile() {
   const { user } = useAuth();
@@ -31,11 +31,17 @@ function Profile() {
       <Navbar />
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
         <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">
+          <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">
             Profile
           </h1>
 
           <p className="text-lg mb-2">TEST EMULATOR!</p>
+          {!userData && (
+            <div>
+              <p className="text-lg mb-2">Name: {user?.displayName}</p>
+              <p className="text-lg">Email: {user?.email}</p>
+            </div>
+          )}
           {userData && (
             <div>
               <p className="text-lg mb-2">Name: {userData.name}</p>
@@ -48,4 +54,4 @@ function Profile() {
   );
 }
 
-export default withAuth(Profile);
+export default ProtectedRoute(Profile);

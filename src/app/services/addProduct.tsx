@@ -1,5 +1,5 @@
 import { collection, addDoc, doc } from 'firebase/firestore';
-import { db } from '../firebase'; // อ้างอิง Firebase
+import { db } from '../lib/firebase'; // อ้างอิง Firebase
 
 // ฟังก์ชันสำหรับการสร้างข้อมูลผลิตภัณฑ์ใหม่
 

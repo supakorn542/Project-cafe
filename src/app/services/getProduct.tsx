@@ -1,5 +1,5 @@
 import { collection, getDoc, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../lib/firebase';
 import { Product } from '../interfaces/product';
 import { Admin } from '../interfaces/admin';
 import { Category } from '../interfaces/category';

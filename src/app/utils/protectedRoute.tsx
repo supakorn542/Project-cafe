@@ -5,7 +5,7 @@ import { useAuth } from "../context/authContext";
 import { useRouter } from "next/navigation";
 
 
-const withAuth = (WrappedComponent: React.ComponentType) => {
+const ProtectedRoute = (WrappedComponent: React.ComponentType) => {
   const ComponentWithAuth = (props: any) => {
     const { user, loading } = useAuth();
     const router = useRouter();
@@ -33,4 +33,4 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
   return ComponentWithAuth;
 };
 
-export default withAuth;
+export default ProtectedRoute;
