@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../../lib/firebase';
-import { Product } from '../../../../lib/interfaces/product';
-import { getCategories } from "../../../../lib/services/getCategory";
-import { getCoffeeOptionByProductId, updateCoffeeOption } from "../../../../lib/services/getcoffeeOption";
+import { Product } from '../../../../interfaces/product';
+import { getCategories } from "../../../../services/getCategory";
+import { getCoffeeOptionByProductId, updateCoffeeOption } from "../../../../services/getcoffeeOption";
 
 const UpdateProduct = () => {
   const { productId } = useParams();

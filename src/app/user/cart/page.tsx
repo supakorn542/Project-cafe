@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { db } from "../../lib/firebase"; // ปรับเส้นทางตามที่คุณใช้
 import { collection, query, where, getDocs,doc } from "firebase/firestore";
-import { CartInterface } from "@/app/lib/interfaces/cartInterface"; // นำเข้า CartInterface
+import { CartInterface } from "@/app/interfaces/cartInterface"; // นำเข้า CartInterface
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartInterface[]>([]);

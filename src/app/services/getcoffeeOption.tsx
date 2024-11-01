@@ -1,5 +1,5 @@
 import { doc, getDoc, updateDoc, setDoc, collection, where, query, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../lib/firebase";
 import { CoffeeOption } from "../interfaces/coffeeOptionInterface";
 
 export const getCoffeeOptionByProductId = async (productId: string) => {

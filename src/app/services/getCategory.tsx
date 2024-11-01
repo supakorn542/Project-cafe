@@ -1,5 +1,5 @@
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../lib/firebase';
 import { Category } from '../interfaces/category';
 
 // ฟังก์ชันดึงข้อมูล categories

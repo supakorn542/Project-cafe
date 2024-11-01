@@ -1,10 +1,10 @@
 "use client"
 
-import { Product } from '../../../lib/interfaces/product';
-import { Admin } from '../../../lib/interfaces/admin';
-import { Category } from '../../../lib/interfaces/category';
-import { getProducts, getAdmins, getCategories } from '../../../lib/services/getProduct';
-import { deleteProduct } from '../../../lib/services/deleteProduct';
+import { Product } from '../../../interfaces/product';
+import { Admin } from '../../../interfaces/admin';
+import { Category } from '../../../interfaces/category';
+import { getProducts, getAdmins, getCategories } from '../../../services/getProduct';
+import { deleteProduct } from '../../../services/deleteProduct';
 import { useState, useEffect } from 'react';
 
 const MenuPage = () => {

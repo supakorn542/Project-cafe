@@ -1,5 +1,5 @@
 import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase'; // อ้างอิง Firebase
+import { db } from '../lib/firebase'; // อ้างอิง Firebase
 
 // ยังไม่ได้ลองว่าใช้งานได้รึป่าว
 // ฟังก์ชันสำหรับการแก้ไขข้อมูลผลิตภัณฑ์
