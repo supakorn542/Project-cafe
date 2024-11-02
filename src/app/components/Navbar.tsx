@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
 
-    const { user,setUser } = useAuth(); 
+    const { user, loading, signOutUser } = useAuth(); 
     const router = useRouter();
 
     useEffect(() => {
@@ -30,16 +30,6 @@ const Navbar = () => {
         };
     }, [scrolled]);
 
-    const handleSignOut = async () => {
-      try {
-        await signOut(auth);
-        setUser(null);
-        localStorage.setItem('signOut', 'true'); 
-        router.push("/");
-      } catch (error) {
-        console.error("Error signing out:", error);
-      }
-    };
 
     return (
         <nav className={`sticky top-0 left-0 right-0 transition-all duration-300 z-50 ${
@@ -75,7 +65,7 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    onClick={handleSignOut}
+                    onClick={signOutUser}
                     className="border-2 border-white rounded-full px-3 bg-white text-black text-lg font-semibold"
                   >
                     Sign Out

@@ -3,30 +3,35 @@
 import { FormEvent, useState, useEffect } from "react";
 import {
   signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
   signInWithCustomToken,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/authContext";
+import nookies from "nookies";
 
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const router = useRouter();
-  const { setUser } = useAuth();
+  const { user, loading, signInWithGoogle } = useAuth();
+  
 
   useEffect(() => {
+
+    if (user) {
+      router.push("/user");
+    }
+
+  
     const token = new URLSearchParams(window.location.search).get("firebaseToken");
     if (token) {
       (async () => {
         try {
           const userCredential = await signInWithCustomToken(auth, token);
           if (userCredential.user) {
-            setUser(userCredential.user);
-            router.push("/user");
+            router.push("/user/profile");
           } else {
             setError("No user returned after signing in.");
           }
@@ -36,7 +41,7 @@ const SignIn = () => {
         }
       })();
     }
-  }, [router, setUser]);
+  }, []);
 
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault();
@@ -48,8 +53,14 @@ const SignIn = () => {
       );
       if (userCredential.user) {
         console.log("User signed in:", userCredential.user);
-        setUser(userCredential.user);
-        router.push("/user");
+        
+        const token = await userCredential.user.getIdToken();
+       
+        nookies.set(null, "token", token, {
+          maxAge: 60 * 60 * 24, // 1 วัน
+          path: "/",
+        });
+        router.push("/user/profile");
       } else {
         throw new Error("No user returned");
       }
@@ -60,14 +71,8 @@ const SignIn = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      console.log("User signed in with Google:", user);
-      setUser(user);
-      router.push("/user");
+      await signInWithGoogle();
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
       setError(error?.message || "An unexpected error occurred.");
