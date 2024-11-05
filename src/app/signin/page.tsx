@@ -20,10 +20,6 @@ const SignIn = () => {
 
   useEffect(() => {
 
-    if (user) {
-      router.push("/user");
-    }
-
   
     const token = new URLSearchParams(window.location.search).get("firebaseToken");
     if (token) {

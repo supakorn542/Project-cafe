@@ -16,7 +16,7 @@ function Profile() {
     const getUserById = async () => {
       if (user) {
         try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
+          const userDoc = await getDoc(doc(db, "users", user.id));
           if (userDoc.exists()) {
             setUserData(userDoc.data() as User);
           } else {
