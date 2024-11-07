@@ -1,85 +1,99 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCategories } from "../../../services/getCategory";
-import { addCoffeeOption } from "../../../services/addcoffeeOption"; 
-import { createProduct } from "../../../services/addProduct"; // ฟังก์ชันสำหรับบันทึก product
+import { getProductTypes } from "../../../services/getproductType";
+import { createProductWithOptions } from "../../../services/addProduct";
+import { OptionInterface } from "@/app/interfaces/optioninterface";
+import { getOptions } from "@/app/services/options";
+import { OptionItem } from "@/app/interfaces/optionItemInterface";
+import { statusInterface } from "@/app/interfaces/statusInterface";
+import { getStatus } from "@/app/services/getstatus";
 
 const AddProductForm = () => {
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState(0);
+  const [calorie, setCalorie] = useState(0);
   const [description, setDescription] = useState("");
-  const [adminId, setAdminId] = useState("");
-  const [categories, setCategories] = useState<
-    { id: string; category_name: string }[]
-  >([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-
-  const [intensity, setIntensity] = useState<string[]>([]);
-  const [sweetness, setSweetness] = useState<string[]>([]);
+  const [status, setStatus] = useState<statusInterface[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState(""); // เก็บค่าที่เลือก
+  const [options, setOptions] = useState<OptionInterface[]>([]);
+  const [optionItemsMap, setOptionItemsMap] = useState<{ [key: string]: OptionItem[] }>({});
+  const [selectedOptions, setSelectedOptions] = useState<{ option: OptionInterface; items: OptionItem[] }[]>([]);
+  const [showOptionsPopup, setShowOptionsPopup] = useState(false);
+  const [showCreateOptionPopup, setShowCreateOptionPopup] = useState(false);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [SelectProductType, setSelectProductType] = useState("");
 
   useEffect(() => {
+    const fetchStatus = async () => {
+      const statusData = await getStatus()
+      setStatus(statusData)
+    }
     const fetchCategories = async () => {
-      const categoriesData = await getCategories();
+      const categoriesData = await getProductTypes();
       setCategories(categoriesData);
     };
 
+    const fetchData = async () => {
+      const { options, optionItemsMap } = await getOptions();
+      setOptions(options);
+      setOptionItemsMap(optionItemsMap);
+    };
+    fetchStatus();
+    fetchData();
     fetchCategories();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. บันทึก product ก่อน
     const productData = {
-      admin_id: "SdVAeQFloBoDUfQ65bt6", // ค่า admin id ตัวอย่าง
-      category_id: selectedCategory,
+      productType_id: SelectProductType,
       description,
       price,
-      product_name: productName,
+      name: productName,
+      options: selectedOptions.map(option => option.option.id),
+      user_id: "", // ตั้งค่าเป็นค่า default
+      status_id: selectedStatus, // ตั้งค่าเป็นค่า default
+      calorie: calorie, // ตั้งค่าเป็นค่า default
     };
+    
 
     try {
-      // บันทึกข้อมูลลง collection products และได้ product_id กลับมา
-      const productRef = await createProduct(productData);
-      const productId = productRef.id;
-
-      // 2. บันทึก coffee_option โดยใช้ product_id
-      const coffeeOptionData = {
-        product_id: productId, // ใช้ product_id ที่เพิ่งสร้าง
-        intensity,
-        sweetness,
-      };
-      await addCoffeeOption(coffeeOptionData);
-
-      console.log("Coffee option created with product ID: ", productId);
+      await createProductWithOptions(productData);
+      alert("Product created successfully!");
     } catch (error) {
-      console.error("Error creating product or coffee option: ", error);
+      console.error("Error creating product:", error);
+      alert("Failed to create product");
     }
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory(e.target.value); 
+    setSelectProductType(e.target.value);
   };
 
-  const handleIntensityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (intensity.includes(value)) {
-      setIntensity(intensity.filter((item) => item !== value));
-    } else {
-      setIntensity([...intensity, value]);
-    }
+  const handleAddButtonClick = () => {
+    setShowOptionsPopup(true);
   };
 
-  const handleSweetnessChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (sweetness.includes(value)) {
-      setSweetness(sweetness.filter((item) => item !== value));
-    } else {
-      setSweetness([...sweetness, value]);
-    }
+  const handleOptionSelect = (option: OptionInterface) => {
+    const items = optionItemsMap[option.id] || [];
+    setSelectedOptions([...selectedOptions, { option, items }]);
+    setShowOptionsPopup(false);
   };
 
+  const handleCreateOptionClick = () => {
+    setShowOptionsPopup(false);
+    setShowCreateOptionPopup(true);
+  };
+
+  const handleSaveNewOption = async (newOption: OptionInterface) => {
+    // บันทึก newOption ลงใน Firestore
+    setShowCreateOptionPopup(false);
+  };
+  const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedStatus(event.target.value); // อัพเดตค่าที่เลือก
+  };
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex flex-col">
@@ -98,63 +112,76 @@ const AddProductForm = () => {
           required
         />
         <input
+          type="number"
+          value={calorie}
+          onChange={(e) => setCalorie(Number(e.target.value))}
+          placeholder="Calorie"
+          required
+        />
+        <input
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description"
           required
         />
+        <label htmlFor="status">Select Status:</label>
+      <select id="status" value={selectedStatus} onChange={handleStatusChange}>
+        <option value="">-- Select Status --</option>
+        {status.map((statusItem) => (
+          <option key={statusItem.id} value={statusItem.id}>
+            {statusItem.name}
+          </option>
+        ))}
+      </select>
 
         <label htmlFor="category">Select Category:</label>
-        <select
-          id="category"
-          value={selectedCategory}
-          onChange={handleCategoryChange}
-        >
+        <select id="category" value={SelectProductType} onChange={handleCategoryChange}>
           <option value="">Select a category</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
-              {category.category_name}
+              {category.name}
             </option>
           ))}
         </select>
+        <button type="button" onClick={handleAddButtonClick}>Add Option</button>
 
-        <label>Intensity</label>
-        <div>
-          <input
-            type="checkbox"
-            value="คั่วอ่อน (Ethiopai)"
-            onChange={handleIntensityChange}
-          />
-          คั่วอ่อน (Ethiopai)
-          <input
-            type="checkbox"
-            value="คั่วกลาง (Brazil + Colombia)"
-            onChange={handleIntensityChange}
-          />
-          คั่วกลาง (Brazil + Colombia)
-          <input
-            type="checkbox"
-            value="คั่วเข้ม (ปางขอน)"
-            onChange={handleIntensityChange}
-          />
-          คั่วเข้ม (ปางขอน)
-        </div>
+        {showOptionsPopup && (
+          <div className="popup">
+            <h2>Select an Option</h2>
+            {options.map((option) => (
+              <div key={option.id} onClick={() => handleOptionSelect(option)}>
+                {option.name}
+              </div>
+            ))}
+            <button onClick={handleCreateOptionClick}>Create New Option</button>
+            <button onClick={() => setShowOptionsPopup(false)}>Close</button>
+          </div>
+        )}
 
-        <label>Sweetness</label>
-        <div>
-          <input
-            type="checkbox"
-            value="ไม่ใส่ไซรัป"
-            onChange={handleSweetnessChange}
-          />
-          ไม่ใส่ไซรัป
-          <input
-            type="checkbox"
-            value="ไซรัป 10 ml หวานนิดเดียว"
-            onChange={handleSweetnessChange}
-          />
-          ไซรัป 10 ml หวานนิดเดียว
+        {showCreateOptionPopup && (
+          <div className="popup">
+            <h2>Create New Option</h2>
+            
+            <button onClick={() => handleSaveNewOption({ id: "", name: "", require: false })}>Save</button>
+            <button onClick={() => setShowCreateOptionPopup(false)}>Cancel</button>
+          </div>
+        )}
+
+        <div className="selected-options">
+          <h3>Selected Options:</h3>
+          {selectedOptions.map(({ option, items }) => (
+            <div key={option.id}>
+              <h4>{option.name}</h4>
+              <ul>
+                {items.map((item) => (
+                  <li key={item.id}>
+                    {item.name} - Price Modifier: {item.priceModifier}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         <button type="submit">Create Product</button>

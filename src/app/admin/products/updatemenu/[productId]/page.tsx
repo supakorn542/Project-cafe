@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../../lib/firebase';
 import { Product } from '../../../../interfaces/product';
-import { getCategories } from "../../../../services/getCategory";
+import { getCategories } from "../../../../services/getproductType";
 import { getCoffeeOptionByProductId, updateCoffeeOption } from "../../../../services/getcoffeeOption";
 
 const UpdateProduct = () => {

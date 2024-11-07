@@ -1,25 +1,22 @@
 "use client"
 
 import { Product } from '../../interfaces/product';
-import { Admin } from '../../interfaces/admin';
-import { Category } from '../../interfaces/category';
-import { getProducts, getAdmins, getCategories } from '../../services/getProduct';
+import { productTypeInterface } from '../../interfaces/productType';
+import { getProducts,  getProductType } from '../../services/getProduct';
 import { deleteProduct } from '../../services/deleteProduct';
 import { useState, useEffect } from 'react';
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [admins, setAdmins] = useState<Admin[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  
+  const [productType, setproductType] = useState<productTypeInterface[]>([]);
   
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await getProducts();
-      const adminsData = await getAdmins();
-      const categoriesData = await getCategories();
+      const productTypeData = await getProductType();
       setProducts(productsData);
-      setAdmins(adminsData);
-      setCategories(categoriesData);
+      setproductType(productTypeData);
     };
     
     fetchData();
@@ -29,8 +26,9 @@ const MenuPage = () => {
 
   };
 
+  console.log("products : ",products)
   
-  const categoryMap = Object.fromEntries(categories.map(category => [category.id, category.category_name]));
+  const productTypeMap = Object.fromEntries(productType.map(productType => [productType.id, productType.name]));
 
   return (
     <div>
@@ -38,11 +36,11 @@ const MenuPage = () => {
       <ul>
         {products.map((product, index) => (
           <li key={index}>
-            <strong>{product.product_name}</strong>: {product.base_price} ฿
+            <strong>{product.name}</strong>: {product.price} ฿
             <br />
-            Description: {product.description}
+            colorie : {product.calorie}
             <br />
-            Category: {categoryMap[product.category_id] || 'Unknown'}
+           productType: {productTypeMap[product.productType_id] || 'Unknown'}
             <br />
             <button onClick={() => handleAddtocart(product.id)}>add to cart</button> {/* Pass product.id */}
           </li>

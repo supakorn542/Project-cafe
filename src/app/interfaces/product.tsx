@@ -1,8 +1,10 @@
 export interface Product {
-    id: string;          // ID ของผลิตภัณฑ์
-    admin_id: string;    // ID ของผู้ดูแลระบบ
-    category_id: string; // ID ของหมวดหมู่
-    description: string; // คำอธิบายผลิตภัณฑ์
-    base_price: number;       // ราคา
-    product_name: string; // ชื่อผลิตภัณฑ์
+    id?: string;          // ID ของผลิตภัณฑ์
+    user_id: string;    // ID ของผู้ดูแลระบบ
+    productType_id: string; // ID ของหมวดหมู่
+    status_id:string;
+    price: number;       // ราคา
+    name: string; // ชื่อผลิตภัณฑ์
+    calorie: number;
+    options: string[];
   }
