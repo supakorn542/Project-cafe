@@ -1,8 +1,8 @@
 import { collection, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Product } from '../interfaces/product';
-import { Admin } from '../interfaces/admin';
-import { Category } from '../interfaces/category';
+
+import { productTypeInterface } from '../interfaces/productType';
 
 export const getProducts = async (): Promise<Product[]> => {
   const productsCol = collection(db, 'products');
@@ -12,31 +12,39 @@ export const getProducts = async (): Promise<Product[]> => {
   const products = await Promise.all(productSnapshot.docs.map(async (docSnapshot) => {
     const data = docSnapshot.data();
     
-    // ตรวจสอบและดึงข้อมูลจาก reference admin_id
-    const adminRef = data.admin_id;
-    let admin_id = '';
+    // ตรวจสอบและดึงข้อมูลจาก reference user_id
+    const userRef = data.user_id;
+    let user_id = '';
 
-    if (adminRef) {
-      const adminDoc = await getDoc(adminRef);
-      admin_id = adminDoc.id; // ดึง ID จาก reference
+    if (userRef) {
+      const userDoc = await getDoc(userRef);
+      user_id = userDoc.id; // ดึง ID จาก reference
     }
 
-    // ตรวจสอบและดึงข้อมูลจาก reference category_id
-    const categoryRef = data.category_id;
-    let category_id = '';
+    const productTypeRef = data.productType_id;
+    let productType_id = '';
 
-    if (categoryRef) {
-      const categoryDoc = await getDoc(categoryRef);
-      category_id = categoryDoc.id; // ดึง ID จาก reference
+    if (productTypeRef) {
+      const productTypeDoc = await getDoc(productTypeRef);
+      productType_id = productTypeDoc.id; // ดึง ID จาก reference
     }
 
+    const statusRef = data.status_id;
+    let status_id = '';
+
+    if (statusRef) {
+      const statusDoc = await getDoc(statusRef);
+     status_id = statusDoc.id; // ดึง ID จาก reference
+    }
+//-----------------------------------------------------------------
     return {
       id: docSnapshot.id,
-      admin_id: admin_id || '', // ใช้ค่า ID ที่ดึงมา
-      category_id: category_id || '', // ใช้ค่า ID ที่ดึงมา
-      description: data.description || '',
-      base_price: data.base_price || 0,
-      product_name: data.product_name || ''
+      user_id: user_id || '', 
+      productType_id: productType_id || '',
+      status_id: status_id || '',
+      price: data.price || 0,
+      name: data.name || '',
+      calorie: data.calorie || ''
     } as Product;
   }));
 
@@ -44,61 +52,17 @@ export const getProducts = async (): Promise<Product[]> => {
 };
 
 
-export const getAdmins = async (): Promise<Admin[]> => {
-  const adminsCol = collection(db, 'admin');
-  const adminSnapshot = await getDocs(adminsCol);
-  return adminSnapshot.docs.map(doc => ({
-    id: doc.id,
-    username: doc.data().username || '',    
-    password: doc.data().password || '',      
-    firstname: doc.data().firstname || '',    
-    lastname: doc.data().lastname || '',      
-    phone_number: doc.data().phone_number || '', 
-    address: doc.data().address || '',        
-  }));
-};
 
-export const getCategories = async (): Promise<Category[]> => {
-  const categoriesCol = collection(db, 'category');
+
+export const getProductType = async (): Promise<productTypeInterface[]> => {
+  const categoriesCol = collection(db, 'productTypes');
   const categorySnapshot = await getDocs(categoriesCol);
   return categorySnapshot.docs.map(doc => ({
     id: doc.id,
-    category_name: doc.data().category_name || '' // ใช้ catagory_name ที่ตรงกับอินเทอร์เฟซ
+    name: doc.data().name || '' // ใช้ catagory_name ที่ตรงกับอินเทอร์เฟซ
   }));
 };
 
 
 
 
-
-
-// ฟังก์ชันดึงข้อมูล product ที่มี reference
-// export const getProducts = async () => {
-//   const productsCol = collection(db, 'products');
-//   const productSnapshot = await getDocs(productsCol);
-
-//   const products = await Promise.all(productSnapshot.docs.map(async (docSnapshot) => {
-//     const data = docSnapshot.data();
-
-//     // ดึงข้อมูล admin จาก reference
-//     const adminRef = data.admin_id;
-//     const adminDoc = await getDoc(adminRef);
-//     const adminData = adminDoc.data();
-
-//     // ดึงข้อมูล category จาก reference
-//     const categoryRef = data.category_id;
-//     const categoryDoc = await getDoc(categoryRef);
-//     const categoryData = categoryDoc.data();
-
-//     return {
-//       id: docSnapshot.id,
-//       admin: adminData ? `${adminData.firstname} ${adminData.lastname}` : 'Unknown',
-//       category: categoryData ? categoryData.category_name : 'Unknown',
-//       description: data.description,
-//       price: data.price,
-//       product_name: data.product_name
-//     };
-//   }));
-
-//   return products;
-// };

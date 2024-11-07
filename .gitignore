@@ -37,4 +37,4 @@ next-env.d.ts
 
 /firebase-export/
 
-/lib/firebase
+/lib/firebase.ts
