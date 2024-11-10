@@ -21,22 +21,6 @@ const SignIn = () => {
   useEffect(() => {
 
   
-    const token = new URLSearchParams(window.location.search).get("firebaseToken");
-    if (token) {
-      (async () => {
-        try {
-          const userCredential = await signInWithCustomToken(auth, token);
-          if (userCredential.user) {
-            router.push("/user/profile");
-          } else {
-            setError("No user returned after signing in.");
-          }
-        } catch (error: any) {
-          console.error("Error signing in with LINE:", error);
-          setError("Error signing in with LINE: " + error.message);
-        }
-      })();
-    }
   }, []);
 
   const handleSignIn = async (e: FormEvent) => {
@@ -51,9 +35,10 @@ const SignIn = () => {
         console.log("User signed in:", userCredential.user);
         
         const token = await userCredential.user.getIdToken();
+        console.log("Token Client:", token);
        
         nookies.set(null, "token", token, {
-          maxAge: 60 * 60 * 24, // 1 วัน
+          maxAge: 60 * 60 * 24, 
           path: "/",
         });
         router.push("/user/profile");
@@ -76,8 +61,8 @@ const SignIn = () => {
   };
 
   const handleLineSignIn = () => {
-    const redirectUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_LINE_CHANNEL_ID}&redirect_uri=${process.env.NEXT_PUBLIC_LINE_CALLBACK_URL}&state=random_state_string&scope=profile`;
-    console.log('Redirect URL:', redirectUrl); // เพิ่ม log เพื่อตรวจสอบค่า
+    const redirectUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_LINE_CHANNEL_ID}&redirect_uri=${process.env.NEXT_PUBLIC_LINE_CALLBACK_URL}&state=random_state_string&scope=profile%20openid%20email`;
+    console.log('Redirect URL:', redirectUrl); 
     window.location.href = redirectUrl;
   };
 

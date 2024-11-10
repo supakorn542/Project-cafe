@@ -63,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         createdAt: new Date(),
       };
       const token = await result.user.getIdToken();
+      console.log("Token Client:", token);
       nookies.set(null, "token", token, {
         maxAge: 60 * 60 * 24, 
         path: "/",
@@ -94,10 +95,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       console.log("Signing out...");
-      await signOut(auth); // Sign out from Firebase
+      await signOut(auth);
       console.log("Firebase sign out successful.");
       
-      nookies.destroy(null, "token"); // Destroy the cookie
+      nookies.destroy(null, "token"); 
       console.log("Token cookie destroyed.");
       router.push("/");
     } catch (error) {
