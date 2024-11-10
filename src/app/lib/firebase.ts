@@ -24,6 +24,7 @@ const db = getFirestore(app);
 connectFirestoreEmulator(db, '127.0.0.1', 8080);
 
 const auth = getAuth(app);
+//ถ้าจะใช้ firebase ที่ไม่ใช่ emulator ไป comment FIREBASE_AUTH_EMULATOR_HOST ที่ .env.local ด้วย
 connectAuthEmulator(auth, "http://127.0.0.1:9099");
 
 

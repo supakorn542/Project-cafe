@@ -1,22 +1,23 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("token");
+  const token = request.cookies.get("token")?.value;
+
+  console.log("Token from cookies:", token);
 
   if (!token) {
     
     return NextResponse.redirect(new URL("/signin", request.url));
   }
   try {
-    // ตรวจสอบ token โดยส่งไปที่ API ของ Firebase
+  
     const verifyTokenResponse = await fetch(new URL("/api/auth", request.url), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: token.value }),
+      body: JSON.stringify({ token }),
     });
 
     if (!verifyTokenResponse.ok) {
-      // หาก token หมดอายุหรือไม่ถูกต้อง ให้ redirect ไปหน้า sign-in
       throw new Error("Invalid or expired token");
     }
   } catch (error) {
