@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
-  console.log("Token from cookies:", token);
+  
 
   if (!token) {
     

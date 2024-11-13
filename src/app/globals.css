@@ -1,3 +1,77 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.custom-datepicker .react-datepicker {
+  background-color: #f6dfbf; /* เปลี่ยนพื้นหลัง */
+  border: 2px solid #000; /* กำหนดเส้นขอบ */
+  border-radius: 10px; /* ปรับขอบให้โค้งมน */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* เพิ่มเงา */
+}
+
+/* สำหรับ header */
+.custom-datepicker .react-datepicker__header {
+  background-color: #f7e3c8;
+  border-bottom: none;
+}
+
+/* สำหรับ day*/
+.custom-datepicker .react-datepicker__day {
+  color: #333;
+  font-weight: bold;
+}
+
+/* สำหรับ selected day */
+.custom-datepicker .react-datepicker__day--selected {
+  background-color: #333;
+  color: #f7e3c8;
+}
+
+/* สำหรับ selected year and selected month  */
+.custom-datepicker .react-datepicker__year-select,
+.custom-datepicker .react-datepicker__month-select {
+  background-color: #f9f1e9;
+  color: #333;
+  border: 1px solid #000;
+  border-radius: 8px;
+
+  font-size: 0.875rem;
+}
+
+/* สำหรับ dropdown options */
+.custom-datepicker .react-datepicker__year-select option,
+.custom-datepicker .react-datepicker__month-select option {
+  background-color: #f6dfbf;
+  color: #333;
+  padding: 5px;
+}
+
+/* สำหรับ Year and Month Dropdown */
+.custom-datepicker .react-datepicker__year-select::-webkit-scrollbar,
+.custom-datepicker .react-datepicker__month-select::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* สำหรับ Background Scrollbar */
+.custom-datepicker .react-datepicker__year-select::-webkit-scrollbar-track,
+.custom-datepicker .react-datepicker__month-select::-webkit-scrollbar-track {
+  background: #f6dfbf;
+  border-radius: 10px;
+}
+
+/* สำหรับ Scrollbar */
+.custom-datepicker .react-datepicker__year-select::-webkit-scrollbar-thumb,
+.custom-datepicker .react-datepicker__month-select::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 10px;
+  border: 2px solid #f6dfbf;
+}
+
+/* สำหรับตอนเลื่อน Scrollbar */
+.custom-datepicker
+  .react-datepicker__year-select::-webkit-scrollbar-thumb:hover,
+.custom-datepicker
+  .react-datepicker__month-select::-webkit-scrollbar-thumb:hover {
+  background-color: #9f9e9e;
+}
