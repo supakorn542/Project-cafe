@@ -15,7 +15,7 @@ const AddProductForm = () => {
   const [calorie, setCalorie] = useState(0);
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<statusInterface[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState(""); // เก็บค่าที่เลือก
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState<OptionInterface[]>([]);
   const [optionItemsMap, setOptionItemsMap] = useState<{ [key: string]: OptionItem[] }>({});
   const [selectedOptions, setSelectedOptions] = useState<{ option: OptionInterface; items: OptionItem[] }[]>([]);
@@ -53,12 +53,11 @@ const AddProductForm = () => {
       price,
       name: productName,
       options: selectedOptions.map(option => option.option.id),
-      user_id: "", // ตั้งค่าเป็นค่า default
-      status_id: selectedStatus, // ตั้งค่าเป็นค่า default
-      calorie: calorie, // ตั้งค่าเป็นค่า default
+      user_id: "", 
+      status_id: selectedStatus, 
+      calorie: calorie, 
     };
     
-
     try {
       await createProductWithOptions(productData);
       alert("Product created successfully!");
@@ -72,14 +71,15 @@ const AddProductForm = () => {
     setSelectProductType(e.target.value);
   };
 
-  const handleAddButtonClick = () => {
-    setShowOptionsPopup(true);
-  };
-
-  const handleOptionSelect = (option: OptionInterface) => {
+  const handleOptionCheckboxChange = (option: OptionInterface) => {
     const items = optionItemsMap[option.id] || [];
-    setSelectedOptions([...selectedOptions, { option, items }]);
-    setShowOptionsPopup(false);
+    const optionIndex = selectedOptions.findIndex(selected => selected.option.id === option.id);
+
+    if (optionIndex > -1) {
+      setSelectedOptions(selectedOptions.filter(selected => selected.option.id !== option.id));
+    } else {
+      setSelectedOptions([...selectedOptions, { option, items }]);
+    }
   };
 
   const handleCreateOptionClick = () => {
@@ -88,12 +88,13 @@ const AddProductForm = () => {
   };
 
   const handleSaveNewOption = async (newOption: OptionInterface) => {
-    // บันทึก newOption ลงใน Firestore
     setShowCreateOptionPopup(false);
   };
+
   const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedStatus(event.target.value); // อัพเดตค่าที่เลือก
+    setSelectedStatus(event.target.value); 
   };
+
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex flex-col">
@@ -125,15 +126,16 @@ const AddProductForm = () => {
           placeholder="Description"
           required
         />
+
         <label htmlFor="status">Select Status:</label>
-      <select id="status" value={selectedStatus} onChange={handleStatusChange}>
-        <option value="">-- Select Status --</option>
-        {status.map((statusItem) => (
-          <option key={statusItem.id} value={statusItem.id}>
-            {statusItem.name}
-          </option>
-        ))}
-      </select>
+        <select id="status" value={selectedStatus} onChange={handleStatusChange}>
+          <option value="">-- Select Status --</option>
+          {status.map((statusItem) => (
+            <option key={statusItem.id} value={statusItem.id}>
+              {statusItem.name}
+            </option>
+          ))}
+        </select>
 
         <label htmlFor="category">Select Category:</label>
         <select id="category" value={SelectProductType} onChange={handleCategoryChange}>
@@ -144,27 +146,24 @@ const AddProductForm = () => {
             </option>
           ))}
         </select>
-        <button type="button" onClick={handleAddButtonClick}>Add Option</button>
+
+        <button type="button" onClick={() => setShowOptionsPopup(true)}>Add Option</button>
 
         {showOptionsPopup && (
           <div className="popup">
-            <h2>Select an Option</h2>
+            <h2>Select Options</h2>
             {options.map((option) => (
-              <div key={option.id} onClick={() => handleOptionSelect(option)}>
-                {option.name}
+              <div key={option.id}>
+                <input
+                  type="checkbox"
+                  checked={selectedOptions.some(selected => selected.option.id === option.id)}
+                  onChange={() => handleOptionCheckboxChange(option)}
+                />
+                <label>{option.name}</label>
               </div>
             ))}
             <button onClick={handleCreateOptionClick}>Create New Option</button>
             <button onClick={() => setShowOptionsPopup(false)}>Close</button>
-          </div>
-        )}
-
-        {showCreateOptionPopup && (
-          <div className="popup">
-            <h2>Create New Option</h2>
-            
-            <button onClick={() => handleSaveNewOption({ id: "", name: "", require: false })}>Save</button>
-            <button onClick={() => setShowCreateOptionPopup(false)}>Cancel</button>
           </div>
         )}
 
