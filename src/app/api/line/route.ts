@@ -20,7 +20,7 @@ const getLineAccessToken = async (code: string) => {
 
   
   const data = await response.json();
-  console.log("data: ",data);
+  
   if (!response.ok) {
     throw new Error(`Failed to get access token: ${data.error || 'Unknown error'}`);
   }
@@ -59,10 +59,10 @@ export async function GET(request: NextRequest) {
       throw new Error("User ID not found in LINE profile");
     }
     
-    console.log("line profile: ",profile)
+   
 
     const firebaseToken = await admin.auth().createCustomToken(profile.uid);
-    console.log("Generated Firebase Token:", firebaseToken);
+    
 
     const userRef = doc(db, "users", profile.uid);
     await setDoc(
