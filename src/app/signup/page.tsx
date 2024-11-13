@@ -70,7 +70,7 @@ export default function Signup() {
               />
               <label
                 htmlFor="floating_outlined"
-                className="absolute font-serif font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f6dbb4] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
+                className="absolute font-serif4 font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f6dbb4] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
               >
                 First name
               </label>
@@ -88,7 +88,7 @@ export default function Signup() {
               />
               <label
                 htmlFor="floating_outlined"
-                className="absolute font-serif font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f6dfbf] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
+                className="absolute font-serif4 font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f6dfbf] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
               >
                 Last name
               </label>
@@ -108,8 +108,8 @@ export default function Signup() {
                   className="block w-full px-2.5 pb-2.5 pt-3 text-xl text-black bg-transparent rounded-3xl border-2 border-black peer"
                   calendarClassName="custom-datepicker"
                 />
-                <label className="absolute font-serif font-bold text-xl text-[black] duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f6dfbf] px-2 peer-focus:px-2 peer-focus:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3">
-                  DOB
+                <label className="absolute font-serif4 font-bold text-xl text-[black] duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f6dfbf] px-2 peer-focus:px-2 peer-focus:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3">
+                  Date of Birth
                 </label>
               </div>
 
@@ -125,7 +125,7 @@ export default function Signup() {
                 />
                 <label
                   htmlFor="floating_outlined"
-                  className="absolute font-serif font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f9ebda] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
+                  className="absolute font-serif4 font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f9ebda] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
                 >
                   Tel.
                 </label>
@@ -144,7 +144,7 @@ export default function Signup() {
               />
               <label
                 htmlFor="floating_outlined"
-                className="absolute font-serif font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f7e3c8] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
+                className="absolute font-serif4 font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f7e3c8] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
               >
                 Email
               </label>
@@ -162,7 +162,7 @@ export default function Signup() {
               />
               <label
                 htmlFor="floating_outlined"
-                className="absolute font-serif font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f7e3c8] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
+                className="absolute font-serif4 font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f7e3c8] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
               >
                 Password
               </label>
