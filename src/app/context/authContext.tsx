@@ -38,8 +38,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (firebaseUser) {
         const newUser: User = {
           id: firebaseUser.uid,
-          name: firebaseUser.displayName || "Unknown",
+          firstName: firebaseUser.displayName || "Unknown",
+          lastName: "",
+          telNumber: "",
+          dob: null,
           email: firebaseUser.email || "No Email",
+          
         };
         setUser(newUser);
       } else {
@@ -58,12 +62,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const result = await signInWithPopup(auth, provider);
       const newUser: User = {
         id: result.user.uid,
-        name: result.user.displayName || "Unknown",
+        firstName: result.user.displayName || "Unknown",
+        lastName: "",
+        telNumber: "",
+        dob: null,
         email: result.user.email || "No Email",
         createdAt: new Date(),
       };
       const token = await result.user.getIdToken();
-      console.log("Token Client:", token);
+   
       nookies.set(null, "token", token, {
         maxAge: 60 * 60 * 24, 
         path: "/",
@@ -83,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await setDoc(
       userRef,
       {
-        name: user.name,
+        name: user.firstName,
         email: user.email,
         createdAt: user.createdAt,
       },

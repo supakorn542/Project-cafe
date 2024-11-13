@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     await setDoc(
       userRef,
       {
-        name: profile.displayName,
+        firstName: profile.displayName,
         email: profile.email,
         photoURL: profile.photoURL,
       },
