@@ -1,277 +1,255 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../../../lib/firebase';
-import { Product } from '../../../../interfaces/product';
-import { getCategories } from "../../../../services/getproductType";
-import { getCoffeeOptionByProductId, updateCoffeeOption } from "../../../../services/getcoffeeOption";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { getProductTypes } from "../../../../services/getproductType";
+import { OptionInterface } from "@/app/interfaces/optioninterface";
+import { getOptions } from "@/app/services/options";
+import { OptionItem } from "@/app/interfaces/optionItemInterface";
+import { statusInterface } from "@/app/interfaces/statusInterface";
+import { getStatus } from "@/app/services/getstatus";
+import { fetchProduct } from "@/app/services/getProduct";
+import { updateProduct } from "@/app/services/updateProduct";
+import { addProductOption, getProductOptionsByProductId } from "@/app/services/productOption";
+import { deleteProductOption } from "@/app/services/deleteProductOption";
 
-const UpdateProduct = () => {
+const UpdateProductForm = () => {
   const { productId } = useParams();
-  const router = useRouter();
-
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<
-    { id: string; category_name: string }[]
+  const [productName, setProductName] = useState("");
+  const [price, setPrice] = useState(0);
+  const [calorie, setCalorie] = useState(0);
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState<statusInterface[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [options, setOptions] = useState<OptionInterface[]>([]);
+  const [optionItemsMap, setOptionItemsMap] = useState<{
+    [key: string]: OptionItem[];
+  }>({});
+  const [optionsToAdd, setOptionsToAdd] = useState<string[]>([]);
+  const [optionsToRemove, setOptionsToRemove] = useState<string[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<
+    { option: OptionInterface; items: OptionItem[] }[]
   >([]);
-  const [formValues, setFormValues] = useState({
-    product_name: '',
-    description: '',
-    price: 0,
-    admin_id: '',
-    category_id: '',
-    intensity: [] as string[], // จัดการค่า intensity แยกจาก Product
-    sweetness: [] as string[], // จัดการค่า sweetness แยกจาก Product
-  });
+  const [showOptionsPopup, setShowOptionsPopup] = useState(false);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [selectProductType, setSelectProductType] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (productId) {
-      const productIdString = Array.isArray(productId) ? productId[0] : productId;
-
-      const fetchProduct = async () => {
+    const fetchData = async () => {
+      if (typeof productId === "string") {
         try {
-          const productRef = doc(db, 'products', productIdString);
-          const docSnap = await getDoc(productRef);
+          const productData = await fetchProduct(productId);
+          const selectedOptionIds = await getProductOptionsByProductId(productId);
+          const { options, optionItemsMap } = await getOptions();
 
-          if (docSnap.exists()) {
-            const data = { id: productIdString, ...docSnap.data() } as Product;
-            setProduct(data);
-            setFormValues((prevFormValues) => ({
-              ...prevFormValues,
-              product_name: data.product_name,
-              description: data.description,
-              price: data.base_price,
-              admin_id: data.admin_id,
-              category_id: data.category_id,
-            }));
-
-            // ดึงค่า intensity และ sweetness จาก coffee_option
-            const coffeeOptionData = await getCoffeeOptionByProductId(productIdString);
-            if (coffeeOptionData) {
-              setFormValues((prevFormValues) => ({
-                ...prevFormValues,
-                intensity: coffeeOptionData.intensity || [],
-                sweetness: coffeeOptionData.sweetness || [],
-              }));
-            }
-          } else {
-            setError('No such product!');
-          }
-        } catch (error) {
-          setError('Error fetching product details.');
-        } finally {
-          setLoading(false);
+          setOptions(options);
+          setOptionItemsMap(optionItemsMap);
+          setProductName(productData.name);
+          setPrice(productData.price);
+          setCalorie(productData.calorie);
+          setDescription(productData.description);
+          setSelectedStatus(productData.status_id.id);
+          setSelectProductType(productData.productType_id.id);
+     
+          const selectedOptionsData = options
+          .filter((option) => selectedOptionIds.includes(option.id))
+          .map((option) => ({
+            option,
+            items: optionItemsMap[option.id] || [],
+          }));
+        
+        setSelectedOptions(selectedOptionsData);
+        console.log("option :",selectedOptionsData)
+        console.log("optionIds :",selectedOptionIds)
+      } catch (error) {
+          console.error("Failed to fetch product:", error);
         }
-      };
+      }
 
-      fetchProduct();
-    }
+      const statusData = await getStatus();
+      const categoriesData = await getProductTypes();
+      // const { options, optionItemsMap } = await getOptions();
 
-    // ดึง category list
-    const fetchCategories = async () => {
-      const categoriesData = await getCategories();
+      setStatus(statusData);
       setCategories(categoriesData);
+      // setOptions(options);
+      // setOptionItemsMap(optionItemsMap);
+      
+      setLoading(false);
     };
-
-    fetchCategories();
+    fetchData();
   }, [productId]);
 
-  // ฟังก์ชันจัดการการเปลี่ยนค่าในฟอร์ม
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormValues({
-      ...formValues,
-      [name]: value,
-    });
-  };
-
-  // ฟังก์ชันจัดการการเลือกค่า intensity
-  const handleIntensityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (formValues.intensity.includes(value)) {
-      setFormValues({
-        ...formValues,
-        intensity: formValues.intensity.filter((item) => item !== value),
-      });
-    } else {
-      setFormValues({
-        ...formValues,
-        intensity: [...formValues.intensity, value],
-      });
-    }
-  };
-
-  // ฟังก์ชันจัดการการเลือกค่า sweetness
-  const handleSweetnessChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (formValues.sweetness.includes(value)) {
-      setFormValues({
-        ...formValues,
-        sweetness: formValues.sweetness.filter((item) => item !== value),
-      });
-    } else {
-      setFormValues({
-        ...formValues,
-        sweetness: [...formValues.sweetness, value],
-      });
-    }
-  };
-
-  // ฟังก์ชันจัดการการ submit ฟอร์ม
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (productId) {
-        const productIdString = Array.isArray(productId) ? productId[0] : productId;
-        try {
-            // อัปเดตข้อมูลใน collection product
-            const productRef = doc(db, 'products', productIdString);
-            await updateDoc(productRef, {
-                product_name: formValues.product_name,
-                description: formValues.description,
-                base_price: formValues.price,
-                admin_id: formValues.admin_id,
-                category_id: formValues.category_id,
-            });
+    if (!productId) return;
 
-            // ตรวจสอบว่ามี coffee_option สำหรับ product นี้หรือไม่
-            const coffeeOptionData = await getCoffeeOptionByProductId(productIdString);
-            if (coffeeOptionData) {
-                // ถ้ามี coffee_option แล้ว ให้ทำการอัปเดต
-                await updateCoffeeOption(coffeeOptionData.id, {
-                    intensity: formValues.intensity,
-                    sweetness: formValues.sweetness,
-                });
+    try {
+      for (const optionId of optionsToAdd) {
+        await addProductOption(productId as string, optionId);
+      }
 
-                alert('Product and coffee option updated successfully!');
-            } else {
-                setError('Coffee option not found for this product.');
-            }
-        } catch (error) {
-            console.error(error); // แสดงข้อผิดพลาดใน console
-            setError('Error updating product or coffee option.'); // แจ้งข้อผิดพลาดให้ผู้ใช้ทราบ
+      // Remove options
+      for (const optionId of optionsToRemove) {
+        await deleteProductOption(productId as string, optionId);
+      }
+      if (typeof productId == "string") {
+        const isUpdated = await updateProduct(
+          productId,
+          productName,
+          description,
+          price,
+          calorie,
+          selectProductType,
+          selectedStatus,
+          selectedOptions
+        );
+
+        if (isUpdated) {
+          alert("Product updated successfully");
         }
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
+      alert("Failed to update product");
     }
-};
+  };
 
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectProductType(e.target.value);
+  };
+
+  // handleOptionCheckboxChange
+  const handleOptionCheckboxChange = (option: OptionInterface) => {
+    const items = optionItemsMap[option.id] || [];
+    const optionIndex = selectedOptions.findIndex(
+      (selected) => selected.option.id === option.id
+    );
+  
+    if (optionIndex > -1) {
+      // หากตัวเลือกถูกเลือกอยู่ จะลบออกจาก selectedOptions
+      setSelectedOptions(
+        selectedOptions.filter((selected) => selected.option.id !== option.id)
+      );
+      setOptionsToRemove([...optionsToRemove, option.id]);
+    } else {
+      // หากตัวเลือกยังไม่ถูกเลือก จะเพิ่มลงใน selectedOptions
+      setSelectedOptions([...selectedOptions, { option, items }]);
+      setOptionsToAdd([...optionsToAdd, option.id]);
+    }
+  };
   
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div>
-      <h1>Update Product</h1>
-      {product && (
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Product Name</label>
-            <input
-              type="text"
-              name="product_name"
-              value={formValues.product_name}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Description</label>
-            <input
-              type="text"
-              name="description"
-              value={formValues.description}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Price</label>
-            <input
-              type="number"
-              name="price"
-              value={formValues.price}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Admin</label>
-            <input
-              type="text"
-              name="admin_id"
-              value={formValues.admin_id}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Category</label>
-            <select
-              name="category_id"
-              value={formValues.category_id}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.category_name}
-                </option>
-              ))}
-            </select>
-          </div>
+      <form onSubmit={handleSubmit} className="flex flex-col">
+        {/* Input fields */}
+        <input
+          type="text"
+          value={productName}
+          onChange={(e) => setProductName(e.target.value)}
+          placeholder="Product Name"
+          required
+        />
+        <input
+          type="number"
+          value={price}
+          onChange={(e) => setPrice(Number(e.target.value))}
+          placeholder="Price"
+          required
+        />
+        <input
+          type="number"
+          value={calorie}
+          onChange={(e) => setCalorie(Number(e.target.value))}
+          placeholder="Calorie"
+          required
+        />
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Description"
+          required
+        />
 
-          <label>Intensity</label>
-          <div>
-            <input
-              type="checkbox"
-              value="คั่วอ่อน (Ethiopai)"
-              checked={formValues.intensity.includes("คั่วอ่อน (Ethiopai)")}
-              onChange={handleIntensityChange}
-            />
-            คั่วอ่อน (Ethiopai)
-            <input
-              type="checkbox"
-              value="คั่วกลาง (Brazil + Colombia)"
-              checked={formValues.intensity.includes("คั่วกลาง (Brazil + Colombia)")}
-              onChange={handleIntensityChange}
-            />
-            คั่วกลาง (Brazil + Colombia)
-            <input
-              type="checkbox"
-              value="คั่วเข้ม (ปางขอน)"
-              checked={formValues.intensity.includes("คั่วเข้ม (ปางขอน)")}
-              onChange={handleIntensityChange}
-            />
-            คั่วเข้ม (ปางขอน)
-          </div>
+        {/* Dropdowns for Status and Category */}
+        <label htmlFor="status">Select Status:</label>
+        <select
+          id="status"
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+        >
+          <option value="">-- Select Status --</option>
+          {status.map((statusItem) => (
+            <option key={statusItem.id} value={statusItem.id}>
+              {statusItem.name}
+            </option>
+          ))}
+        </select>
 
-          <label>Sweetness</label>
-        <div>
-          <input
-            type="checkbox"
-            value="ไม่ใส่ไซรัป"
-            checked={formValues.sweetness.includes("ไม่ใส่ไซรัป")}
-            onChange={handleSweetnessChange}
-            />
-          ไม่ใส่ไซรัป
-          <input
-            type="checkbox"
-            value="ไซรัป 10 ml หวานนิดเดียว"
-            checked={formValues.sweetness.includes("ไซรัป 10 ml หวานนิดเดียว")}
-            onChange={handleSweetnessChange}
-          />
-          ไซรัป 10 ml หวานนิดเดียว
+        <label htmlFor="category">Select Category:</label>
+        <select
+          id="category"
+          value={selectProductType}
+          onChange={handleCategoryChange}
+        >
+          <option value="">Select a category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Option popup */}
+        <button type="button" onClick={() => setShowOptionsPopup(true)}>
+          Edit Option
+        </button>
+        {showOptionsPopup && (
+          <div className="popup">
+            <h2>Select Options</h2>
+             {options.map((option) => (
+          <label key={option.id}>
+             <input
+      type="checkbox"
+      checked={selectedOptions.some(selected => selected.option.id === option.id)}
+      onChange={() => handleOptionCheckboxChange(option)}
+    />
+            {option.name}
+          </label>
+        ))}
+            <button onClick={() => setShowOptionsPopup(false)}>Close</button>
+          </div>
+        )}
+
+        {/* Selected options display */}
+        <div className="selected-options">
+          <h3>Selected Options:</h3>
+          {selectedOptions.map(({ option, items }) => (
+            <div key={option.id}>
+              <h4>{option.name}</h4>
+              <ul>
+                {items.map((item) => (
+                  <li key={item.id}>
+                    {item.name} - Price Modifier: {item.priceModifier}
+                  </li>
+                ))}
+              </ul>
+              
+            </div>
+          ))}
         </div>
 
-          <button type="submit">Update</button>
-        </form>
-      )}
+        <button type="submit">Update Product</button>
+      </form>
     </div>
   );
 };
 
-export default UpdateProduct;
+export default UpdateProductForm;
