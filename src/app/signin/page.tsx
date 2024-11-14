@@ -121,7 +121,7 @@ const SignIn = () => {
             </div>
             <div className="mt-2 text-right w-full">
               <a
-                href=""
+                href="signin/forgot-password"
                 className="text-base font-serif4 text-black hover:underline"
               >
                 Forgot password ?
