@@ -10,7 +10,8 @@ import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
 import { fetchProduct } from "@/app/services/getProduct";
 import { updateProduct } from "@/app/services/updateProduct";
-import { getProductOptionsByProductId } from "@/app/services/productOption";
+import { addProductOption, getProductOptionsByProductId } from "@/app/services/productOption";
+import { deleteProductOption } from "@/app/services/deleteProductOption";
 
 const UpdateProductForm = () => {
   const { productId } = useParams();
@@ -24,6 +25,8 @@ const UpdateProductForm = () => {
   const [optionItemsMap, setOptionItemsMap] = useState<{
     [key: string]: OptionItem[];
   }>({});
+  const [optionsToAdd, setOptionsToAdd] = useState<string[]>([]);
+  const [optionsToRemove, setOptionsToRemove] = useState<string[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<
     { option: OptionInterface; items: OptionItem[] }[]
   >([]);
@@ -85,6 +88,14 @@ const UpdateProductForm = () => {
     if (!productId) return;
 
     try {
+      for (const optionId of optionsToAdd) {
+        await addProductOption(productId as string, optionId);
+      }
+
+      // Remove options
+      for (const optionId of optionsToRemove) {
+        await deleteProductOption(productId as string, optionId);
+      }
       if (typeof productId == "string") {
         const isUpdated = await updateProduct(
           productId,
@@ -98,16 +109,7 @@ const UpdateProductForm = () => {
         );
 
         if (isUpdated) {
-          //ลบ productOptions ที่ไม่ถูกเลือกออกจาก Firestore
-          const removedOptions = options.filter(
-            (option) =>
-              !selectedOptions.some((selected) => selected.option.id === option.id)
-          );
-          // removedOptions.forEach(async (option) => {
-          //   await deleteProductOption(productId, option.id); // สร้างฟังก์ชันลบตัวเลือก
-          // });
-
-          alert("Product updated successfully!");
+          alert("Product updated successfully");
         }
       }
     } catch (error) {
@@ -126,17 +128,20 @@ const UpdateProductForm = () => {
     const optionIndex = selectedOptions.findIndex(
       (selected) => selected.option.id === option.id
     );
-
+  
     if (optionIndex > -1) {
       // หากตัวเลือกถูกเลือกอยู่ จะลบออกจาก selectedOptions
       setSelectedOptions(
         selectedOptions.filter((selected) => selected.option.id !== option.id)
       );
+      setOptionsToRemove([...optionsToRemove, option.id]);
     } else {
       // หากตัวเลือกยังไม่ถูกเลือก จะเพิ่มลงใน selectedOptions
       setSelectedOptions([...selectedOptions, { option, items }]);
+      setOptionsToAdd([...optionsToAdd, option.id]);
     }
   };
+  
 
   if (loading) return <p>Loading...</p>;
 
@@ -209,20 +214,16 @@ const UpdateProductForm = () => {
         {showOptionsPopup && (
           <div className="popup">
             <h2>Select Options</h2>
-            {options.map((option) => (
-              <div key={option.id}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={selectedOptions.some(
-                      (selected) => selected.option.id === option.id
-                    )}
-                    onChange={() => handleOptionCheckboxChange(option)}
-                  />
-                  {option.name}
-                </label>
-              </div>
-            ))}
+             {options.map((option) => (
+          <label key={option.id}>
+             <input
+      type="checkbox"
+      checked={selectedOptions.some(selected => selected.option.id === option.id)}
+      onChange={() => handleOptionCheckboxChange(option)}
+    />
+            {option.name}
+          </label>
+        ))}
             <button onClick={() => setShowOptionsPopup(false)}>Close</button>
           </div>
         )}
