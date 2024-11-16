@@ -11,7 +11,7 @@ import { getStatus } from "@/app/services/getstatus";
 import { fetchProduct } from "@/app/services/getProduct";
 import { updateProduct } from "@/app/services/updateProduct";
 import { addProductOption, getProductOptionsByProductId } from "@/app/services/productOption";
-import { deleteProductOption } from "@/app/services/deleteProductOption";
+import { deleteArrayOptionByProductId } from "@/app/services/deleteProductOption";
 
 const UpdateProductForm = () => {
   const { productId } = useParams();
@@ -94,7 +94,7 @@ const UpdateProductForm = () => {
 
       // Remove options
       for (const optionId of optionsToRemove) {
-        await deleteProductOption(productId as string, optionId);
+        await deleteArrayOptionByProductId(productId as string, optionId);
       }
       if (typeof productId == "string") {
         const isUpdated = await updateProduct(

@@ -5,34 +5,47 @@ import { productTypeInterface } from "../../../interfaces/productType";
 import { getProducts, getProductType } from "../../../services/getProduct";
 import { deleteProduct } from "../../../services/deleteProduct";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { deleteProductOptionsByProductId } from "@/app/services/deleteProductOption";
+
+const EditButton = ({ productId }: { productId: string }) => {
+  const router = useRouter();
+
+  const handleEdit = () => {
+    router.push(`/admin/products/updatemenu/${productId}`);
+  };
+
+  return <button onClick={handleEdit}>Edit</button>;
+};
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
-
-  const [productType, setproductType] = useState<productTypeInterface[]>([]);
+  const [productType, setProductType] = useState<productTypeInterface[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await getProducts();
       const productTypeData = await getProductType();
       setProducts(productsData);
-      setproductType(productTypeData);
+      setProductType(productTypeData);
     };
 
     fetchData();
   }, []);
 
-  const handleAddtocart = async (id: string) => {};
-  
   const handleDelete = async (id: string) => {
     await deleteProduct(id);
-    // Optionally, update the state to reflect the deletion
     setProducts((prevProducts) =>
       prevProducts.filter((product) => product.id !== id)
     );
-  };
 
-  console.log("products : ", products);
+    try {
+      await deleteProductOptionsByProductId(id);
+      console.log("Product options deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting product options:", error);
+    }
+  };
 
   const productTypeMap = Object.fromEntries(
     productType.map((productType) => [productType.id, productType.name])
@@ -42,18 +55,18 @@ const MenuPage = () => {
     <div>
       <h1>Product List</h1>
       <ul>
-        {products.map((product, index) => (
-          <li key={index}>
+        {products.map((product) => (
+          <li key={product.id}>
             <strong>{product.name}</strong>: {product.price} ฿
             <br />
-            colorie : {product.calorie}
+            Calorie: {product.calorie}
             <br />
-            productType: {productTypeMap[product.productType_id] || "Unknown"}
+            Product Type: {productTypeMap[product.productType_id] || "Unknown"}
             <br />
             <button onClick={() => handleDelete(product.id || "")}>
               Delete
-            </button>{" "}
-            {/* Pass product.id */}
+            </button>
+            <EditButton productId={product.id || ""} />
           </li>
         ))}
       </ul>
