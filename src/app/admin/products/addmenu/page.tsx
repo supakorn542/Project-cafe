@@ -8,6 +8,7 @@ import { getOptions } from "@/app/services/options";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
+import Popupcreate from "../../../components/popup/popupcreateoption";
 
 const AddProductForm = () => {
   const [productName, setProductName] = useState("");
@@ -23,6 +24,10 @@ const AddProductForm = () => {
   const [showCreateOptionPopup, setShowCreateOptionPopup] = useState(false);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [SelectProductType, setSelectProductType] = useState("");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -52,7 +57,7 @@ const AddProductForm = () => {
       description,
       price,
       name: productName,
-      options: selectedOptions.map(option => option.option.id),
+      options: selectedOptions.filter((option) => option !== undefined) as unknown as string[], // กรอง undefined ออก
       user_id: "", 
       status_id: selectedStatus, 
       calorie: calorie, 
@@ -72,17 +77,28 @@ const AddProductForm = () => {
   };
 
   const handleOptionCheckboxChange = (option: OptionInterface) => {
-    const items = optionItemsMap[option.id] || [];
-    const optionIndex = selectedOptions.findIndex(selected => selected.option.id === option.id);
-
+    if (!option.id) {
+      console.error("Option ID is undefined");
+      return; // หยุดทำงานถ้า id เป็น undefined
+    }
+  
+    const items = optionItemsMap[option.id] || []; // ปลอดภัยเพราะตรวจสอบแล้ว
+    const optionIndex = selectedOptions.findIndex(
+      (selected) => selected.option.id === option.id
+    );
+  
     if (optionIndex > -1) {
-      setSelectedOptions(selectedOptions.filter(selected => selected.option.id !== option.id));
+      setSelectedOptions((prev) =>
+        prev.filter((selected) => selected.option.id !== option.id)
+      );
     } else {
-      setSelectedOptions([...selectedOptions, { option, items }]);
+      setSelectedOptions((prev) => [...prev, { option, items }]);
     }
   };
+  
 
   const handleCreateOptionClick = () => {
+    setIsPopupOpen(true)
     setShowOptionsPopup(false);
     setShowCreateOptionPopup(true);
   };
@@ -166,6 +182,7 @@ const AddProductForm = () => {
             <button onClick={() => setShowOptionsPopup(false)}>Close</button>
           </div>
         )}
+        <Popupcreate isOpen={isPopupOpen} onClose={closePopup} ></Popupcreate>
 
         <div className="selected-options">
           <h3>Selected Options:</h3>
@@ -175,7 +192,7 @@ const AddProductForm = () => {
               <ul>
                 {items.map((item) => (
                   <li key={item.id}>
-                    {item.name} - Price Modifier: {item.priceModifier}
+                    {item.name} - Price Modifier: {item.pricemodifier}
                   </li>
                 ))}
               </ul>
