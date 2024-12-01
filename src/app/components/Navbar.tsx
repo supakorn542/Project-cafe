@@ -1,94 +1,166 @@
-"use client"
+"use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import Image from "next/image"
-import { signOut } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { useState, useEffect,useRef } from "react";
 import { useAuth } from "../context/authContext";
-import { useRouter } from "next/navigation"; 
-
-
+import { useRouter } from "next/navigation";
+import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+import { MdAccountCircle } from "react-icons/md";
+import { FaShoppingBasket } from "react-icons/fa";
 
 const Navbar = () => {
-    const [scrolled, setScrolled] = useState(false);
+  const { user, signOutUser } = useAuth();
+  const router = useRouter();
 
-    const { user, loading, signOutUser } = useAuth(); 
-    const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-    useEffect(() => {
-        const handleScroll = (): void => {
-            const isScrolled = window.scrollY > 10;
-            if (isScrolled !== scrolled) {
-                setScrolled(isScrolled);
-            }
-        };
+  const [isOpen, setIsOpen] = useState(false);
 
-        document.addEventListener("scroll", handleScroll);
-        return () => {
-            document.removeEventListener("scroll", handleScroll);
-        };
-    }, [scrolled]);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
 
-    return (
-        <nav className={`sticky top-0 left-0 right-0 transition-all duration-300 z-50 ${
-            scrolled ? "bg-white/80 text-black shadow-md saturate-[180%] backdrop-blur-md" : "bg-transparent text-white"
-        } p-2`}>
-            <div className="container mx-auto">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <Link href="/"></Link>
-                    </div>
-                    <ul className="flex space-x-20 font-semibold text-base font-sans">
-                        <li className="hover:border-b-2 transition-all ease-in-out">
-                            <Link href="/">Home</Link>
-                        </li>
-                        <li className="hover:border-b-2 transition-all ease-in-out">
-                            <Link href="/">PlanTrip</Link>
-                        </li>
-                        <li className="hover:border-b-2 transition-all ease-in-out">
-                            <Link href="/">Explore</Link>
-                        </li>
-                        <li className="hover:border-b-2 transition-all ease-in-out">
-                            <Link href="/">Q&A</Link>
-                        </li>
-                        <li className="hover:border-b-2 transition-all ease-in-out">
-                            <img src="" alt="Icon" />
-                        </li>
-                    </ul>
-                    <ul className="flex items-center space-x-3">
-            {user ? (
-              <>
-                <li className="text-lg font-semibold text-black">
-                  <span>Welcome, {user.email}</span>
-                </li>
-                <li>
-                  <button
-                    onClick={signOutUser}
-                    className="border-2 border-white rounded-full px-3 bg-white text-black text-lg font-semibold"
-                  >
-                    Sign Out
-                  </button>
-                </li>
-              </>
-            ) : (
-             
-                
-              <>
-                <li className="border-2 border-white rounded-full px-3 bg-white text-black text-lg font-semibold">
-                  <Link href="/signin">Sign in</Link>
-                </li>
-                <li className="border-2 border-white rounded-full px-3 bg-transparent text-black text-lg font-semibold">
-                  <Link href="/signup">Sign up</Link>
-                </li>
-              </>
-            )}
-          </ul>
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen((prev) => !prev);
+  };
+
+ 
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current && 
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsOpen(false);
+    }
+  };
+
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <nav className="fixed top-0 left-0 w-full z-50 bg-transparent backdrop-blur-md py-4 px-11 flex justify-between items-center">
+      <div>
+        <Link href="/" className="font-gloock font-bold text-2xl">
+          Forest Tale
+        </Link>
+      </div>
+
+      <div className="hidden md:block">
+        <ul className="flex md:flex-row flex-col md:gap-[4vw] md:items-center gap-8 text-lg">
+          <li>
+            <Link href="#" className="hover:text-gray-500">
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link href="#" className="hover:text-gray-500">
+              Menu
+            </Link>
+          </li>
+          <li>
+            <Link href="#" className="hover:text-gray-500">
+              About us
+            </Link>
+          </li>
+        </ul>
+      </div>
+
+      <div className="flex items-center gap-8">
+        {user ? (
+          <>
+            <FaShoppingBasket className="text-3xl cursor-pointer" />
+            <div className="relative" ref={dropdownRef}>
+              <MdAccountCircle
+                onClick={toggleDropdown}
+                className="text-3xl cursor-pointer"
+              />
+              {isOpen && (
+                <div  className="absolute left-1/2 -translate-x-1/2 min-w-max z-10 mt-2 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow  dark:bg-gray-700 dark:divide-gray-600">
+                  <ul className="py-2 text-sm text-gray-700 dark:text-gray-400">
+                    <li>
+                      <Link
+                        href="/user/profile"
+                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        Profile
+                      </Link>
+                    </li>
+                  </ul>
+                  <div className="py-1">
+                    <Link
+                      href="#"
+                      onClick={signOutUser}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                    >
+                      Sign out
+                    </Link>
+                  </div>
                 </div>
+              )}
             </div>
-        </nav>
-    );
+          </>
+        ) : (
+          <>
+            <Link href="/signin">
+              <button className="bg-transparent px-2 py-1 rounded-3xl border border-black hover:bg-blue-400">
+                Sign in
+              </button>
+            </Link>
+            <Link href="/signup">
+              <button className="bg-transparent px-2 py-1 rounded-3xl border border-black hover:bg-blue-400">
+                Sign up
+              </button>
+            </Link>
+          </>
+        )}
+
+        {menuOpen ? (
+          <AiOutlineClose
+            onClick={toggleMenu}
+            className="text-2xl cursor-pointer md:hidden"
+            aria-label="Close menu"
+          />
+        ) : (
+          <AiOutlineMenu
+            onClick={toggleMenu}
+            className="text-2xl cursor-pointer md:hidden"
+            aria-label="Open menu"
+          />
+        )}
+      </div>
+
+      {menuOpen && (
+    <div className="absolute top-full left-0 w-full bg-transparent shadow-md md:hidden">
+      <ul className="flex flex-col items-start py-4 px-6 gap-4 text-lg">
+        <li>
+          <Link href="#" className="hover:text-gray-500">
+            Home
+          </Link>
+        </li>
+        <li>
+          <Link href="#" className="hover:text-gray-500">
+            Menu
+          </Link>
+        </li>
+        <li>
+          <Link href="#" className="hover:text-gray-500">
+            About us
+          </Link>
+        </li>
+      </ul>
+    </div>
+  )}
+    </nav>
+  );
 };
 
 export default Navbar;

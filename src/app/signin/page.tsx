@@ -64,20 +64,20 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-custom-gradient">
-      <div className="flex w-full max-w-[1440px] h-[670px]">
-        <div className="flex-1 p-2 flex flex-col  ">
+    <div className="min-h-screen flex items-center  bg-[#013927]">
+      <div className="flex w-full h-[695px] max-w-[1440px] ">
+        <div className="flex-1  flex flex-col">
           <div className="relative w-5/6 h-full ">
             <Image
               src="/assets/signin-image.jpg"
               alt="Forest Tales Coffee"
               fill
-              className="object-cover rounded-3xl"
+              className="object-cover "
             />
           </div>
         </div>
         <div className="flex-1 p-8 flex flex-col items-center ">
-          <h2 className="text-6xl font-playfair font-bold mb-10 text-center">
+          <h2 className="text-6xl font-playfair font-bold mb-10 text-center text-white">
             Welcome To Forest Tales
           </h2>
 
@@ -92,11 +92,11 @@ const SignIn = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder=" "
-                className="block px-2.5 pb-2.5 pt-3 w-full text-lg text-black bg-transparent rounded-3xl border-2 border-black  peer"
+                className="block px-2.5 pb-2.5 pt-3 w-full text-lg text-white bg-transparent rounded-3xl border-2 border-white  peer"
               />
               <label
                 htmlFor="floating_outlined"
-                className="absolute font-serif font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f8eee1] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
+                className="absolute font-serif font-bold text-xl text-white  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#013927] px-2 peer-focus:px-2 peer-focus:text-white  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
               >
                 Email
               </label>
@@ -110,11 +110,11 @@ const SignIn = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder=" "
-                className="block px-2.5 pb-2.5 pt-3 w-full text-lg text-black bg-transparent rounded-3xl border-2 border-black  peer"
+                className="block px-2.5 pb-2.5 pt-3 w-full text-lg text-white bg-transparent rounded-3xl border-2 border-white peer"
               />
               <label
                 htmlFor="floating_outlined"
-                className="absolute font-serif4 font-bold text-xl text-[black]  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#f8eee1] px-2 peer-focus:px-2 peer-focus:text-black  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
+                className="absolute font-serif4 font-bold text-xl text-white  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#013927] px-2 peer-focus:px-2 peer-focus:text-white  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
               >
                 Password
               </label>
@@ -122,7 +122,7 @@ const SignIn = () => {
             <div className="mt-2 text-right w-full">
               <a
                 href="signin/forgot-password"
-                className="text-base font-serif4 text-black hover:underline"
+                className="text-base font-serif4 text-white hover:underline"
               >
                 Forgot password ?
               </a>
@@ -130,24 +130,24 @@ const SignIn = () => {
 
             <button
               type="submit"
-              className="w-full bg-black font-serif4 text-2xl font-bold text-white py-3 rounded-full hover:bg-gray-800 transition duration-300 mt-7"
+              className="w-full bg-white font-serif4 text-2xl font-bold text-[#013927] py-3 rounded-full hover:bg-slate-200 transition duration-300 mt-7"
             >
               Log in
             </button>
           </form>
           <div className="flex items-center my-4 w-full">
-            <div className="flex-grow h-0.5 bg-black"></div>
-            <span className="px-4 text-xl font-serif4 font-bold text-black">
+            <div className="flex-grow h-0.5 bg-white"></div>
+            <span className="px-4 text-xl font-serif4 font-bold text-white">
               OR
             </span>
-            <div className="flex-grow h-0.5 bg-black"></div>
+            <div className="flex-grow h-0.5 bg-white"></div>
           </div>
 
           <div className="mb-4 w-full flex justify-center">
             <button
               type="button"
               onClick={handleGoogleSignIn}
-              className="w-[45%] border font-serif4 font-bold text-2xl border-black text-black py-3 rounded-full flex items-center justify-center hover:bg-[#f7dab1] transition duration-300"
+              className="w-[45%] border font-serif4 font-bold text-2xl border-white text-white py-3 rounded-full flex items-center justify-center hover:bg-[#174839] transition duration-300"
             >
               <svg
                 className="w-10 h-7 mr-5"
@@ -169,11 +169,11 @@ const SignIn = () => {
             <button
               type="button"
               onClick={handleLineSignIn}
-              className="w-[45%] border font-serif4 font-bold text-2xl border-black text-black py-3 rounded-full flex items-center justify-center hover:bg-[#f7dab1] transition duration-300"
+              className="w-[45%] border font-serif4 font-bold text-2xl border-white text-white py-3 rounded-full flex items-center justify-center hover:bg-[#174839] transition duration-300"
             >
               <svg
                 className="h-8 w-7 mr-5" 
-                fill="#000000"
+                fill="#ffffff"
                 viewBox="0 0 236.271 236.271"
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -187,11 +187,11 @@ const SignIn = () => {
             </button>
           </div>
 
-          <p className="text-center font-serif4 text-lg text-black mt-2">
+          <p className="text-center font-serif4 text-lg text-white mt-2">
             Don't have an account?{" "}
             <a
               href="/signup"
-              className="text-black font-serif4 font-semibold hover:underline"
+              className="text-white font-serif4 font-semibold hover:underline"
             >
               Sign up
             </a>

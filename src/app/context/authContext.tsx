@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           lastName: "",
           telNumber: "",
           dob: null,
+          username:"",
           email: firebaseUser.email || "No Email",
           
         };
@@ -67,6 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         telNumber: "",
         dob: null,
         email: result.user.email || "No Email",
+        username: "",
         createdAt: new Date(),
       };
       const token = await result.user.getIdToken();

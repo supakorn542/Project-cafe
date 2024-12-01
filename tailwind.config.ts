@@ -14,10 +14,12 @@ const config: Config = {
       },
       backgroundImage: {
         'custom-gradient': 'linear-gradient(135deg, #F9CF93, #F6DEBC, #FAEEE0, #FAEEE0, #F6DEBC, #F9CF93)',
+       
       },
       fontFamily: {
         playfair: ['"Playfair Display"', "serif"],
         serif4: ['"Source Serif 4"', "serif"],
+        gloock: ['Gloock', 'serif'],
       },
     },
   },
