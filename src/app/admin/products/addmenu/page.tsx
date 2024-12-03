@@ -9,6 +9,7 @@ import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
 import Popupcreate from "../../../components/popup/popupcreateoption";
+import SelectOptionsPopup from "@/app/components/popup/popupupdateotion";
 
 const AddProductForm = () => {
   const [productName, setProductName] = useState("");
@@ -165,24 +166,17 @@ const AddProductForm = () => {
 
         <button type="button" onClick={() => setShowOptionsPopup(true)}>Add Option</button>
 
-        {showOptionsPopup && (
-          <div className="popup">
-            <h2>Select Options</h2>
-            {options.map((option) => (
-              <div key={option.id}>
-                <input
-                  type="checkbox"
-                  checked={selectedOptions.some(selected => selected.option.id === option.id)}
-                  onChange={() => handleOptionCheckboxChange(option)}
-                />
-                <label>{option.name}</label>
-              </div>
-            ))}
-            <button onClick={handleCreateOptionClick}>Create New Option</button>
-            <button onClick={() => setShowOptionsPopup(false)}>Close</button>
-          </div>
+      
+         {showOptionsPopup && (
+          <SelectOptionsPopup
+            options={options}
+            selectedOptions={selectedOptions}
+            optionItemsMap={optionItemsMap}
+            onOptionChange={handleOptionCheckboxChange}
+            onCreateOption={handleCreateOptionClick}
+            onClose={() => setShowOptionsPopup(false)}
+          />
         )}
-        <Popupcreate isOpen={isPopupOpen} onClose={closePopup} ></Popupcreate>
 
         <div className="selected-options">
           <h3>Selected Options:</h3>
