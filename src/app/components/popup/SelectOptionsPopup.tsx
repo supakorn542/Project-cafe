@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { OptionInterface } from "@/app/interfaces/optioninterface";
 import CreateOptionPopup from "./popupcreateoption";
+import OptionItemPopup from "./OptionItemPopup";
 
 interface OptionItem {
   id: string;
@@ -26,7 +27,13 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
   onClose,
 }) => {
     const [isCreateOptionPopupOpen, setIsCreateOptionPopupOpen] = useState(false);
-
+    const [selectedOptionForUpdate, setSelectedOptionForUpdate] = useState<OptionInterface | null>(null);
+    const handleUpdateOption = (option: OptionInterface) => {
+      setSelectedOptionForUpdate(option); // เปิด popup เพื่อแสดงรายการ option items
+    };
+    const handleCloseOptionItemPopup = () => {
+      setSelectedOptionForUpdate(null); // ปิด popup
+    };
   const handleOpenCreateOptionPopup = () => {
     setIsCreateOptionPopupOpen(true);
   };
@@ -34,6 +41,8 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
   const handleCloseCreateOptionPopup = () => {
     setIsCreateOptionPopupOpen(false);
   };
+
+  
   return (
     <div
       style={{
@@ -60,6 +69,7 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
             onChange={() => onOptionChange(option)}
           />
           <label>{option.name}</label>
+          <button onClick={() => handleUpdateOption(option)}>อัปเดท</button>
         </div>
       ))}
 
@@ -77,6 +87,17 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
         >
           ปิด
         </button>
+        {selectedOptionForUpdate && (
+        <OptionItemPopup
+        option={{
+          id: selectedOptionForUpdate.id!, // แปลงเป็น string แน่นอน
+          name: selectedOptionForUpdate.name,
+          require: selectedOptionForUpdate.require,
+        }}
+          onClose={handleCloseOptionItemPopup}
+        />
+      )}
+
         <button
           onClick={handleOpenCreateOptionPopup}
           style={{

@@ -9,7 +9,7 @@ import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
 import Popupcreate from "../../../components/popup/popupcreateoption";
-import SelectOptionsPopup from "@/app/components/popup/popupupdateotion";
+import SelectOptionsPopup from "@/app/components/popup/SelectOptionsPopup";
 
 const AddProductForm = () => {
   const [productName, setProductName] = useState("");
@@ -52,18 +52,24 @@ const AddProductForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // ดึงเฉพาะ option.id จาก selectedOptions
+    const optionIds = selectedOptions
+    .map((selected) => selected.option.id)
+    .filter((id): id is string => id !== undefined);
 
+  
     const productData = {
       productType_id: SelectProductType,
       description,
       price,
       name: productName,
-      options: selectedOptions.filter((option) => option !== undefined) as unknown as string[], // กรอง undefined ออก
-      user_id: "", 
-      status_id: selectedStatus, 
-      calorie: calorie, 
+      options: optionIds, // ใช้ array ของ id โดยตรง
+      user_id: "",
+      status_id: selectedStatus,
+      calorie,
     };
-    
+  
     try {
       await createProductWithOptions(productData);
       alert("Product created successfully!");
@@ -72,7 +78,7 @@ const AddProductForm = () => {
       alert("Failed to create product");
     }
   };
-
+  
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectProductType(e.target.value);
   };

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect,useRef } from "react";
 import { useAuth } from "../context/authContext";
 import { useRouter } from "next/navigation";
-import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+// import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { MdAccountCircle } from "react-icons/md";
 import { FaShoppingBasket } from "react-icons/fa";
 
@@ -123,7 +123,7 @@ const Navbar = () => {
           </>
         )}
 
-        {menuOpen ? (
+        {/* {menuOpen ? (
           <AiOutlineClose
             onClick={toggleMenu}
             className="text-2xl cursor-pointer md:hidden"
@@ -135,7 +135,7 @@ const Navbar = () => {
             className="text-2xl cursor-pointer md:hidden"
             aria-label="Open menu"
           />
-        )}
+        )} */}
       </div>
 
       {menuOpen && (

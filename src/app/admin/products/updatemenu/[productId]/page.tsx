@@ -237,7 +237,7 @@ const UpdateProductForm = () => {
               <ul>
                 {items.map((item) => (
                   <li key={item.id}>
-                    {item.name} - Price Modifier: {item.priceModifier}
+                    {item.name} - Price Modifier: {item.pricemodifier}
                   </li>
                 ))}
               </ul>
