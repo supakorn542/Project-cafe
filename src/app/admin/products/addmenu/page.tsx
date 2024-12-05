@@ -8,8 +8,8 @@ import { getOptions } from "@/app/services/options";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
-import Popupcreate from "../../../components/popup/popupcreateoption";
-import SelectOptionsPopup from "@/app/components/popup/SelectOptionsPopup";
+import Popupcreate from "../../../components/option and optionitem popup/popupcreateoption";
+import SelectOptionsPopup from "@/app/components/option and optionitem popup/SelectOptionsPopup";
 
 const AddProductForm = () => {
   const [productName, setProductName] = useState("");

@@ -12,7 +12,7 @@ import { fetchProduct } from "@/app/services/getProduct";
 import { updateProduct } from "@/app/services/updateProduct";
 import { addProductOption, getProductOptionsByProductId } from "@/app/services/productOption";
 import { deleteArrayOptionByProductId } from "@/app/services/deleteProductOption";
-import OptionupdatePopup from "@/app/components/popup/optionupdatepopup";
+import OptionupdatePopup from "@/app/components/option and optionitem popup/optionupdatepopup";
 
 const UpdateProductForm = () => {
   const { productId } = useParams();

@@ -7,6 +7,7 @@ import { deleteProduct } from "../../../services/deleteProduct";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { deleteProductOptionsByProductId } from "@/app/services/deleteProductOption";
+import AddProductForm from "../addmenu/page";
 
 const EditButton = ({ productId }: { productId: string }) => {
   const router = useRouter();
@@ -47,13 +48,19 @@ const MenuPage = () => {
     }
   };
 
+  const [createpopup, setCreatepopup] = useState(false)
   const productTypeMap = Object.fromEntries(
     productType.map((productType) => [productType.id, productType.name])
   );
 
+ 
   return (
     <div>
       <h1>Product List</h1>
+      <button onClick={() => setCreatepopup(true)}>create</button>
+      {createpopup && (
+        <AddProductForm />
+      )}
       <ul>
         {products.map((product) => (
           <li key={product.id}>
