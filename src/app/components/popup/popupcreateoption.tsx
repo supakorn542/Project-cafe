@@ -38,6 +38,7 @@ const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     }
 
     const optionData = {
+      id : "",
       name: optionName,
       require: isRequired,
     };

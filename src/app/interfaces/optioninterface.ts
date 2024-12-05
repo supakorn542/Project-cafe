@@ -1,5 +1,5 @@
 export interface OptionInterface {
-    id?: string;
+    id: string;
     name: string;
     require: boolean;
   }

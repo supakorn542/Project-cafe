@@ -12,6 +12,7 @@ import { fetchProduct } from "@/app/services/getProduct";
 import { updateProduct } from "@/app/services/updateProduct";
 import { addProductOption, getProductOptionsByProductId } from "@/app/services/productOption";
 import { deleteArrayOptionByProductId } from "@/app/services/deleteProductOption";
+import OptionupdatePopup from "@/app/components/popup/optionupdatepopup";
 
 const UpdateProductForm = () => {
   const { productId } = useParams();
@@ -27,13 +28,12 @@ const UpdateProductForm = () => {
   }>({});
   const [optionsToAdd, setOptionsToAdd] = useState<string[]>([]);
   const [optionsToRemove, setOptionsToRemove] = useState<string[]>([]);
-  const [selectedOptions, setSelectedOptions] = useState<
-    { option: OptionInterface; items: OptionItem[] }[]
-  >([]);
+  const [selectedOptions, setSelectedOptions] = useState<{
+    option: OptionInterface;
+    items: OptionItem[];
+  }[]>([]);
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
-    []
-  );
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [selectProductType, setSelectProductType] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -53,33 +53,29 @@ const UpdateProductForm = () => {
           setDescription(productData.description);
           setSelectedStatus(productData.status_id.id);
           setSelectProductType(productData.productType_id.id);
-     
+
           const selectedOptionsData = options
-          .filter((option) => selectedOptionIds.includes(option.id))
-          .map((option) => ({
-            option,
-            items: optionItemsMap[option.id] || [],
-          }));
-        
-        setSelectedOptions(selectedOptionsData);
-        console.log("option :",selectedOptionsData)
-        console.log("optionIds :",selectedOptionIds)
-      } catch (error) {
+            .filter((option) => selectedOptionIds.includes(option.id))
+            .map((option) => ({
+              option,
+              items: optionItemsMap[option.id!] || [],
+            }));
+
+          setSelectedOptions(selectedOptionsData);
+          console.log("option :", selectedOptionsData);
+          console.log("optionIds :", selectedOptionIds);
+        } catch (error) {
           console.error("Failed to fetch product:", error);
         }
       }
 
       const statusData = await getStatus();
       const categoriesData = await getProductTypes();
-      // const { options, optionItemsMap } = await getOptions();
-
       setStatus(statusData);
       setCategories(categoriesData);
-      // setOptions(options);
-      // setOptionItemsMap(optionItemsMap);
-      
       setLoading(false);
     };
+
     fetchData();
   }, [productId]);
 
@@ -96,6 +92,7 @@ const UpdateProductForm = () => {
       for (const optionId of optionsToRemove) {
         await deleteArrayOptionByProductId(productId as string, optionId);
       }
+
       if (typeof productId == "string") {
         const isUpdated = await updateProduct(
           productId,
@@ -124,25 +121,24 @@ const UpdateProductForm = () => {
 
   // handleOptionCheckboxChange
   const handleOptionCheckboxChange = (option: OptionInterface) => {
+    if (!option.id) return; // ข้ามถ้า id ไม่มีค่า
+  
     const items = optionItemsMap[option.id] || [];
     const optionIndex = selectedOptions.findIndex(
       (selected) => selected.option.id === option.id
     );
   
     if (optionIndex > -1) {
-      // หากตัวเลือกถูกเลือกอยู่ จะลบออกจาก selectedOptions
       setSelectedOptions(
         selectedOptions.filter((selected) => selected.option.id !== option.id)
       );
       setOptionsToRemove([...optionsToRemove, option.id]);
     } else {
-      // หากตัวเลือกยังไม่ถูกเลือก จะเพิ่มลงใน selectedOptions
       setSelectedOptions([...selectedOptions, { option, items }]);
       setOptionsToAdd([...optionsToAdd, option.id]);
     }
   };
   
-
   if (loading) return <p>Loading...</p>;
 
   return (
@@ -212,20 +208,12 @@ const UpdateProductForm = () => {
           Edit Option
         </button>
         {showOptionsPopup && (
-          <div className="popup">
-            <h2>Select Options</h2>
-             {options.map((option) => (
-          <label key={option.id}>
-             <input
-      type="checkbox"
-      checked={selectedOptions.some(selected => selected.option.id === option.id)}
-      onChange={() => handleOptionCheckboxChange(option)}
-    />
-            {option.name}
-          </label>
-        ))}
-            <button onClick={() => setShowOptionsPopup(false)}>Close</button>
-          </div>
+          <OptionupdatePopup
+            options={options}
+            selectedOptions={selectedOptions}
+            onClose={() => setShowOptionsPopup(false)}
+            onToggleOption={handleOptionCheckboxChange}
+          />
         )}
 
         {/* Selected options display */}
@@ -241,7 +229,6 @@ const UpdateProductForm = () => {
                   </li>
                 ))}
               </ul>
-              
             </div>
           ))}
         </div>
