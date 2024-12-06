@@ -119,7 +119,9 @@ const AddProductForm = () => {
   };
 
   return (
-    <div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    {/* Popup Container */}
+    <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
       <form onSubmit={handleSubmit} className="flex flex-col">
         <input
           type="text"
@@ -202,6 +204,7 @@ const AddProductForm = () => {
 
         <button type="submit">Create Product</button>
       </form>
+      </div>
     </div>
   );
 };
