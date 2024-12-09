@@ -17,7 +17,7 @@ const config: Config = {
       },
       fontFamily: {
         playfair: ['"Playfair Display"', "serif"],
-        serif4: ['"Source Serif 4"', "serif"],
+        serif4: ['"Source Serif 4"', "serif"]
       },
     },
   },
