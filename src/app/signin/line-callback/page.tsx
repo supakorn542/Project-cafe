@@ -38,18 +38,15 @@ const LineCallback = () => {
   }, []);
 
   return (
-    <div className="flex flex-row justify-between min-h-screen bg-gray-100">
-      <div className="hidden xs:block sm:w-2/3 flex flex-col justify-center items-center bg-gray-200">
-        <h1 className="text-5xl font-bold">My APP</h1>
-      </div>
+    <div className="flex flex-row justify-center min-h-screen bg-white">
 
-      <div className="w-full sm:w-1/3 flex flex-col justify-center items-center p-8">
-        <div className="w-3/4 p-4 space-y-4">
-          <h4 className="text-2xl font-semibold">เข้าสู่ระบบสำเร็จ</h4>
-          <h5 className="text-lg">
+      <div className="w-full flex flex-col justify-center items-center p-8">
+       
+          <h4 className="text-2xl font-serif4">เข้าสู่ระบบสำเร็จ</h4>
+          <h5 className="text-lg font-serif4">
             ระบบกำลังนำท่านเข้าสู่ระบบ กรุณารอสักครู่....
           </h5>
-        </div>
+        
       </div>
     </div>
   );

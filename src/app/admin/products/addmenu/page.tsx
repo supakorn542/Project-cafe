@@ -8,6 +8,8 @@ import { getOptions } from "@/app/services/options";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
+import Popupcreate from "../../../components/option and optionitem popup/popupcreateoption";
+import SelectOptionsPopup from "@/app/components/option and optionitem popup/SelectOptionsPopup";
 
 const AddProductForm = () => {
   const [productName, setProductName] = useState("");
@@ -23,6 +25,10 @@ const AddProductForm = () => {
   const [showCreateOptionPopup, setShowCreateOptionPopup] = useState(false);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [SelectProductType, setSelectProductType] = useState("");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -46,18 +52,24 @@ const AddProductForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // ดึงเฉพาะ option.id จาก selectedOptions
+    const optionIds = selectedOptions
+    .map((selected) => selected.option.id)
+    .filter((id): id is string => id !== undefined);
 
+  
     const productData = {
       productType_id: SelectProductType,
       description,
       price,
       name: productName,
-      options: selectedOptions.map(option => option.option.id),
-      user_id: "", 
-      status_id: selectedStatus, 
-      calorie: calorie, 
+      options: optionIds, // ใช้ array ของ id โดยตรง
+      user_id: "",
+      status_id: selectedStatus,
+      calorie,
     };
-    
+  
     try {
       await createProductWithOptions(productData);
       alert("Product created successfully!");
@@ -66,23 +78,34 @@ const AddProductForm = () => {
       alert("Failed to create product");
     }
   };
-
+  
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectProductType(e.target.value);
   };
 
   const handleOptionCheckboxChange = (option: OptionInterface) => {
-    const items = optionItemsMap[option.id] || [];
-    const optionIndex = selectedOptions.findIndex(selected => selected.option.id === option.id);
-
+    if (!option.id) {
+      console.error("Option ID is undefined");
+      return; // หยุดทำงานถ้า id เป็น undefined
+    }
+  
+    const items = optionItemsMap[option.id] || []; // ปลอดภัยเพราะตรวจสอบแล้ว
+    const optionIndex = selectedOptions.findIndex(
+      (selected) => selected.option.id === option.id
+    );
+  
     if (optionIndex > -1) {
-      setSelectedOptions(selectedOptions.filter(selected => selected.option.id !== option.id));
+      setSelectedOptions((prev) =>
+        prev.filter((selected) => selected.option.id !== option.id)
+      );
     } else {
-      setSelectedOptions([...selectedOptions, { option, items }]);
+      setSelectedOptions((prev) => [...prev, { option, items }]);
     }
   };
+  
 
   const handleCreateOptionClick = () => {
+    setIsPopupOpen(true)
     setShowOptionsPopup(false);
     setShowCreateOptionPopup(true);
   };
@@ -96,7 +119,9 @@ const AddProductForm = () => {
   };
 
   return (
-    <div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    {/* Popup Container */}
+    <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
       <form onSubmit={handleSubmit} className="flex flex-col">
         <input
           type="text"
@@ -149,22 +174,16 @@ const AddProductForm = () => {
 
         <button type="button" onClick={() => setShowOptionsPopup(true)}>Add Option</button>
 
-        {showOptionsPopup && (
-          <div className="popup">
-            <h2>Select Options</h2>
-            {options.map((option) => (
-              <div key={option.id}>
-                <input
-                  type="checkbox"
-                  checked={selectedOptions.some(selected => selected.option.id === option.id)}
-                  onChange={() => handleOptionCheckboxChange(option)}
-                />
-                <label>{option.name}</label>
-              </div>
-            ))}
-            <button onClick={handleCreateOptionClick}>Create New Option</button>
-            <button onClick={() => setShowOptionsPopup(false)}>Close</button>
-          </div>
+      
+         {showOptionsPopup && (
+          <SelectOptionsPopup
+            options={options}
+            selectedOptions={selectedOptions}
+            optionItemsMap={optionItemsMap}
+            onOptionChange={handleOptionCheckboxChange}
+            onCreateOption={handleCreateOptionClick}
+            onClose={() => setShowOptionsPopup(false)}
+          />
         )}
 
         <div className="selected-options">
@@ -175,7 +194,7 @@ const AddProductForm = () => {
               <ul>
                 {items.map((item) => (
                   <li key={item.id}>
-                    {item.name} - Price Modifier: {item.priceModifier}
+                    {item.name} - Price Modifier: {item.pricemodifier}
                   </li>
                 ))}
               </ul>
@@ -185,6 +204,7 @@ const AddProductForm = () => {
 
         <button type="submit">Create Product</button>
       </form>
+      </div>
     </div>
   );
 };

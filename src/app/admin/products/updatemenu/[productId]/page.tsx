@@ -10,8 +10,12 @@ import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
 import { fetchProduct } from "@/app/services/getProduct";
 import { updateProduct } from "@/app/services/updateProduct";
-import { addProductOption, getProductOptionsByProductId } from "@/app/services/productOption";
+import {
+  addProductOption,
+  getProductOptionsByProductId,
+} from "@/app/services/productOption";
 import { deleteArrayOptionByProductId } from "@/app/services/deleteProductOption";
+import OptionupdatePopup from "@/app/components/option and optionitem popup/optionupdatepopup";
 
 const UpdateProductForm = () => {
   const { productId } = useParams();
@@ -28,7 +32,10 @@ const UpdateProductForm = () => {
   const [optionsToAdd, setOptionsToAdd] = useState<string[]>([]);
   const [optionsToRemove, setOptionsToRemove] = useState<string[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<
-    { option: OptionInterface; items: OptionItem[] }[]
+    {
+      option: OptionInterface;
+      items: OptionItem[];
+    }[]
   >([]);
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(
@@ -42,7 +49,9 @@ const UpdateProductForm = () => {
       if (typeof productId === "string") {
         try {
           const productData = await fetchProduct(productId);
-          const selectedOptionIds = await getProductOptionsByProductId(productId);
+          const selectedOptionIds = await getProductOptionsByProductId(
+            productId
+          );
           const { options, optionItemsMap } = await getOptions();
 
           setOptions(options);
@@ -53,33 +62,29 @@ const UpdateProductForm = () => {
           setDescription(productData.description);
           setSelectedStatus(productData.status_id.id);
           setSelectProductType(productData.productType_id.id);
-     
+
           const selectedOptionsData = options
-          .filter((option) => selectedOptionIds.includes(option.id))
-          .map((option) => ({
-            option,
-            items: optionItemsMap[option.id] || [],
-          }));
-        
-        setSelectedOptions(selectedOptionsData);
-        console.log("option :",selectedOptionsData)
-        console.log("optionIds :",selectedOptionIds)
-      } catch (error) {
+            .filter((option) => selectedOptionIds.includes(option.id))
+            .map((option) => ({
+              option,
+              items: optionItemsMap[option.id!] || [],
+            }));
+
+          setSelectedOptions(selectedOptionsData);
+          console.log("option :", selectedOptionsData);
+          console.log("optionIds :", selectedOptionIds);
+        } catch (error) {
           console.error("Failed to fetch product:", error);
         }
       }
 
       const statusData = await getStatus();
       const categoriesData = await getProductTypes();
-      // const { options, optionItemsMap } = await getOptions();
-
       setStatus(statusData);
       setCategories(categoriesData);
-      // setOptions(options);
-      // setOptionItemsMap(optionItemsMap);
-      
       setLoading(false);
     };
+
     fetchData();
   }, [productId]);
 
@@ -96,6 +101,7 @@ const UpdateProductForm = () => {
       for (const optionId of optionsToRemove) {
         await deleteArrayOptionByProductId(productId as string, optionId);
       }
+
       if (typeof productId == "string") {
         const isUpdated = await updateProduct(
           productId,
@@ -124,130 +130,123 @@ const UpdateProductForm = () => {
 
   // handleOptionCheckboxChange
   const handleOptionCheckboxChange = (option: OptionInterface) => {
+    if (!option.id) return; // ข้ามถ้า id ไม่มีค่า
+
     const items = optionItemsMap[option.id] || [];
     const optionIndex = selectedOptions.findIndex(
       (selected) => selected.option.id === option.id
     );
-  
+
     if (optionIndex > -1) {
-      // หากตัวเลือกถูกเลือกอยู่ จะลบออกจาก selectedOptions
       setSelectedOptions(
         selectedOptions.filter((selected) => selected.option.id !== option.id)
       );
       setOptionsToRemove([...optionsToRemove, option.id]);
     } else {
-      // หากตัวเลือกยังไม่ถูกเลือก จะเพิ่มลงใน selectedOptions
       setSelectedOptions([...selectedOptions, { option, items }]);
       setOptionsToAdd([...optionsToAdd, option.id]);
     }
   };
-  
 
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="flex flex-col">
-        {/* Input fields */}
-        <input
-          type="text"
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
-          placeholder="Product Name"
-          required
-        />
-        <input
-          type="number"
-          value={price}
-          onChange={(e) => setPrice(Number(e.target.value))}
-          placeholder="Price"
-          required
-        />
-        <input
-          type="number"
-          value={calorie}
-          onChange={(e) => setCalorie(Number(e.target.value))}
-          placeholder="Calorie"
-          required
-        />
-        <input
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Description"
-          required
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      {/* Popup Container */}
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+        <form onSubmit={handleSubmit} className="flex flex-col">
+          {/* Input fields */}
+          <input
+            type="text"
+            value={productName}
+            onChange={(e) => setProductName(e.target.value)}
+            placeholder="Product Name"
+            required
+          />
+          <input
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(Number(e.target.value))}
+            placeholder="Price"
+            required
+          />
+          <input
+            type="number"
+            value={calorie}
+            onChange={(e) => setCalorie(Number(e.target.value))}
+            placeholder="Calorie"
+            required
+          />
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Description"
+            required
+          />
 
-        {/* Dropdowns for Status and Category */}
-        <label htmlFor="status">Select Status:</label>
-        <select
-          id="status"
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-        >
-          <option value="">-- Select Status --</option>
-          {status.map((statusItem) => (
-            <option key={statusItem.id} value={statusItem.id}>
-              {statusItem.name}
-            </option>
-          ))}
-        </select>
+          {/* Dropdowns for Status and Category */}
+          <label htmlFor="status">Select Status:</label>
+          <select
+            id="status"
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+          >
+            <option value="">-- Select Status --</option>
+            {status.map((statusItem) => (
+              <option key={statusItem.id} value={statusItem.id}>
+                {statusItem.name}
+              </option>
+            ))}
+          </select>
 
-        <label htmlFor="category">Select Category:</label>
-        <select
-          id="category"
-          value={selectProductType}
-          onChange={handleCategoryChange}
-        >
-          <option value="">Select a category</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
+          <label htmlFor="category">Select Category:</label>
+          <select
+            id="category"
+            value={selectProductType}
+            onChange={handleCategoryChange}
+          >
+            <option value="">Select a category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
 
-        {/* Option popup */}
-        <button type="button" onClick={() => setShowOptionsPopup(true)}>
-          Edit Option
-        </button>
-        {showOptionsPopup && (
-          <div className="popup">
-            <h2>Select Options</h2>
-             {options.map((option) => (
-          <label key={option.id}>
-             <input
-      type="checkbox"
-      checked={selectedOptions.some(selected => selected.option.id === option.id)}
-      onChange={() => handleOptionCheckboxChange(option)}
-    />
-            {option.name}
-          </label>
-        ))}
-            <button onClick={() => setShowOptionsPopup(false)}>Close</button>
+          {/* Option popup */}
+          <button type="button" onClick={() => setShowOptionsPopup(true)}>
+            Edit Option
+          </button>
+          {showOptionsPopup && (
+            <OptionupdatePopup
+              options={options}
+              selectedOptions={selectedOptions}
+              onClose={() => setShowOptionsPopup(false)}
+              onToggleOption={handleOptionCheckboxChange}
+            />
+          )}
+
+          {/* Selected options display */}
+          <div className="selected-options">
+            <h3>Selected Options:</h3>
+            {selectedOptions.map(({ option, items }) => (
+              <div key={option.id}>
+                <h4>{option.name}</h4>
+                <ul>
+                  {items.map((item) => (
+                    <li key={item.id}>
+                      {item.name} - Price Modifier: {item.pricemodifier}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
-        )}
 
-        {/* Selected options display */}
-        <div className="selected-options">
-          <h3>Selected Options:</h3>
-          {selectedOptions.map(({ option, items }) => (
-            <div key={option.id}>
-              <h4>{option.name}</h4>
-              <ul>
-                {items.map((item) => (
-                  <li key={item.id}>
-                    {item.name} - Price Modifier: {item.priceModifier}
-                  </li>
-                ))}
-              </ul>
-              
-            </div>
-          ))}
-        </div>
-
-        <button type="submit">Update Product</button>
-      </form>
+          <button type="submit">Update Product</button>
+        </form>
+      </div>
     </div>
   );
 };

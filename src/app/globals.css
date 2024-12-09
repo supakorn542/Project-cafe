@@ -2,11 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.react-datepicker-wrapper {
+  width: 100%;
+ 
+}
+
+
+
 .custom-datepicker .react-datepicker {
   background-color: #f6dfbf; /* เปลี่ยนพื้นหลัง */
   border: 2px solid #000; /* กำหนดเส้นขอบ */
   border-radius: 10px; /* ปรับขอบให้โค้งมน */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* เพิ่มเงา */
+
 }
 
 /* สำหรับ header */
