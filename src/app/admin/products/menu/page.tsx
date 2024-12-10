@@ -84,10 +84,10 @@ const MenuPage = () => {
   // );
 
   return (
-    <div>
+    <div className="bg-[#FBF6F0] h-screen pt-20">
       <Navbar />
       {/* Main Container */}
-      <div className="container mx-auto border-2 rounded-3xl border-black p-6 mt-20 bg-background shadow-md">
+      <div className="container mx-auto border-2 rounded-3xl border-black p-6  bg-background shadow-md">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">All Menu</h1>
