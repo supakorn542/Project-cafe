@@ -1,3 +1,5 @@
+
+
 export interface User {
   id: string;
   username: string | null
@@ -7,4 +9,5 @@ export interface User {
   email: string | null; 
   dob: Date | null; 
   createdAt?: Date;
+  profileImage?: string; 
 }
