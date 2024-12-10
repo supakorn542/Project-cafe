@@ -11,6 +11,10 @@ import AddProductForm from "../addmenu/page";
 import Navbar from "@/app/components/Navbar";
 import { FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import UpdateProductForm from "../updatemenu/[productId]/page";
+import { OptionInterface } from "@/app/interfaces/optioninterface";
+import { OptionItem } from "@/app/interfaces/optionItemInterface";
+import { getProductOptionsByProductId } from "@/app/services/productOption";
+import { getOptions } from "@/app/services/options";
 
 const EditButton = ({ productId }: { productId: string }) => {
   const router = useRouter();
@@ -19,17 +23,46 @@ const EditButton = ({ productId }: { productId: string }) => {
     router.push(`/admin/products/updatemenu/${productId}`);
   };
 
-  return <button onClick={handleEdit}><FaEdit /></button>;
+  return (
+    <button onClick={handleEdit}>
+      <FaEdit />
+    </button>
+  );
 };
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [productType, setProductType] = useState<productTypeInterface[]>([]);
-
+  const [allGroupedOptions, setallGroupedOptions] = useState<
+    {
+      productId: string | undefined;
+      options: { option: OptionInterface; items: OptionItem[] }[];
+    }[]
+  >([]);
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await getProducts();
       const productTypeData = await getProductType();
+     
+      // Fetch options and their items
+      const { options, optionItemsMap } = await getOptions();
+
+      // Fetch options for each product
+      const allGroupedOptions = await Promise.all(
+        productsData.map(async (product) => {
+          const selectedOptionIds = await getProductOptionsByProductId(product.id || "");
+          const relatedOptions = options
+            .filter((option) => selectedOptionIds.includes(option.id))
+            .map((option) => ({
+              option,
+              items: optionItemsMap[option.id!] || [],
+            }));
+          return { productId: product.id, options: relatedOptions };
+        })
+      );
+
+
+      setallGroupedOptions(allGroupedOptions);
       setProducts(productsData);
       setProductType(productTypeData);
     };
@@ -56,7 +89,6 @@ const MenuPage = () => {
     productType.map((productType) => [productType.id, productType.name])
   );
 
-  
   return (
     <div>
       <Navbar />
@@ -95,46 +127,66 @@ const MenuPage = () => {
         {createpopup && <AddProductForm />}
 
         {/* Product List */}
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="flex flex-col ">
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-white shadow-md rounded-md overflow-hidden"
+              className="bg-white shadow-md rounded-md overflow-hidden p-6"
             >
-              <div className="flex items-center space-x-4 p-4">
-                {/* Product Details */}
-                <div>
-                  <h2 className="text-lg font-bold text-gray-800">
-                    {product.name}
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    Price: {product.price} ฿
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Calorie: {product.calorie}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Product Type:{" "}
-                    {productTypeMap[product.productType_id] || "Unknown"}
-                  </p>
+              <div className="flex justify-between font-semibold text-[20px]">
+                <div>{product.name}</div>
+                <div>$ {product.price}</div>
+              </div>
+              <div className="flex ">
+                <div className="flex-1 flex">
+                  <img className="w-[100px] h-[100px] rounded-3xl" src=""></img>
+                  <div>
+                    {allGroupedOptions
+                      .find((selected) => selected.productId === product.id)
+                      ?.options?.map(({ option, items }) => (
+                        <div key={option.id}>
+                          <h4 className="text-xl font-semibold">{option.name}</h4>
+                          <ul>
+                            {items.map((item) => (
+                              <li key={item.id}>
+                                {item.name} - Price Modifier:{" "}
+                                {item.pricemodifier}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                <div className="flex-1 relative">
+                  <label>คำอธิบาย: {product.description}</label>
+                  <div className="flex justify-between w-20 absolute bottom-0 right-0">
+                    <button
+                      className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-red-800"
+                      onClick={() => handleDelete(product.id || "")}
+                    >
+                      <FaTrash />
+                    </button>
+                    <button className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-blue-800">
+                      <EditButton productId={product.id || ""} />
+                    </button>
+                  </div>
                 </div>
               </div>
-              {/* Divider */}
-              <hr className="border-t" />
-              {/* Action Buttons */}
-              <div className="p-4 flex justify-between">
-                <button
-                  className="flex items-center space-x-2 text-red-600 hover:text-red-800"
-                  onClick={() => handleDelete(product.id || "")}
-                >
-                  <FaTrash />
-                  <span>Delete</span>
-                </button>
-                <button className="flex items-center space-x-2 text-blue-600 hover:text-blue-800">
-                  
-                  <EditButton productId={product.id || ""} />
-                </button>
-              </div>
+              <svg
+              className="w-full my-4"
+              height="1"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="0"
+                y1="0"
+                x2="100%"
+                y2="0"
+                stroke="#000000"
+                strokeWidth="2"
+              />
+            </svg>
             </div>
           ))}
         </div>
