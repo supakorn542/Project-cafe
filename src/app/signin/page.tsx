@@ -31,7 +31,7 @@ const SignIn = () => {
       if (userCredential.user) {
         console.log("User signed in:", userCredential.user);
 
-        const token = await userCredential.user.getIdToken();
+        const token = await userCredential.user.getIdToken(true);
         console.log("Token Client:", token);
 
         nookies.set(null, "token", token, {

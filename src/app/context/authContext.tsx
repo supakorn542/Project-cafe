@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           dob: null,
           username:"",
           email: firebaseUser.email || "No Email",
+   
           
         };
         setUser(newUser);
@@ -70,8 +71,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email: result.user.email || "No Email",
         username: "",
         createdAt: new Date(),
+    
       };
-      const token = await result.user.getIdToken();
+      const token = await result.user.getIdToken(true);
    
       nookies.set(null, "token", token, {
         maxAge: 60 * 60 * 24, 
@@ -95,6 +97,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name: user.firstName,
         email: user.email,
         createdAt: user.createdAt,
+
       },
       { merge: true }
     );
