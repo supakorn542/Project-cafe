@@ -13,7 +13,7 @@ import SelectOptionsPopup from "@/app/components/option and optionitem popup/Sel
 import { FaPlus } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
 
-const AddProductForm = () => {
+const AddProductForm = ({onClose}:{onClose: () => void}) => {
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState(0);
   const [calorie, setCalorie] = useState(0);
@@ -277,6 +277,7 @@ const AddProductForm = () => {
             <button
               type="button"
               className="text-black border border-black rounded-md px-4 py-2 hover:bg-black hover:text-white"
+              onClick={() => onClose()}
             >
               ยกเลิก
             </button>

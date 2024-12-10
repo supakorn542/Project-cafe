@@ -16,23 +16,13 @@ import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { getProductOptionsByProductId } from "@/app/services/productOption";
 import { getOptions } from "@/app/services/options";
 
-const EditButton = ({ productId }: { productId: string }) => {
-  const router = useRouter();
 
-  const handleEdit = () => {
-    router.push(`/admin/products/updatemenu/${productId}`);
-  };
-
-  return (
-    <button onClick={handleEdit}>
-      <FaEdit />
-    </button>
-  );
-};
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [productType, setProductType] = useState<productTypeInterface[]>([]);
+  const [createpopup, setCreatepopup] = useState(false);
+  const [editPopup, setEditPopup] = useState(false);
   const [allGroupedOptions, setallGroupedOptions] = useState<
     {
       productId: string | undefined;
@@ -43,14 +33,16 @@ const MenuPage = () => {
     const fetchData = async () => {
       const productsData = await getProducts();
       const productTypeData = await getProductType();
-     
+
       // Fetch options and their items
       const { options, optionItemsMap } = await getOptions();
 
       // Fetch options for each product
       const allGroupedOptions = await Promise.all(
         productsData.map(async (product) => {
-          const selectedOptionIds = await getProductOptionsByProductId(product.id || "");
+          const selectedOptionIds = await getProductOptionsByProductId(
+            product.id || ""
+          );
           const relatedOptions = options
             .filter((option) => selectedOptionIds.includes(option.id))
             .map((option) => ({
@@ -60,7 +52,6 @@ const MenuPage = () => {
           return { productId: product.id, options: relatedOptions };
         })
       );
-
 
       setallGroupedOptions(allGroupedOptions);
       setProducts(productsData);
@@ -84,16 +75,19 @@ const MenuPage = () => {
     }
   };
 
-  const [createpopup, setCreatepopup] = useState(false);
-  const productTypeMap = Object.fromEntries(
-    productType.map((productType) => [productType.id, productType.name])
-  );
+  const handleCloseUpdatePopup= () => {
+    setEditPopup(false)
+  }
+
+  // const productTypeMap = Object.fromEntries(
+  //   productType.map((productType) => [productType.id, productType.name])
+  // );
 
   return (
     <div>
       <Navbar />
       {/* Main Container */}
-      <div className="container mx-auto border-2 rounded-lg border-black p-6 mt-20 bg-gray-50 shadow-md">
+      <div className="container mx-auto border-2 rounded-3xl border-black p-6 mt-20 bg-background shadow-md">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">All Menu</h1>
@@ -124,7 +118,7 @@ const MenuPage = () => {
         </div>
 
         {/* Popup Form */}
-        {createpopup && <AddProductForm />}
+        {createpopup && <AddProductForm onClose={() => setCreatepopup(false)} />}
 
         {/* Product List */}
         <div className="flex flex-col ">
@@ -145,7 +139,9 @@ const MenuPage = () => {
                       .find((selected) => selected.productId === product.id)
                       ?.options?.map(({ option, items }) => (
                         <div key={option.id}>
-                          <h4 className="text-xl font-semibold">{option.name}</h4>
+                          <h4 className="text-xl font-semibold">
+                            {option.name}
+                          </h4>
                           <ul>
                             {items.map((item) => (
                               <li key={item.id}>
@@ -158,8 +154,16 @@ const MenuPage = () => {
                       ))}
                   </div>
                 </div>
-                <div className="flex-1 relative">
-                  <label>คำอธิบาย: {product.description}</label>
+                <div className="flex-1 relative border-l-2 border-black pl-4">
+                  <label className="block break-words whitespace-pre-wrap">
+                    คำอธิบาย:{" "}
+                    {product.description.length > 40
+                      ? `${product.description.slice(
+                          0,
+                          40
+                        )}\n${product.description.slice(100)}`
+                      : product.description}
+                  </label>
                   <div className="flex justify-between w-20 absolute bottom-0 right-0">
                     <button
                       className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-red-800"
@@ -167,26 +171,27 @@ const MenuPage = () => {
                     >
                       <FaTrash />
                     </button>
-                    <button className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-blue-800">
-                      <EditButton productId={product.id || ""} />
+                    <button onClick={() => setEditPopup(true)} className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-blue-800">
+                      <FaEdit />
                     </button>
+                    {editPopup && <UpdateProductForm productId={product.id || ""} onClose={handleCloseUpdatePopup} /> }
                   </div>
                 </div>
               </div>
               <svg
-              className="w-full my-4"
-              height="1"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line
-                x1="0"
-                y1="0"
-                x2="100%"
-                y2="0"
-                stroke="#000000"
-                strokeWidth="2"
-              />
-            </svg>
+                className="w-full my-4"
+                height="1"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="0"
+                  y1="0"
+                  x2="100%"
+                  y2="0"
+                  stroke="#000000"
+                  strokeWidth="2"
+                />
+              </svg>
             </div>
           ))}
         </div>
