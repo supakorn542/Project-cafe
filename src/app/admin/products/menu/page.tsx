@@ -15,8 +15,7 @@ import { OptionInterface } from "@/app/interfaces/optioninterface";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { getProductOptionsByProductId } from "@/app/services/productOption";
 import { getOptions } from "@/app/services/options";
-
-
+import Link from "next/link";
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -61,6 +60,7 @@ const MenuPage = () => {
     fetchData();
   }, []);
 
+  
   const handleDelete = async (id: string) => {
     await deleteProduct(id);
     setProducts((prevProducts) =>
@@ -75,13 +75,21 @@ const MenuPage = () => {
     }
   };
 
-  const handleCloseUpdatePopup= () => {
-    setEditPopup(false)
-  }
+  const handleCloseUpdatePopup = () => {
+    setEditPopup(false);
+    setSelectedProductId(null);
+  };
 
   // const productTypeMap = Object.fromEntries(
   //   productType.map((productType) => [productType.id, productType.name])
   // );
+
+
+const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
+const handleEditClick = (productId: string) => {
+  setSelectedProductId(productId);
+};
 
   return (
     <div className="bg-[#FBF6F0] h-screen pt-20">
@@ -104,12 +112,12 @@ const MenuPage = () => {
 
           {/* Buttons */}
           <div className="flex items-center space-x-4">
-            <button className="px-4 py-2 bg-green-100 text-green-600 rounded-md hover:bg-green-200">
-              Stock
+            <button className="px-4 py-2 bg-transparent border border-greenthemewep text-greenthemewep rounded-full  hover:bg-greenthemewep hover:text-white transition duration-150 delay-75 ease-in-out">
+              <Link href="/admin/stock/showstock">stock</Link>
             </button>
             <button
               onClick={() => setCreatepopup(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-green-700 text-white rounded-md hover:bg-green-800"
+              className="flex items-center space-x-2 px-4 py-2 bg-greenthemewep border border-greenthemewep text-white rounded-full  hover:bg-transparent hover:text-greenthemewep transition duration-150 delay-75 ease-in-out"
             >
               <FaPlus />
               <span>Add Menu</span>
@@ -118,22 +126,27 @@ const MenuPage = () => {
         </div>
 
         {/* Popup Form */}
-        {createpopup && <AddProductForm onClose={() => setCreatepopup(false)} />}
+        {createpopup && (
+          <AddProductForm onClose={() => setCreatepopup(false)} />
+        )}
 
         {/* Product List */}
-        <div className="flex flex-col ">
+        <div className="flex flex-col gap-5">
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-white shadow-md rounded-md overflow-hidden p-6"
+              className="bg-white shadow-md rounded-md overflow-hidden p-6 min-h-[200px] max-h-[300px]  "
             >
               <div className="flex justify-between font-semibold text-[20px]">
                 <div>{product.name}</div>
                 <div>$ {product.price}</div>
               </div>
-              <div className="flex ">
-                <div className="flex-1 flex">
-                  <img className="w-[100px] h-[100px] rounded-3xl" src=""></img>
+              <div className="flex">
+                <div className="flex-1 flex space-x-3">
+                  <img
+                    className="w-[100px] h-[100px] rounded-3xl flex self-center"
+                    src=""
+                  ></img>
                   <div>
                     {allGroupedOptions
                       .find((selected) => selected.productId === product.id)
@@ -171,10 +184,18 @@ const MenuPage = () => {
                     >
                       <FaTrash />
                     </button>
-                    <button onClick={() => setEditPopup(true)} className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-blue-800">
+                    <button
+                      onClick={() => handleEditClick(product.id || "")}
+                      className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-blue-800"
+                    >
                       <FaEdit />
                     </button>
-                    {editPopup && <UpdateProductForm productId={product.id || ""} onClose={handleCloseUpdatePopup} /> }
+                    {selectedProductId === product.id && (
+                      <UpdateProductForm
+                        productId={product.id || ""}
+                        onClose={handleCloseUpdatePopup}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
