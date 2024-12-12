@@ -11,25 +11,48 @@ import AddProductForm from "../addmenu/page";
 import Navbar from "@/app/components/Navbar";
 import { FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import UpdateProductForm from "../updatemenu/[productId]/page";
-
-const EditButton = ({ productId }: { productId: string }) => {
-  const router = useRouter();
-
-  const handleEdit = () => {
-    router.push(`/admin/products/updatemenu/${productId}`);
-  };
-
-  return <button onClick={handleEdit}><FaEdit /></button>;
-};
+import { OptionInterface } from "@/app/interfaces/optioninterface";
+import { OptionItem } from "@/app/interfaces/optionItemInterface";
+import { getProductOptionsByProductId } from "@/app/services/productOption";
+import { getOptions } from "@/app/services/options";
+import Link from "next/link";
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [productType, setProductType] = useState<productTypeInterface[]>([]);
-
+  const [createpopup, setCreatepopup] = useState(false);
+  const [editPopup, setEditPopup] = useState(false);
+  const [allGroupedOptions, setallGroupedOptions] = useState<
+    {
+      productId: string | undefined;
+      options: { option: OptionInterface; items: OptionItem[] }[];
+    }[]
+  >([]);
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await getProducts();
       const productTypeData = await getProductType();
+
+      // Fetch options and their items
+      const { options, optionItemsMap } = await getOptions();
+
+      // Fetch options for each product
+      const allGroupedOptions = await Promise.all(
+        productsData.map(async (product) => {
+          const selectedOptionIds = await getProductOptionsByProductId(
+            product.id || ""
+          );
+          const relatedOptions = options
+            .filter((option) => selectedOptionIds.includes(option.id))
+            .map((option) => ({
+              option,
+              items: optionItemsMap[option.id!] || [],
+            }));
+          return { productId: product.id, options: relatedOptions };
+        })
+      );
+
+      setallGroupedOptions(allGroupedOptions);
       setProducts(productsData);
       setProductType(productTypeData);
     };
@@ -37,6 +60,7 @@ const MenuPage = () => {
     fetchData();
   }, []);
 
+  
   const handleDelete = async (id: string) => {
     await deleteProduct(id);
     setProducts((prevProducts) =>
@@ -51,17 +75,27 @@ const MenuPage = () => {
     }
   };
 
-  const [createpopup, setCreatepopup] = useState(false);
-  const productTypeMap = Object.fromEntries(
-    productType.map((productType) => [productType.id, productType.name])
-  );
+  const handleCloseUpdatePopup = () => {
+    setEditPopup(false);
+    setSelectedProductId(null);
+  };
 
-  
+  // const productTypeMap = Object.fromEntries(
+  //   productType.map((productType) => [productType.id, productType.name])
+  // );
+
+
+const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
+const handleEditClick = (productId: string) => {
+  setSelectedProductId(productId);
+};
+
   return (
-    <div>
+    <div className="bg-[#FBF6F0] h-screen pt-20">
       <Navbar />
       {/* Main Container */}
-      <div className="container mx-auto border-2 rounded-lg border-black p-6 mt-20 bg-gray-50 shadow-md">
+      <div className="container mx-auto border-2 rounded-3xl border-black p-6  bg-background shadow-md">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">All Menu</h1>
@@ -78,12 +112,12 @@ const MenuPage = () => {
 
           {/* Buttons */}
           <div className="flex items-center space-x-4">
-            <button className="px-4 py-2 bg-green-100 text-green-600 rounded-md hover:bg-green-200">
-              Stock
+            <button className="px-4 py-2 bg-transparent border border-greenthemewep text-greenthemewep rounded-full  hover:bg-greenthemewep hover:text-white transition duration-150 delay-75 ease-in-out">
+              <Link href="/admin/stock/showstock">stock</Link>
             </button>
             <button
               onClick={() => setCreatepopup(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-green-700 text-white rounded-md hover:bg-green-800"
+              className="flex items-center space-x-2 px-4 py-2 bg-greenthemewep border border-greenthemewep text-white rounded-full  hover:bg-transparent hover:text-greenthemewep transition duration-150 delay-75 ease-in-out"
             >
               <FaPlus />
               <span>Add Menu</span>
@@ -92,49 +126,93 @@ const MenuPage = () => {
         </div>
 
         {/* Popup Form */}
-        {createpopup && <AddProductForm />}
+        {createpopup && (
+          <AddProductForm onClose={() => setCreatepopup(false)} />
+        )}
 
         {/* Product List */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="flex flex-col gap-5">
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-white shadow-md rounded-md overflow-hidden"
+              className="bg-white shadow-md rounded-md overflow-hidden p-6 min-h-[200px] max-h-[300px]  "
             >
-              <div className="flex items-center space-x-4 p-4">
-                {/* Product Details */}
-                <div>
-                  <h2 className="text-lg font-bold text-gray-800">
-                    {product.name}
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    Price: {product.price} ฿
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Calorie: {product.calorie}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Product Type:{" "}
-                    {productTypeMap[product.productType_id] || "Unknown"}
-                  </p>
+              <div className="flex justify-between font-semibold text-[20px]">
+                <div>{product.name}</div>
+                <div>$ {product.price}</div>
+              </div>
+              <div className="flex">
+                <div className="flex-1 flex space-x-3">
+                  <img
+                    className="w-[100px] h-[100px] rounded-3xl flex self-center"
+                    src=""
+                  ></img>
+                  <div>
+                    {allGroupedOptions
+                      .find((selected) => selected.productId === product.id)
+                      ?.options?.map(({ option, items }) => (
+                        <div key={option.id}>
+                          <h4 className="text-xl font-semibold">
+                            {option.name}
+                          </h4>
+                          <ul>
+                            {items.map((item) => (
+                              <li key={item.id}>
+                                {item.name} - Price Modifier:{" "}
+                                {item.pricemodifier}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+                <div className="flex-1 relative border-l-2 border-black pl-4">
+                  <label className="block break-words whitespace-pre-wrap">
+                    คำอธิบาย:{" "}
+                    {product.description.length > 40
+                      ? `${product.description.slice(
+                          0,
+                          40
+                        )}\n${product.description.slice(100)}`
+                      : product.description}
+                  </label>
+                  <div className="flex justify-between w-20 absolute bottom-0 right-0">
+                    <button
+                      className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-red-800"
+                      onClick={() => handleDelete(product.id || "")}
+                    >
+                      <FaTrash />
+                    </button>
+                    <button
+                      onClick={() => handleEditClick(product.id || "")}
+                      className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-blue-800"
+                    >
+                      <FaEdit />
+                    </button>
+                    {selectedProductId === product.id && (
+                      <UpdateProductForm
+                        productId={product.id || ""}
+                        onClose={handleCloseUpdatePopup}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
-              {/* Divider */}
-              <hr className="border-t" />
-              {/* Action Buttons */}
-              <div className="p-4 flex justify-between">
-                <button
-                  className="flex items-center space-x-2 text-red-600 hover:text-red-800"
-                  onClick={() => handleDelete(product.id || "")}
-                >
-                  <FaTrash />
-                  <span>Delete</span>
-                </button>
-                <button className="flex items-center space-x-2 text-blue-600 hover:text-blue-800">
-                  
-                  <EditButton productId={product.id || ""} />
-                </button>
-              </div>
+              <svg
+                className="w-full my-4"
+                height="1"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="0"
+                  y1="0"
+                  x2="100%"
+                  y2="0"
+                  stroke="#000000"
+                  strokeWidth="2"
+                />
+              </svg>
             </div>
           ))}
         </div>

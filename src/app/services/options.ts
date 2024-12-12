@@ -40,6 +40,8 @@ export const getOptions = async (): Promise<{ options: OptionInterface[], option
     return { options: optionsData, optionItemsMap: optionItemsMapTemp };
 };
 
+
+// สร้าง option โดยมีการสร้าง optionitem เข้าไปด้วย
 export const createOption = async (
   data: OptionInterface,
   optionItems?: { name: string; pricemodifier: number }[]
