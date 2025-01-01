@@ -17,6 +17,7 @@ import {
 import { deleteArrayOptionByProductId } from "@/app/services/deleteProductOption";
 import OptionupdatePopup from "@/app/components/option and optionitem popup/optionupdatepopup";
 import CreateProductTypePopup from "@/app/components/option and optionitem popup/CreateproductTypepopup";
+import SelectOptionsPopup from "@/app/components/option and optionitem popup/SelectOptionsPopup";
 
 const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: () => void;}) => {
 
@@ -130,6 +131,9 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
     setSelectProductType(e.target.value);
   };
 
+  const handleCreateOptionClick = () => {
+    setShowOptionsPopup(false);
+  };
   // handleOptionCheckboxChange
   const handleOptionCheckboxChange = (option: OptionInterface) => {
     if (!option.id) return; // ข้ามถ้า id ไม่มีค่า
@@ -249,12 +253,14 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
               Edit Option
             </button>
             {showOptionsPopup && (
-              <OptionupdatePopup
-                options={options}
-                selectedOptions={selectedOptions}
-                onClose={() => setShowOptionsPopup(false)}
-                onToggleOption={handleOptionCheckboxChange}
-              />
+              <SelectOptionsPopup
+              options={options}
+              selectedOptions={selectedOptions}
+              optionItemsMap={optionItemsMap}
+              onOptionChange={handleOptionCheckboxChange}
+              onCreateOption={handleCreateOptionClick}
+              onClose={() => setShowOptionsPopup(false)}
+            />
             )}
           </div>
   

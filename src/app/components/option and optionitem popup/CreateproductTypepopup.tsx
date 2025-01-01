@@ -33,33 +33,53 @@ function CreateProductTypePopup({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div style={styles.overlay}>
-      <div style={styles.popup}>
-        <h2>Create Product Type</h2>
-        <div style={styles.formGroup}>
-          <label>Product Type Name</label>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-[400px]">
+        <h2 className="text-xl font-semibold mb-4">Create Product Type</h2>
+        <div className="mb-4">
+          <label
+            htmlFor="productTypeName"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Product Type Name
+          </label>
           <input
             type="text"
+            id="productTypeName"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             value={productTypeName}
             onChange={(e) => setProductTypeName(e.target.value)}
             placeholder="Enter product type name"
-            style={styles.input}
           />
         </div>
-        <div style={styles.formGroup}>
-          <label>Description</label>
+        <div className="mb-4">
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Description
+          </label>
           <textarea
+            id="description"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter description (optional)"
-            style={styles.textarea}
           />
         </div>
-        <div style={styles.actions}>
-          <button onClick={onClose} style={styles.buttonCancel} disabled={loading}>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded disabled:opacity-50"
+            disabled={loading}
+          >
             Cancel
           </button>
-          <button onClick={handleCreateProductType} style={styles.buttonSubmit} disabled={loading}>
+          <button
+            onClick={handleCreateProductType}
+            className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+            disabled={loading}
+          >
             {loading ? "Creating..." : "Create"}
           </button>
         </div>
@@ -67,64 +87,5 @@ function CreateProductTypePopup({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-
-const styles = {
-  overlay: {
-    position: "fixed" as const,
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  popup: {
-    background: "#fff",
-    borderRadius: "8px",
-    padding: "20px",
-    width: "400px",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-  },
-  formGroup: {
-    marginBottom: "15px",
-  },
-  input: {
-    width: "100%",
-    padding: "8px",
-    marginTop: "5px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-  },
-  textarea: {
-    width: "100%",
-    padding: "8px",
-    marginTop: "5px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-    minHeight: "80px",
-  },
-  actions: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "10px",
-  },
-  buttonCancel: {
-    backgroundColor: "#ccc",
-    border: "none",
-    padding: "10px 15px",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
-  buttonSubmit: {
-    backgroundColor: "#4CAF50",
-    color: "#fff",
-    border: "none",
-    padding: "10px 15px",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
-};
 
 export default CreateProductTypePopup;
