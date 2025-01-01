@@ -16,6 +16,7 @@ import {
 } from "@/app/services/productOption";
 import { deleteArrayOptionByProductId } from "@/app/services/deleteProductOption";
 import OptionupdatePopup from "@/app/components/option and optionitem popup/optionupdatepopup";
+import CreateProductTypePopup from "@/app/components/option and optionitem popup/CreateproductTypepopup";
 
 const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: () => void;}) => {
 
@@ -43,6 +44,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
   );
   const [selectProductType, setSelectProductType] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -272,6 +274,12 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
                 </option>
               ))}
             </select>
+            <div>
+      <button onClick={() => setShowPopup(true)}>Create Product Type</button>
+      {showPopup && (
+        <CreateProductTypePopup onClose={() => setShowPopup(false)} />
+      )}
+    </div>
           </div>
   
           <div>
