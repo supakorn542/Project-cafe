@@ -1,6 +1,6 @@
 "use client";
 
-import { getIngredientById } from "@/app/services/stock";
+import { getIngredientById, updateIngredientByIDAndAddDetail } from "@/app/services/stock";
 import { useEffect, useState } from "react";
 
 interface AddIngredientProps {
@@ -8,48 +8,83 @@ interface AddIngredientProps {
     stockId: string; // รับ stockId เป็น prop
 }
 
-const AddIngredient : React.FC<AddIngredientProps> = ({ addIngredientPopup, stockId }) => {
+const AddIngredient: React.FC<AddIngredientProps> = ({ addIngredientPopup, stockId }) => {
     const [currentPopup, setCurrentPopup] = useState(1); // State สำหรับติดตาม popup
+    const [quantity, setQuantity] = useState(0);
+    const [addedDate, setAddedDate] = useState(Date);
+    const [description, setDescription] = useState("");
+    const [details, setDetails] = useState<
+        Array<{ idStock: string; manufactureDate: Date; expiryDate: Date }>
+    >([]);
+    const [ingredientData, setIngredientData] = useState<any>(null); // เก็บข้อมูลส่วนผสม
     const goToNextPopup = () => {
         setCurrentPopup(2); // ไปยัง nextpopup
     };
-    const [ingredientData, setIngredientData] = useState<any>(null); // เก็บข้อมูลส่วนผสม
-    
-    useEffect(() => {
-        const fetchIngredient = async () => {
-          try {
+
+    const formatDate = (date: Date) => {
+        if (date instanceof Date) {
+            return date.toISOString().split('T')[0]; // แปลง Date เป็น string ในรูปแบบ yyyy-mm-dd
+        }
+        return date || ''; // หากไม่มีค่า ให้ส่งคืนค่าว่าง
+    };
+
+    const handleDetailChange = (index: any, field: any, value: any) => {
+        const updatedDetails = [...details]; // คัดลอกอาร์เรย์เก่า
+        updatedDetails[index] = {
+            ...updatedDetails[index],
+            [field]: value, // อัปเดตค่าฟิลด์ที่ระบุ
+        };
+        setDetails(updatedDetails); // อัปเดต state
+    };
+
+
+    const fetchIngredient = async () => {
+        try {
             const data = await getIngredientById(stockId); // เรียกฟังก์ชัน getIngredientById
             if (data) {
                 console.log(data);
                 setIngredientData(data); // ตั้งค่าข้อมูลที่ดึงมา
             }
-          } catch (error) {
-            
+        } catch (error) {
+
             console.error("Error fetching ingredient:", error);
-          }
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log(stockId)
+        const updatedStockData = {
+            quantity, // จำนวนใหม่
+            addedDate, // วันที่เพิ่มใหม่
+            description, // หมายเหตุ
         };
-    
-        // if (stockId) {
-          fetchIngredient(); // ดึงข้อมูลเมื่อ stockId มีค่า
-        // }
-      }, []);
-    
-    // const [stockData, setStockData] = useState({
-    //     name: "",
-    //     netQuantity: 0,
-    //     unit: "",
-    //     price: 0,
-    //     classifier: "",
-    //     totalPrice: 0,
-    //     quantity: 0,
-    //     description: "",
-    //     stockType: "",
-    //     addedDate: "",
-    // });
-    // const [details, setDetails] = useState([
-    //     { idStock: "", manufactureDate: "", expiryDate: "" },
-    // ]);
-    
+
+        const newDetails = details.map((detail) => ({
+            idStock: detail.idStock,
+            manufactureDate: detail.manufactureDate,
+            expiryDate: detail.expiryDate,
+        }));
+
+        try {
+            const response = await updateIngredientByIDAndAddDetail(stockId, updatedStockData, newDetails);
+            if (response.success) {
+                alert("Stock add successfully!");
+                addIngredientPopup(); // Close the popup on success
+            } else {
+                alert("Failed to add Stock");
+            }
+        } catch (error) {
+            console.error("Error add Stock:", error);
+            alert("Failed to add Stock");
+        }
+      
+    };
+
+    useEffect(() => {
+        fetchIngredient(); // ดึงข้อมูลเมื่อ stockId มีค่า
+    }, []);
+
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
             {currentPopup === 1 && (
@@ -60,12 +95,15 @@ const AddIngredient : React.FC<AddIngredientProps> = ({ addIngredientPopup, stoc
                         <div className="flex justify-between items-center">
                             <input
                                 type="text"
-                                // value={netQuantity}
-                                // onChange={(e) => setNetQuantity(Number(e.target.value))}
-                                className="w-[55%] h-[35px] border-2 border-black rounded-md pl-3"
+                                value={quantity}
+                                onChange={(e) => setQuantity(Number(e.target.value))}
+                                className="w-[70%] h-[35px] border-2 border-black rounded-md pl-3"
                             />
                             <p className=" text-[34px]">/</p>
-                            <select
+                            <div className="w-[20%] h-[35px] border-2 border-black rounded-md pt-1">
+                                <p className=" text-center">{ingredientData?.classifier}</p>
+                            </div>
+                            {/* <select
                                 id="classifier"
                                 // value={classifier}
                                 className="w-[35%] h-[35px] border-2 border-black rounded-md pl-3"
@@ -75,23 +113,23 @@ const AddIngredient : React.FC<AddIngredientProps> = ({ addIngredientPopup, stoc
                                 <option value="ชิ้น">ชิ้น</option>
                                 <option value="กล่อง">กล่อง</option>
                                 <option value="อัน">อัน</option>
-                            </select>
+                            </select> */}
                         </div >
                     </div>
                     <div className="">
                         <div className="text-black mb-1">วันที่เพิ่มสินค้า</div>
                         <input
                             type="date"
-                            // value={addedDate}
-                            // onChange={(e) => setAddedDate(e.target.value)}
+                            value={addedDate}
+                            onChange={(e) => setAddedDate(e.target.value)}
                             className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
                         />
                     </div>
                     <div className="pt-[7px] ">
                         <div className="text-black mb-1">หมายเหตุ</div>
                         <textarea
-                            // value={description}
-                            // onChange={(e) => setDescription(e.target.value)}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             className="w-[100%] h-[35px] border-2 border-black rounded-md min-h-14 resize-none pl-3"
                         />
                     </div>
@@ -110,43 +148,45 @@ const AddIngredient : React.FC<AddIngredientProps> = ({ addIngredientPopup, stoc
                         </button>
                     </div>
                 </div>)}
-                 {/* ----nextpopup--- */} 
+            {/* ----nextpopup--- */}
             {currentPopup === 2 && (
                 <div className="bg-white rounded-3xl shadow-lg p-11 pt-8 w-[100%] max-w-[772px] max-h-[90%] ">
                     <h2 className="text-xl text-center font-bold ">{ingredientData?.name}</h2>
                     <div className=" overflow-auto max-h-[400px]">
-                        <div className="flex flex-row justify-between pt-4">
-                            <div className="text-black flex items-center text-xl pt-[23px] ">
-                                01
+                        {quantity > 0 && Array.from({ length: quantity }).map((_, index) => (
+                            <div className="flex flex-row justify-between pt-4">
+                                <div className="text-black flex items-center text-xl pt-[23px] ">
+                                    {String(index + 1).padStart(2, "0")}
+                                </div>
+                                <div className="">
+                                    <div className="text-black">หมายเลขไอดี</div>
+                                    <input
+                                        type="text"
+                                        value={details[index]?.idStock || ""}
+                                        onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
+                                        className="w-[146px] h-[35px] border-2 border-black rounded-md pl-3"
+                                    />
+                                </div>
+                                <div className="">
+                                    <div className="text-black">วันที่ผลิต</div>
+                                    <input
+                                        type="date"
+                                        value={formatDate(details[index]?.manufactureDate)}
+                                        onChange={(e) => handleDetailChange(index, "manufactureDate", e.target.value)}
+                                        className="w-[210px] h-[35px] border-2 border-black rounded-md pl-3"
+                                    />
+                                </div>
+                                <div className="">
+                                    <div className="text-black">วันหมดอายุ</div>
+                                    <input
+                                        type="date"
+                                        value={formatDate(details[index]?.expiryDate)}
+                                        onChange={(e) => handleDetailChange(index, "expiryDate", e.target.value)}
+                                        className="w-[210px] h-[35px] border-2 border-black rounded-md pl-3"
+                                    />
+                                </div>
                             </div>
-                            <div className="">
-                                <div className="text-black">หมายเลขไอดี</div>
-                                <input
-                                    type="text"
-                                    // value={idStock}
-                                    // onChange={(e) => setIdStock(e.target.value)}
-                                    className="w-[146px] h-[35px] border-2 border-black rounded-md pl-3"
-                                />
-                            </div>
-                            <div className="">
-                                <div className="text-black">วันที่ผลิต</div>
-                                <input
-                                    type="date"
-                                    // value={manufactureDate}
-                                    // onChange={(e) => setManufactureDate(e.target.value)}
-                                    className="w-[210px] h-[35px] border-2 border-black rounded-md pl-3"
-                                />
-                            </div>
-                            <div className="">
-                                <div className="text-black">วันหมดอายุ</div>
-                                <input
-                                    type="date"
-                                    // value={expiryDate}
-                                    // onChange={(e) => setExpiryDate(e.target.value)}
-                                    className="w-[210px] h-[35px] border-2 border-black rounded-md pl-3"
-                                />
-                            </div>
-                        </div>
+                        ))}
                     </div>
                     <div className="flex justify-between pt-9">
                         <button
@@ -156,6 +196,7 @@ const AddIngredient : React.FC<AddIngredientProps> = ({ addIngredientPopup, stoc
                             กลับ
                         </button>
                         <button
+                            onClick={handleSubmit}
                             className="w-[73px] h-[26px] bg-black text-white  rounded-md hover:bg-green-600 "
                         >
                             บันทึก
