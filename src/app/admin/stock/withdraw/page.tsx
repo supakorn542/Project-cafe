@@ -10,8 +10,8 @@ interface WithdrawProps {
 const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup }) => {
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white rounded-3xl shadow-lg p-14 pt-6 w-[594px] h-[618px] ">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
+            <div className="bg-white rounded-[2rem] shadow-lg p-14 pt-6 w-[594px] h-[618px] ">
                 <h2 className="text-md text-center font-bold ">นมโอ๊ต</h2>
                 <div className="flex flex-row justify-between pt-5">
                     <div className="">
