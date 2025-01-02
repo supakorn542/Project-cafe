@@ -104,6 +104,53 @@ export const createPackages = async (stockData: Stock, details: Array<{ idStock:
   }
 };
 
+// ฟังก์ชันสำหรับอัปเดตข้อมูล Stock และเพิ่มรายละเอียดใหม่
+export const updateIngredientByIDAndAddDetail = async (
+  stockId: string,
+  updatedStockData: {
+    quantity: number;
+    addedDate: string;
+    description: string;
+  },
+  newDetails: Array<{
+    idStock: string;
+    manufactureDate: Date;
+    expiryDate: Date;
+  }> ) => {
+  try {
+    console.log(stockId)
+    // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
+    const stockRef = doc(db, "stocks", stockId);
+    const stockSnapshot = await getDoc(stockRef);
+
+    if (!stockSnapshot.exists()) {
+      return { success: false, message: "Stock not found" };
+    }
+
+    // อัปเดตข้อมูล Stock
+    if (Object.keys(updatedStockData).length > 0) {
+      await updateDoc(stockRef, updatedStockData);
+    }
+
+    // เพิ่มรายละเอียดใหม่ในคอลเลกชัน `details`
+    const detailsPromises = newDetails.map((detail) =>
+      addDoc(collection(db, "stocks", stockId, "details"), {
+        idStock: detail.idStock,
+        manufactureDate: detail.manufactureDate,
+        expiryDate: detail.expiryDate,
+        addedDate: new Date(), // หรือข้อมูลเพิ่มเติมอื่น ๆ
+      })
+    );
+
+    await Promise.all(detailsPromises);
+
+    return { success: true, message: "Stock updated and details added successfully" };
+  } catch (error) {
+    console.error("Error updating stock and adding details:", error);
+    return { success: false, message: "Failed to update stock or add details", error };
+  }
+};
+
 // export const createIngredientByID = async (stockData: Stock, details: Array<{ idStock: string, manufactureDate: Date, expiryDate: Date }>) => {
 //   try {
 //      // ระบุ collection ที่ต้องการดึงข้อมูล
@@ -160,49 +207,49 @@ export const createPackages = async (stockData: Stock, details: Array<{ idStock:
 //   }
 // };
 
-export const addStockDetailsByID = async (
-  stockId: string,
-  details: Array<{ idStock: string; manufactureDate: Date; expiryDate: Date }>
-) => {
-  try {
-    // อ้างอิงเอกสาร stock ที่มีอยู่
-    const stockRef = doc(db, "stocks", stockId);
+// export const addStockDetailsByID = async (
+//   stockId: string,
+//   details: Array<{ idStock: string; manufactureDate: Date; expiryDate: Date }>
+// ) => {
+//   try {
+//     // อ้างอิงเอกสาร stock ที่มีอยู่
+//     const stockRef = doc(db, "stocks", stockId);
 
-    // ตรวจสอบว่า stock มีอยู่หรือไม่
-    const stockSnapshot = await getDoc(stockRef);
-    if (!stockSnapshot.exists()) {
-      return {
-        success: false,
-        message: "Stock not found",
-      };
-    }
+//     // ตรวจสอบว่า stock มีอยู่หรือไม่
+//     const stockSnapshot = await getDoc(stockRef);
+//     if (!stockSnapshot.exists()) {
+//       return {
+//         success: false,
+//         message: "Stock not found",
+//       };
+//     }
 
-    // เพิ่มข้อมูลในคอลเลกชัน "details" ของ stock ที่มีอยู่
-    const detailsPromises = details.map((detail) =>
-      addDoc(collection(db, "stocks", stockId, "details"), {
-        idStock: detail.idStock,
-        manufactureDate: detail.manufactureDate instanceof Date ? detail.manufactureDate : new Date(detail.manufactureDate),
-        expiryDate: detail.expiryDate instanceof Date ? detail.expiryDate : new Date(detail.expiryDate),
-        // เพิ่มข้อมูลอื่น ๆ ที่จำเป็น
-      })
-    );
+//     // เพิ่มข้อมูลในคอลเลกชัน "details" ของ stock ที่มีอยู่
+//     const detailsPromises = details.map((detail) =>
+//       addDoc(collection(db, "stocks", stockId, "details"), {
+//         idStock: detail.idStock,
+//         manufactureDate: detail.manufactureDate instanceof Date ? detail.manufactureDate : new Date(detail.manufactureDate),
+//         expiryDate: detail.expiryDate instanceof Date ? detail.expiryDate : new Date(detail.expiryDate),
+//         // เพิ่มข้อมูลอื่น ๆ ที่จำเป็น
+//       })
+//     );
 
-    // รอให้เพิ่มข้อมูลเสร็จสิ้น
-    await Promise.all(detailsPromises);
+//     // รอให้เพิ่มข้อมูลเสร็จสิ้น
+//     await Promise.all(detailsPromises);
 
-    return {
-      success: true,
-      message: "Details added successfully",
-    };
-  } catch (error) {
-    console.error("Error adding details to stock: ", error);
+//     return {
+//       success: true,
+//       message: "Details added successfully",
+//     };
+//   } catch (error) {
+//     console.error("Error adding details to stock: ", error);
 
-    return {
-      success: false,
-      message: "Failed to add details",
-    };
-  }
-};
+//     return {
+//       success: false,
+//       message: "Failed to add details",
+//     };
+//   }
+// };
 
 export const getIngredientById = async (stockId: string) => {
   try {
@@ -212,7 +259,6 @@ export const getIngredientById = async (stockId: string) => {
 
     if (docSnap.exists()) {
       // ตรวจสอบว่าเอกสารมีอยู่หรือไม่
-      console.log("name")
       console.log("Document data:", docSnap.data());
       return docSnap.data(); // คืนค่าข้อมูลของเอกสาร
     } else {

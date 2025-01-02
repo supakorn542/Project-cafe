@@ -43,17 +43,29 @@ const ShowStock = () => {
         console.log('open')
     };
 
-    const formatDate = (date: String) => {
-        if (date) {
-            const seconds = Number(date.split('=')[1].split(',')[0])
+    // const formatDate = (date: String) => {
+    //     if (date) {
+    //         const seconds = Number(date.split('=')[1].split(',')[0])
+    //         const nanoseconds = 0;
+    //         const fakeDate = new Date(seconds * 1000 + nanoseconds / 1000000); // nanoseconds แปลงเป็นมิลลิวินาที
+    //         const realDate = fakeDate.toISOString().split('T')[0]
+    //         // ฟังก์ชัน format วันที่
+    //         return String(realDate); // แปลง Date เป็น string ในรูปแบบ yyyy-mm-dd
+    //     }
+    //     return date || ''; // หากไม่มีค่า ให้ส่งคืนค่าว่าง
+    // };
+
+    const formatDate = (date: string | undefined) => {
+        if (date && date.includes('=') && date.includes(',')) {
+            const seconds = Number(date.split('=')[1].split(',')[0]);
             const nanoseconds = 0;
             const fakeDate = new Date(seconds * 1000 + nanoseconds / 1000000); // nanoseconds แปลงเป็นมิลลิวินาที
-            const realDate = fakeDate.toISOString().split('T')[0]
-            // ฟังก์ชัน format วันที่
-            return String(realDate); // แปลง Date เป็น string ในรูปแบบ yyyy-mm-dd
+            const realDate = fakeDate.toISOString().split('T')[0];
+            return realDate;
         }
-        return date || ''; // หากไม่มีค่า ให้ส่งคืนค่าว่าง
+        return date; // คืนค่าค่าว่างหาก date ไม่มีรูปแบบที่คาดหวัง
     };
+    
 
     const fetchStockIngredients = async () => {
         try {
