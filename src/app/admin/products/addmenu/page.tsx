@@ -12,6 +12,7 @@ import { getStatus } from "@/app/services/getstatus";
 import SelectOptionsPopup from "@/app/components/option and optionitem popup/SelectOptionsPopup";
 import { FaPlus } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
+import CreateProductTypePopup from "@/app/components/option and optionitem popup/CreateproductTypepopup";
 
 const AddProductForm = ({onClose}:{onClose: () => void}) => {
   const [productName, setProductName] = useState("");
@@ -89,6 +90,7 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectProductType(e.target.value);
   };
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   const handleOptionCheckboxChange = (option: OptionInterface) => {
     if (!option.id) {
@@ -256,6 +258,12 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
                 </option>
               ))}
             </select>
+            <div>
+      <button onClick={() => setShowPopup(true)}>Create Product Type</button>
+      {showPopup && (
+        <CreateProductTypePopup onClose={() => setShowPopup(false)} />
+      )}
+    </div>
 
             <label htmlFor="status">Select Status:</label>
             <select

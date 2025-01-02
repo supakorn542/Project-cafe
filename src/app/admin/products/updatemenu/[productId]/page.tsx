@@ -16,6 +16,8 @@ import {
 } from "@/app/services/productOption";
 import { deleteArrayOptionByProductId } from "@/app/services/deleteProductOption";
 import OptionupdatePopup from "@/app/components/option and optionitem popup/optionupdatepopup";
+import CreateProductTypePopup from "@/app/components/option and optionitem popup/CreateproductTypepopup";
+import SelectOptionsPopup from "@/app/components/option and optionitem popup/SelectOptionsPopup";
 
 const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: () => void;}) => {
 
@@ -43,6 +45,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
   );
   const [selectProductType, setSelectProductType] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,6 +131,9 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
     setSelectProductType(e.target.value);
   };
 
+  const handleCreateOptionClick = () => {
+    setShowOptionsPopup(false);
+  };
   // handleOptionCheckboxChange
   const handleOptionCheckboxChange = (option: OptionInterface) => {
     if (!option.id) return; // ข้ามถ้า id ไม่มีค่า
@@ -147,8 +153,6 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
       setOptionsToAdd([...optionsToAdd, option.id]);
     }
   };
-
-  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -247,12 +251,14 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
               Edit Option
             </button>
             {showOptionsPopup && (
-              <OptionupdatePopup
-                options={options}
-                selectedOptions={selectedOptions}
-                onClose={() => setShowOptionsPopup(false)}
-                onToggleOption={handleOptionCheckboxChange}
-              />
+              <SelectOptionsPopup
+              options={options}
+              selectedOptions={selectedOptions}
+              optionItemsMap={optionItemsMap}
+              onOptionChange={handleOptionCheckboxChange}
+              onCreateOption={handleCreateOptionClick}
+              onClose={() => setShowOptionsPopup(false)}
+            />
             )}
           </div>
   
@@ -272,6 +278,12 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
                 </option>
               ))}
             </select>
+            <div>
+      <button onClick={() => setShowPopup(true)}>Create Product Type</button>
+      {showPopup && (
+        <CreateProductTypePopup onClose={() => setShowPopup(false)} />
+      )}
+    </div>
           </div>
   
           <div>

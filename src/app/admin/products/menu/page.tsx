@@ -28,6 +28,25 @@ const MenuPage = () => {
       options: { option: OptionInterface; items: OptionItem[] }[];
     }[]
   >([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+  const filteredProducts = products.filter((product) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      product.name.toLowerCase().includes(search) ||
+      product.description.toLowerCase().includes(search) ||
+      allGroupedOptions
+        .find((selected) => selected.productId === product.id)
+        ?.options.some(({ option, items }) => {
+          return (
+            option.name.toLowerCase().includes(search) ||
+            items.some((item) => item.name.toLowerCase().includes(search))
+          );
+        })
+    );
+  });
   useEffect(() => {
     const fetchData = async () => {
       const productsData = await getProducts();
@@ -102,13 +121,15 @@ const handleEditClick = (productId: string) => {
 
           {/* Search Bar */}
           <div className="relative">
-            <input
-              type="text"
-              placeholder="Search"
-              className="border border-gray-300 rounded-full py-2 pl-10 pr-4 w-64"
-            />
-            <FaSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
-          </div>
+          <input
+            type="text"
+            placeholder="Search"
+            className="border border-gray-300 rounded-full py-2 pl-10 pr-4 w-64"
+            value={searchTerm} // Bind search term to input value
+            onChange={handleSearchChange} // Call handleSearchChange on input change
+          />
+          <FaSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+        </div>
 
           {/* Buttons */}
           <div className="flex items-center space-x-4">
@@ -132,10 +153,10 @@ const handleEditClick = (productId: string) => {
 
         {/* Product List */}
         <div className="flex flex-col gap-5">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white shadow-md rounded-md overflow-hidden p-6 min-h-[200px] max-h-[300px]  "
+              className="bg-transparen rounded-md overflow-hidden p-6 min-h-[200px] max-h-[300px]  "
             >
               <div className="flex justify-between font-semibold text-[20px]">
                 <div>{product.name}</div>
