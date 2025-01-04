@@ -20,6 +20,8 @@ const ShowStock = () => {
     const [addIngredientPopupOpen, setAddIngredientPopupOpen] = useState(false);
     const [addPackagingPopupOpen, setAddPackagingPopupOpen] = useState(false);
     const [selectedStockId, setSelectedStockId] = useState(null);
+    const [selectedIngredientId, setSelectedIngredientId] = useState(null);
+
 
 
     const togglePopup = () => {
@@ -27,7 +29,8 @@ const ShowStock = () => {
         console.log('open')
     };
 
-    const withdrawalPopup = () => {
+    const withdrawalPopup = (stockId: any) => {
+        setSelectedIngredientId(stockId);
         setWithdrawalPopupOpen(!withdrawalPopupOpen);
         console.log('open')
     };
@@ -127,7 +130,7 @@ const ShowStock = () => {
                                     </div>
                                     <div className="w-[28%] h-full pt-9 flex flex-row justify-between " >
                                         <button
-                                            onClick={withdrawalPopup}
+                                            onClick={() => withdrawalPopup(ingredient.id)}
                                             className="w-[120px] h-8   rounded-3xl font-semibold text-white bg-black">
                                             - เบิกของ
                                         </button>
@@ -183,7 +186,7 @@ const ShowStock = () => {
                                 </div>)}
 
                         </div>
-                        {withdrawalPopupOpen && <Withdrawal withdrawalPopup={withdrawalPopup} />}
+                        {withdrawalPopupOpen && <Withdrawal withdrawalPopup={() => withdrawalPopup(selectedIngredientId)} stockId={selectedIngredientId!} />}
                         {addIngredientPopupOpen && <AddIngredient addIngredientPopup={() => addIngredientPopup(selectedStockId)} stockId={selectedStockId!} />}
                     </div>
                     
@@ -220,7 +223,7 @@ const ShowStock = () => {
                                         >
                                             - เบิกของ
                                         </button>
-                                        {withdrawalPopupOpen && <Withdrawal withdrawalPopup={withdrawalPopup} />}
+                                        {/* {withdrawalPopupOpen && <Withdrawal withdrawalPopup={withdrawalPopup} />} */}
                                         <button
                                             onClick={addPackagingPopup}
                                             className="w-[120px] h-8 border-2 border-black rounded-3xl font-semibold  ">
