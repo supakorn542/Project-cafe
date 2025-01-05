@@ -43,6 +43,7 @@ export const getProducts = async (): Promise<Product[]> => {
       status_id: status_id || '',
       price: data.price || 0,
       name: data.name || '',
+      description: data.description || '',
       calorie: data.calorie || ''
     } as Product;
   }));

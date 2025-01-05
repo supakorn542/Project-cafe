@@ -1,7 +1,14 @@
-import { getOptionItemsByOptionId } from "@/app/services/optionItem";
 import React, { useEffect, useState } from "react";
-import { doc, deleteDoc, setDoc, collection, addDoc, updateDoc } from "firebase/firestore"; // ใช้ setDoc ในการเพิ่มเอกสาร
-import { db } from "@/app/lib/firebase"; // เชื่อมต่อกับ Firestore
+import {
+  doc,
+  deleteDoc,
+  collection,
+  addDoc,
+  updateDoc,
+  writeBatch,
+} from "firebase/firestore";
+import { db } from "@/app/lib/firebase";
+import { getOptionItemsByOptionId } from "@/app/services/optionItem";
 
 interface OptionItem {
   id: string;
@@ -20,12 +27,12 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
 }) => {
   const [optionItems, setOptionItems] = useState<OptionItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [newOptionName, setNewOptionName] = useState<string>(option.name);
+  const [isRequire, setIsRequire] = useState<boolean>(option.require);
+  const [pendingAddItems, setPendingAddItems] = useState<OptionItem[]>([]);
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<string[]>([]);
   const [newItemName, setNewItemName] = useState<string>("");
   const [newItemPrice, setNewItemPrice] = useState<number>(0);
-  const [newOptionName, setNewOptionName] = useState<string>(option.name); // ใช้ state เพื่อเก็บชื่อที่จะแก้ไข
-  const [isRequire, setIsRequire] = useState<boolean>(option.require); // ใช้ state สำหรับ checkbox require
-
-
   useEffect(() => {
     const fetchOptionItems = async () => {
       try {
@@ -40,199 +47,148 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
 
     fetchOptionItems();
   }, [option.id]);
-  const handleUpdateOptionName = async () => {
-    try {
-      // สร้าง reference ของ document ใน Firestore ที่ต้องการแก้ไข
-      const optionRef = doc(db, "options", option.id);
 
-      // ใช้ updateDoc เพื่ออัปเดตชื่อและค่า require
-      await updateDoc(optionRef, {
-        name: newOptionName,
-        require: isRequire, // อัปเดตค่า require ด้วย
+  const handleAddOptionItem = (name: string, price: number) => {
+    const newItem = { id: "", name, pricemodifier: price }; // Temporary ID
+    setPendingAddItems((prev) => [...prev, newItem]);
+    setOptionItems((prev) => [...prev, newItem]);
+  };
+
+  const handleDeleteOptionItem = (itemId: string) => {
+    setPendingDeleteIds((prev) => [...prev, itemId]);
+    setOptionItems((prev) => prev.filter((item) => item.id !== itemId));
+  };
+  console.log("require : ",isRequire)
+
+  const handleSaveChanges = async () => {
+    try {
+      const batch = writeBatch(db);
+
+      // Update option name and require
+      const optionRef = doc(db, "options", option.id);
+      batch.update(optionRef, { name: newOptionName, require: isRequire });
+
+      // Add new option items
+      const optionItemsCollection = collection(db, "optionItems");
+      pendingAddItems.forEach((item) => {
+        const newItemRef = doc(optionItemsCollection);
+        batch.set(newItemRef, {
+          name: item.name,
+          pricemodifier: item.pricemodifier,
+          option_id: optionRef,
+        });
       });
 
-      // ปิด popup เมื่ออัปเดตเสร็จ
+      // Delete removed option items
+      pendingDeleteIds.forEach((id) => {
+        const itemRef = doc(db, "optionItems", id);
+        batch.delete(itemRef);
+      });
+
+      // Commit all changes
+      await batch.commit();
+
+      alert("Changes saved successfully!");
       onClose();
     } catch (error) {
-      console.error("Error updating option name:", error);
+      console.error("Error saving changes:", error);
+      alert("Failed to save changes. Please try again.");
     }
   };
-  // ฟังก์ชันสำหรับลบ OptionItem
-  const handleDeleteOptionItem = async (itemId: string) => {
-    try {
-      await deleteDoc(doc(db, "optionItems", itemId));
-      setOptionItems((prevItems) =>
-        prevItems.filter((item) => item.id !== itemId)
-      );
-    } catch (error) {
-      console.error("Error deleting option item:", error);
-    }
-  };
-
-  // ฟังก์ชันสำหรับเพิ่ม OptionItem ใหม่
-  const handleAddOptionItem = async () => {
-    if (!newItemName || newItemPrice < 0) {
-      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-      return;
-    }
-    const newOptionItem = {
-      name: newItemName,
-      pricemodifier: newItemPrice,
-      option_id: doc(db, "options", option.id), // เชื่อมโยงกับ Option ที่เลือก
-    };
-
-    try {
-      // ใช้ addDoc เพื่อเพิ่มเอกสารใหม่ให้ Firestore สร้าง docId ให้เอง
-      const optionItemsCollection = collection(db, "optionItems"); // เรียก collection "optionItems"
-      const docRef = await addDoc(optionItemsCollection, newOptionItem); // เพิ่มเอกสารใหม่และให้ Firestore สร้าง docId อัตโนมัติ
-
-      // อัปเดต optionItems ใน state
-      setOptionItems((prevItems) => [
-        ...prevItems,
-        { id: docRef.id, ...newOptionItem }, // ใช้ docRef.id ที่ Firestore สร้างให้
-      ]);
-
-      // รีเซ็ตค่าใหม่หลังจากการเพิ่มเสร็จ
-      setNewItemName("");
-      setNewItemPrice(0);
-    } catch (error) {
-      console.error("Error adding option item:", error);
-    }
-  };
-
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        background: "#fff",
-        borderRadius: "8px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        padding: "20px",
-        width: "400px",
-        zIndex: 1000,
-      }}
-    >
-        <div>
-        <label>ชื่อ Option:</label>
-        <input
-          type="text"
-          value={newOptionName}
-          onChange={(e) => setNewOptionName(e.target.value)} // อัปเดต state เมื่อมีการเปลี่ยนแปลง
-          style={{ width: "100%", padding: "10px", marginTop: "10px" }}
-        />
-      </div>
-
-      <div style={{ marginTop: "20px" }}>
-        <label>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
+      <div className="bg-white w-[400px] p-6 rounded-lg shadow-lg">
+        <h2 className="text-xl font-semibold mb-4">
+          สร้างตัวเลือก
+        </h2>
+        <div className="mb-4">
+          <label htmlFor="optionName" className="block text-sm font-medium text-gray-700">
+            ชื่อตัวเลือก
+          </label>
           <input
-            type="checkbox"
-            checked={isRequire} // ค่าเริ่มต้นของ checkbox จากค่า require
-            onChange={(e) => setIsRequire(e.target.checked)} // เมื่อ checkbox เปลี่ยนค่า
+            type="text"
+            id="optionName"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            value={newOptionName}
+            onChange={(e) => setNewOptionName(e.target.value)}
           />
-          ต้องระบุ
-        </label>
-      </div>
-
-      <div style={{ marginTop: "20px" }}>
-        <button
-          onClick={handleUpdateOptionName}
-          style={{
-            padding: "10px 20px",
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          บันทึกการแก้ไข
-        </button>
         </div>
-        <h2>รายการ Option Items สำหรับ {option.name}</h2>
-      {loading ? (
-        <p>กำลังโหลด...</p>
-      ) : (
-        <ul>
-          {optionItems.length > 0 ? (
-            optionItems.map((item) => (
-              <li key={item.id}>
-                {item.name} - ราคา: {item.pricemodifier}
+        <div className="flex items-start mb-4">
+          <div className="flex items-center h-5">
+            
+            <input
+              id="require"
+              type="checkbox"
+              className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+              checked={isRequire}
+              onChange={(e) => setIsRequire(e.target.checked)}
+            />
+          </div>
+          <div className="ml-3 text-sm">
+            <label htmlFor="require" className="font-medium text-gray-700">
+              ต้องระบุ
+            </label>
+          </div>
+        </div>
+        <hr className="my-4" />
+        <h3 className="text-lg font-semibold mb-4">
+          ช้อยส์
+        </h3>
+        {loading ? (
+          <p>กำลังโหลด...</p>
+        ) : (
+          <ul className="mb-4">
+            {optionItems.map((item) => (
+              <li key={item.id} className="flex items-center justify-between py-2">
+                <span>{item.name}</span>
+                <span>{item.pricemodifier} $</span>
                 <button
                   onClick={() => handleDeleteOptionItem(item.id)}
-                  style={{
-                    marginLeft: "10px",
-                    color: "red",
-                    cursor: "pointer",
-                    background: "none",
-                    border: "none",
-                  }}
+                  className="text-red-500 hover:text-red-700"
                 >
-                  ลบ
+                  X
                 </button>
               </li>
-            ))
-          ) : (
-            <p>ไม่มี Option Items สำหรับตัวเลือกนี้</p>
-          )}
-        </ul>
-      )}
-
-      <div style={{ marginTop: "20px" }}>
-        <h3>เพิ่มตัวเลือกใหม่</h3>
-        <input
-          type="text"
-          placeholder="ชื่อตัวเลือก"
-          value={newItemName}
-          onChange={(e) => setNewItemName(e.target.value)}
-          style={{
-            padding: "8px",
-            width: "100%",
-            marginBottom: "10px",
-          }}
-        />
-        <input
-          type="number"
-          placeholder="ราคา"
-          value={newItemPrice}
-          onChange={(e) => setNewItemPrice(Number(e.target.value))}
-          style={{
-            padding: "8px",
-            width: "100%",
-            marginBottom: "10px",
-          }}
-        />
-        <button
-          onClick={handleAddOptionItem}
-          style={{
-            padding: "10px 20px",
-            background: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          เพิ่ม
-        </button>
+            ))}
+          </ul>
+        )}
+        <div className="flex items-center  justify-between mb-4">
+          <input
+            type="text"
+            placeholder="เพิ่มช้อยส์"
+            className=" border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            value={newItemName}
+            onChange={(e) => setNewItemName(e.target.value)}
+          />
+           <input
+              type="number"
+              placeholder="ราคา"
+              className="w-20 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              value={newItemPrice}
+              onChange={(e) => setNewItemPrice(Number(e.target.value))}
+            />
+          <button
+            onClick={() => handleAddOptionItem(newItemName, newItemPrice)}
+            className="bg-black  text-white font-bold py-2 px-4 rounded"
+          >
+            เพิ่ม
+          </button>
+        </div>
+        <div className="flex justify-end">
+          <button
+            onClick={onClose}
+            className="mr-2 bg-white border border-black hover:bg-red-200 text-black font-bold py-2 px-4 rounded"
+          >
+            ยกเลิก
+          </button>
+          <button
+            onClick={handleSaveChanges}
+            className="bg-black hover:bg-white border border-black text-white hover:text-black font-bold py-2 px-4 rounded"
+          >
+            บันทึก
+          </button>
+        </div>
       </div>
-
-      <button
-        onClick={onClose}
-        style={{
-          padding: "10px 20px",
-          background: "#dc3545",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          marginTop: "20px",
-        }}
-      >
-        ปิด
-      </button>
     </div>
   );
 };

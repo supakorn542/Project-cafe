@@ -38,7 +38,7 @@ const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     }
 
     const optionData = {
-      id : "",
+      id: "",
       name: optionName,
       require: isRequired,
     };
@@ -55,152 +55,105 @@ const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        background: "#fff",
-        borderRadius: "8px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        padding: "20px",
-        width: "400px",
-        zIndex: 1000,
-      }}
-    >
-      <h2 style={{ textAlign: "center" }}>สร้างตัวเลือก</h2>
-      {/* Input สำหรับชื่อตัวเลือก */}
-      <div style={{ marginBottom: "10px" }}>
-        <label>
-          <strong>ชื่อตัวเลือก</strong>
-        </label>
-        <input
-          type="text"
-          value={optionName}
-          onChange={(e) => setOptionName(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "8px",
-            marginTop: "5px",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-          }}
-        />
-      </div>
-      {/* Checkbox สำหรับตัวเลือกเพิ่มเติม */}
-      <div style={{ marginBottom: "10px" }}>
-        <label>
-          <input
-            type="checkbox"
-            checked={isRequired}
-            onChange={(e) => setIsRequired(e.target.checked)}
-          />{" "}
-          ต้องระบุ
-        </label>
-      </div>
-      {/* รายการตัวเลือก (Choices) */}
-      <div style={{ marginBottom: "10px" }}>
-        <strong>ตัวเลือกเสริม</strong>
-        {optionItems.map((item, index) => (
-          <div
-            key={index}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "5px",
-            }}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-[400px]">
+        <h2 className="text-xl font-semibold text-center mb-4">
+          สร้างตัวเลือก
+        </h2>
+
+        {/* Input สำหรับชื่อตัวเลือก */}
+        <div className="mb-4">
+          <label
+            htmlFor="optionName"
+            className="block font-medium text-gray-700"
           >
-            <span style={{ flex: 1 }}>{item.name} (ราคา: {item.pricemodifier})</span>
-            <button
-              onClick={() => handleRemoveItem(index)}
-              style={{
-                background: "red",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                padding: "5px 10px",
-                cursor: "pointer",
-              }}
-            >
-              ลบ
-            </button>
-          </div>
-        ))}
-        <div style={{ display: "flex", marginTop: "10px" }}>
+            ชื่อตัวเลือก
+          </label>
           <input
             type="text"
-            placeholder="ชื่อช้อยส์"
-            value={newItemName}
-            onChange={(e) => setNewItemName(e.target.value)}
-            style={{
-              flex: 1,
-              padding: "8px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              marginRight: "10px",
-            }}
+            id="optionName"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            value={optionName}
+            onChange={(e) => setOptionName(e.target.value)}
           />
+        </div>
+
+        {/* Checkbox สำหรับตัวเลือกเพิ่มเติม */}
+        <div className="mb-4 flex items-center">
           <input
-            type="number"
-            placeholder="ปรับราคา"
-            value={newItemPriceModifier}
-            onChange={(e) => setNewItemPriceModifier(Number(e.target.value))}
-            style={{
-              width: "80px",
-              padding: "8px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              marginRight: "10px",
-            }}
+            id="isRequired"
+            type="checkbox"
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            checked={isRequired}
+            onChange={(e) => setIsRequired(e.target.checked)}
           />
-          <button
-            onClick={handleAddItem}
-            style={{
-              background: "#28a745",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              padding: "5px 10px",
-              cursor: "pointer",
-            }}
+          <label
+            htmlFor="isRequired"
+            className="ml-2 block text-sm font-medium text-gray-700"
           >
-            เพิ่ม
+            ต้องระบุ
+          </label>
+        </div>
+
+        {/* รายการตัวเลือก (Choices) */}
+        <div className="mb-4">
+          <strong className="block text-gray-700">ตัวเลือกเสริม</strong>
+          <ul>
+            {optionItems.map((item, index) => (
+              <li key={index} className="flex items-center mb-2">
+                <span className="flex-grow">
+                  {item.name} (ราคา: {item.pricemodifier})
+                </span>
+                <button
+                  onClick={() => handleRemoveItem(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
+                >
+                  ลบ
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="flex mt-2">
+            <input
+              type="text"
+              placeholder="ชื่อช้อยส์"
+              className="flex-grow mr-2 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="ปรับราคา"
+              className="w-24 mr-2 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              value={newItemPriceModifier}
+              onChange={(e) => setNewItemPriceModifier(Number(e.target.value))}
+            />
+            <button
+              onClick={handleAddItem}
+              className="bg-black hover:bg-white text-white hover:text-black border border-black font-bold py-2 px-4 rounded">
+              เพิ่ม
+            </button>
+          </div>
+        </div>
+
+        {/* ปุ่ม Action */}
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            onClick={onClose}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            ยกเลิก
+          </button>
+          <button
+            onClick={handleCreateOption}
+            className="bg-black hover:bg-white text-white hover:text-black border border-black font-bold py-2 px-4 rounded"
+          >
+            บันทึก
           </button>
         </div>
-      </div>
-      {/* ปุ่ม Action */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
-        <button
-          onClick={onClose}
-          style={{
-            padding: "10px 20px",
-            background: "#dc3545",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          ยกเลิก
-        </button>
-        <button
-          onClick={handleCreateOption}
-          style={{
-            padding: "10px 20px",
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          บันทึก
-        </button>
       </div>
     </div>
   );
 };
 
 export default CreateOptionPopup;
-  

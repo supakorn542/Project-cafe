@@ -6,5 +6,6 @@ export interface Product {
     price: number;       // ราคา
     name: string; // ชื่อผลิตภัณฑ์
     calorie: number;
+    description: string
     options: string[];
   }

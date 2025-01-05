@@ -1,6 +1,7 @@
 import { collection, addDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Product } from '../interfaces/product';
+import { MdDescription } from 'react-icons/md';
 
 // ฟังก์ชันสำหรับการสร้างข้อมูลผลิตภัณฑ์ใหม่พร้อมกับ option หลายตัวในฟิลด์เดียว
 export const createProductWithOptions = async (productData: Product) => {
@@ -11,6 +12,7 @@ export const createProductWithOptions = async (productData: Product) => {
 
     // บันทึกข้อมูล product ลง Firestore
     const productDocRef = await addDoc(collection(db, "products"), {
+      description : productData.description,
       status_id: statusRef,
       productType_id: productTypeRef,
       calorie: productData.calorie,

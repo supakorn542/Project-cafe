@@ -1,24 +1,16 @@
 export interface Stock {
-    id?: string;             // ID ของสินค้า (ถ้ามี)
+    id?: string;             // ID 
+    idStock: string;         // ID Stock ที่ใช้ในการเบิก
     name: string;            // ชื่อสินค้า
-    quantity: number;        // ปริมาณสินค้า
+    netQuantity: number;      // ปริมาณสินค้า
     unit?: string;           // หน่วย เช่น ml, g, oz, Kg
     price: number;           // ราคาต่อหน่วย
     classifier?: string;     // ตัวบ่งบอกประเภท เช่น ถุง, ชิ้น, กล่อง
     totalPrice: number;      // ราคารวม
+    quantity: number;       //จำนวนสินค้า
+    stockType: string;     //ประเภทของstock
     description: string;     // หมายเหตุสินค้า
-    addedDate: Date | string;
-    manufactureDate: Date | string;
+    addedDate: Date | string; // วันที่เพิ่มstock
+    manufactureDate: Date | string; //วันที่ผลิต
     expiryDate: Date | string;     // วันหมดอายุ
 }
-// export interface Stock {
-//     id?: string;
-//     name: string;
-//     quantity: number;
-//     description: string;
-//     totalPrice: number;
-//     price: number;
-//     addedDate: Date | string;
-//     manufactureDate: Date | string;
-//     expiryDate: Date | string;
-// }
