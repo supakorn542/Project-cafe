@@ -84,3 +84,21 @@
   .react-datepicker__month-select::-webkit-scrollbar-thumb:hover {
   background-color: #9f9e9e;
 }
+
+/* ซ่อน scrollbar */
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* สำหรับ IE และ Edge */
+  scrollbar-width: none; /* สำหรับ Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* สำหรับ Chrome, Safari */
+}
+
+.custom-scroll::-webkit-scrollbar {
+  display: none;
+}
+.custom-scroll {
+  -ms-overflow-style: none;  /* For Internet Explorer 10+ */
+  scrollbar-width: none; /* For Firefox */
+}
