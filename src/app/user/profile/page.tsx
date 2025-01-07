@@ -8,7 +8,6 @@ import { useAuth } from "../../context/authContext";
 import { User } from "../../interfaces/user";
 import { BiSolidEdit } from "react-icons/bi";
 import Image from "next/image";
-
 import axios from "axios";
 
 function Profile() {
@@ -16,6 +15,9 @@ function Profile() {
   const [userData, setUserData] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState<User | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | undefined>(
+    undefined
+  );
 
   const convertTimestampToDate = (timestamp: any) => {
     return timestamp.toDate().toLocaleDateString("th-TH", {
@@ -51,24 +53,35 @@ function Profile() {
 
   const handleSaveClick = async () => {
     if (!userData || !editedData) return;
-
+  
     const currentUser = auth.currentUser;
     if (!currentUser) {
       console.error("No authenticated user found");
       return;
     }
-
+  
     try {
+      // อัปเดตอีเมลถ้ามีการเปลี่ยนแปลง
       if (editedData.email && userData.email !== editedData.email) {
         await updateEmail(currentUser, editedData.email);
       }
-
+  
       const userRef = doc(db, "users", currentUser.uid);
-
+  
+      // เตรียมข้อมูลที่จะอัปเดต
       const updatedData: Partial<User> = { ...editedData };
+  
+      // อัปเดตรูปภาพถ้ามีการเปลี่ยนแปลง
+      if (uploadedImageUrl && uploadedImageUrl !== userData.profileImage) {
+        updatedData.profileImage = uploadedImageUrl;
+      }
+  
+      // อัปเดตใน Firestore
       await updateDoc(userRef, updatedData);
-
-      setUserData(editedData);
+  
+      // อัปเดต State
+      setUserData({ ...userData, ...updatedData });
+      setUploadedImageUrl(undefined); // เคลียร์ค่า URL รูปภาพ
       setIsEditing(false);
       console.log("Profile updated successfully");
     } catch (error) {
@@ -78,35 +91,39 @@ function Profile() {
 
   const handleCancelClick = () => {
     setEditedData(userData);
+    setUploadedImageUrl(undefined);
     setIsEditing(false);
   };
 
-  const uploadToCloudinary = async (file: File): Promise<string | null> => {
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-    if (!cloudName || !uploadPreset) {
-      console.error('Cloudinary configuration is missing.');
-      return null;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
-
-    try {
-      const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        formData
-      );
-      console.log("Cloudinary Response:", response); // ตรวจสอบ response
-      return response.data.secure_url; // URL ของรูปภาพที่อัปโหลด
-    } catch (error) {
-      console.error("Error uploading to Cloudinary:", error);
-      return null;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+  
+      reader.onloadend = async () => {
+        const base64Image = reader.result as string;
+  
+        try {
+          const response = await axios.post("/api/uploads", {
+            image: base64Image,
+            publicId: `profile_pics/${user?.id}`,
+            folder: "profile_pics",
+          });
+  
+          if (response.data.url) {
+            setUploadedImageUrl(response.data.url); // เก็บ URL ใน State
+            console.log("Image uploaded successfully:", response.data.url);
+          } else {
+            console.error("Failed to upload image");
+          }
+        } catch (error) {
+          console.error("Error uploading image:", error);
+        }
+      };
+  
+      reader.readAsDataURL(file);
     }
   };
-
   return (
     <>
       <div
@@ -306,28 +323,13 @@ function Profile() {
             </div>
             {isEditing ? (
               <div className="col-start-1 place-self-center ">
-              
-
                 <label className="  cursor-pointer bg-white text-black rounded-3xl px-4 py-1 text-xl hover:bg-[#c7c4c4] transition duration-300 font-serif4">
                   Upload Image
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={async (e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        console.log(e.target.files[0]); // ตรวจสอบไฟล์
-                        const imageUrl = await uploadToCloudinary(
-                          e.target.files[0]
-                        );
-                        if (imageUrl) {
-                          setEditedData({
-                            ...editedData!,
-                            profileImage: imageUrl,
-                          });
-                        }
-                      }
-                    }}
-                    className="hidden" // ซ่อน input
+                    className="hidden"
+                    onChange={handleFileChange}
                   />
                 </label>
               </div>
