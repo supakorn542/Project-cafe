@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from 'next/server';
 import { admin } from "../../lib/firebaseAdmin";
+import { console } from "inspector";
 
 export async function POST(req: NextRequest) {
   const { token } = await req.json(); 
@@ -13,6 +14,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
+    console.log("Token at auth: ",decodedToken);
    
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (error) {

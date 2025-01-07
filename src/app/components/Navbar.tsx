@@ -52,7 +52,7 @@ const Navbar = ( {textColor = "text-black" } : NavnarProp) => {
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-transparent  py-4 px-11 flex justify-between items-center">
+    <nav className="absolute top-0 left-0 w-full z-50 bg-transparent  py-4 px-11 flex justify-between items-center">
       <div>
         <Link href="/" className={`font-gloock font-bold text-2xl ${textColor}`}>
           Forest Tale
@@ -67,7 +67,7 @@ const Navbar = ( {textColor = "text-black" } : NavnarProp) => {
             </Link>
           </li>
           <li>
-            <Link href="#" className={`hover:text-gray-500 ${textColor}`}>
+            <Link href="/user/menu" className={`hover:text-gray-500 ${textColor}`}>
               Menu
             </Link>
           </li>

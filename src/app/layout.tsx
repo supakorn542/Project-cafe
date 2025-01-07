@@ -22,7 +22,7 @@ const playfairDisplay = Playfair_Display({
 
 const sourceSerif4 = Source_Serif_4({
   subsets: ["latin"],
-  weight: ["400", "600", "700"], 
+  weight: ["200","300","400", "600", "700"], 
 });
 
 const gloock = Gloock({
