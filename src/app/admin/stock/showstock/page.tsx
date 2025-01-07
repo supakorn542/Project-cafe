@@ -9,6 +9,7 @@ import CreatePackaging from "../createpackaging/page";
 import AddIngredient from "../addingredient/page";
 import AddPackaging from "../addpackaging/page";
 import { deletedStock, getStockIngredients, getStockPackags } from "@/app/services/stock";
+import UpdateIngredient from "../updateingredient/page";
 
 
 const ShowStock = () => {
@@ -19,31 +20,31 @@ const ShowStock = () => {
     const [withdrawalPopupOpen, setWithdrawalPopupOpen] = useState(false);
     const [addIngredientPopupOpen, setAddIngredientPopupOpen] = useState(false);
     const [addPackagingPopupOpen, setAddPackagingPopupOpen] = useState(false);
+    const [updateIngredientPopupOpen, setUpdateIngredientPopupOpen] = useState(false);
     const [selectedStockId, setSelectedStockId] = useState(null);
     const [selectedIngredientId, setSelectedIngredientId] = useState(null);
 
-
-
     const togglePopup = () => {
         setIsPopupOpen(!isPopupOpen);
-        console.log('open')
     };
 
     const withdrawalPopup = (stockId: any) => {
         setSelectedIngredientId(stockId);
         setWithdrawalPopupOpen(!withdrawalPopupOpen);
-        console.log('open')
     };
 
     const addIngredientPopup = (stockId: any) => {
         setSelectedStockId(stockId);
         setAddIngredientPopupOpen(!addIngredientPopupOpen);
-        console.log('open')
+    };
+
+    const updateIngredientPopup = (stockId: any) => {
+        setSelectedStockId(stockId);
+        setUpdateIngredientPopupOpen(!updateIngredientPopupOpen);
     };
 
     const addPackagingPopup = () => {
         setAddPackagingPopupOpen(!addPackagingPopupOpen);
-        console.log('open')
     };
 
     // const formatDate = (date: String) => {
@@ -68,7 +69,7 @@ const ShowStock = () => {
         }
         return date; // คืนค่าค่าว่างหาก date ไม่มีรูปแบบที่คาดหวัง
     };
-    
+
 
     const fetchStockIngredients = async () => {
         try {
@@ -94,7 +95,9 @@ const ShowStock = () => {
         console.log(id)
         if (window.confirm("Are you sure you want to delete this item?")) {
             deletedStock(id);
+            fetchStockIngredients(); // เรียก API เมื่อ component ถูก mount
         }
+
     };
 
     useEffect(() => {
@@ -134,16 +137,18 @@ const ShowStock = () => {
                                             className="w-[120px] h-8   rounded-3xl font-semibold text-white bg-black">
                                             - เบิกของ
                                         </button>
-                                        
-                                        <button 
+
+                                        <button
                                             onClick={() => addIngredientPopup(ingredient.id)}
                                             className="w-[120px] h-8 border-2 border-black rounded-3xl font-semibold  ">
                                             + เพิ่มของ
                                         </button>
-                                        
+
 
                                         <div>
-                                            <button className="">
+                                            <button
+                                                onClick={() => updateIngredientPopup(ingredient.id)}
+                                                className="">
                                                 <svg
                                                     className="h-7 w-7  "
                                                     width="24"
@@ -188,11 +193,13 @@ const ShowStock = () => {
                         </div>
                         {withdrawalPopupOpen && <Withdrawal withdrawalPopup={() => withdrawalPopup(selectedIngredientId)} stockId={selectedIngredientId!} />}
                         {addIngredientPopupOpen && <AddIngredient addIngredientPopup={() => addIngredientPopup(selectedStockId)} stockId={selectedStockId!} />}
+                        {updateIngredientPopupOpen && <UpdateIngredient updateIngredientPopup ={() => updateIngredientPopup(selectedStockId) } stockId={selectedStockId!} />}
+
                     </div>
-                    
+
                 );
 
-                
+
             case "packaging":
                 return (
                     <div className="pt-2 flex justify-center ">
@@ -250,7 +257,7 @@ const ShowStock = () => {
                                         </div>
 
                                         <div>
-                                            <button  onClick={() => handleDelete(packaging.id!)}>
+                                            <button onClick={() => handleDelete(packaging.id!)}>
                                                 <svg
                                                     className="h-7 w-7 text-black"
                                                     width="24"

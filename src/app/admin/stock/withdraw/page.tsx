@@ -93,7 +93,7 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
             <div className="bg-white rounded-[2rem] shadow-lg p-14 pt-6 w-[594px] h-[618px] ">
-                <h2 className="text-md text-center font-bold ">{ingredientData?.name}</h2>
+                <h2 className="text-md text-center font-bold ">{ingredientData?.data.name}</h2>
                 <div className="flex flex-row justify-between pt-5">
                     <div className="">
                         <div className="text-black pb-1">ชื่อพนักงาน</div>

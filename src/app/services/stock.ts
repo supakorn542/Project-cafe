@@ -4,7 +4,7 @@ import { db } from '../lib/firebase';
 import { Stock } from '../interfaces/stock';
 import { assert } from "console";
 
-export const createStocks = async (stockData: Stock, details: Array<{ idStock: string, manufactureDate: Date, expiryDate: Date }>) => {
+export const createStocks = async (stockData: Stock, details: Array<{ idStock: string, manufactureDate: String, expiryDate: String }>) => {
   try {
     // เพิ่มเอกสารในคอลเลกชัน "stocks"
     const stockDocRef = await addDoc(collection(db, "stocks"), {
@@ -24,8 +24,8 @@ export const createStocks = async (stockData: Stock, details: Array<{ idStock: s
     const stockDetailsPromises = details.map((detail) =>
       addDoc(collection(db, "stocks", stockDocRef.id, "details"), {
         idStock: detail.idStock,
-        manufactureDate: detail.manufactureDate instanceof Date ? detail.manufactureDate : new Date(detail.manufactureDate),
-        expiryDate: detail.expiryDate instanceof Date ? detail.expiryDate : new Date(detail.expiryDate),
+        manufactureDate: detail.manufactureDate,
+        expiryDate: detail.expiryDate,
         // name: stockData.name,
         // netQuantity: stockData.netQuantity,
         // unit: stockData.unit,
@@ -108,39 +108,64 @@ export const createWithdrawal = async (
   stockId: string,
   selectedDetails: Array<any>,
   newData: Array<any>,
-  data: { userName: string, withdrawDate: string, description: string, quantity: number}
-  ) => {
-    try {
-      if (newData.length === 0) {
-        return { success: false, message: "No data provided for creation" };
-      }
-
-      // สร้างเอกสารใหม่ใน `Withdrawal` 
-      const withdrawalData = {
-        stockId, // เก็บ stockId
-        data,
-        details: newData, // เก็บข้อมูล selectedDetails เป็น array
-        createdAt: new Date(), // เพิ่มเวลาในการสร้าง
-      };
-
-      // สร้างเอกสารในคอลเลกชัน Withdrawal
-      const withdrawalCollectionRef = collection(db, "withdrawals");
-      await addDoc(withdrawalCollectionRef, withdrawalData);
-
-      // ลบเอกสารใน `details` ที่เกี่ยวข้องกับ stockId และรายการที่เลือก
-      const deletePromises = selectedDetails.map((detail) => {
-        const detailRef = doc(db, "stocks", stockId, "details", detail.id); // อ้างอิงถึงแต่ละเอกสารใน `details`
-        return deleteDoc(detailRef); // ลบเอกสารใน `details`
-      });
-
-      await Promise.all(deletePromises); // รอให้ลบเอกสารเสร็จสิ้น
-
-      return { success: true, message: "Creation in Withdrawal and withdrawal from details completed successfully" };
-    } catch (error) {
-      console.error("Error during creation in Withdrawal and withdrawal:", error);
-      return { success: false, message: "Failed to complete creation in Withdrawal and withdrawal", error };
+  data: { userName: string, withdrawDate: string, description: string, quantity: number }
+) => {
+  try {
+    if (newData.length === 0) {
+      return { success: false, message: "No data provided for creation" };
     }
+
+    // สร้างเอกสารใหม่ใน `Withdrawal` 
+    const withdrawalData = {
+      stockId, // เก็บ stockId
+      data,
+      details: newData, // เก็บข้อมูล selectedDetails เป็น array
+      createdAt: new Date(), // เพิ่มเวลาในการสร้าง
+    };
+
+    // สร้างเอกสารในคอลเลกชัน Withdrawal
+    const withdrawalCollectionRef = collection(db, "withdrawals");
+    await addDoc(withdrawalCollectionRef, withdrawalData);
+
+    // อัปเดตข้อมูล Stock
+    // อัปเดตข้อมูล Stock quantity ให้ลดลง จากจำนวนของ Withdrawal quantity 
+    const stockRef = doc(db, "stocks", stockId); // ใช้ stockId ที่ได้รับ
+
+    // ดึงข้อมูล stock ปัจจุบันจาก Firestore
+    const stockSnapshot = await getDoc(stockRef);
+
+    if (stockSnapshot.exists()) {
+      const stockData = stockSnapshot.data(); // ข้อมูลปัจจุบันของ stock
+      const currentQuantity = stockData.quantity || 0; // ตรวจสอบว่า quantity มีค่าหรือไม่
+
+      if (currentQuantity >= data.quantity) {
+        // ลดจำนวน quantity
+        await updateDoc(stockRef, {
+          quantity: currentQuantity - data.quantity,
+        });
+      } else {
+        throw new Error("Not enough stock quantity available.");
+      }
+    } else {
+      throw new Error("Stock document does not exist.");
+    }
+
+
+    // ลบเอกสารใน `details` ที่เกี่ยวข้องกับ stockId และรายการที่เลือก
+    const deletePromises = selectedDetails.map((detail) => {
+      const detailRef = doc(db, "stocks", stockId, "details", detail.id); // อ้างอิงถึงแต่ละเอกสารใน `details`
+      return deleteDoc(detailRef); // ลบเอกสารใน `details`
+    });
+
+    await Promise.all(deletePromises); // รอให้ลบเอกสารเสร็จสิ้น
+
+    return { success: true, message: "Creation in Withdrawal and withdrawal from details completed successfully" };
+  } catch (error) {
+    console.error("Error during creation in Withdrawal and withdrawal:", error);
+    return { success: false, message: "Failed to complete creation in Withdrawal and withdrawal", error };
+  }
 };
+
 
 
 // ฟังก์ชันสำหรับอัปเดตข้อมูล Stock และเพิ่มรายละเอียดใหม่
@@ -162,13 +187,31 @@ export const updateIngredientByIDAndAddDetail = async (
     const stockRef = doc(db, "stocks", stockId);
     const stockSnapshot = await getDoc(stockRef);
 
-    if (!stockSnapshot.exists()) {
-      return { success: false, message: "Stock not found" };
-    }
+    // if (!stockSnapshot.exists()) {
+    //   return { success: false, message: "Stock not found" };
+    // }
 
     // อัปเดตข้อมูล Stock
-    if (Object.keys(updatedStockData).length > 0) {
-      await updateDoc(stockRef, updatedStockData);
+    // if (Object.keys(updatedStockData).length > 0) {
+    //   await updateDoc(stockRef, updatedStockData);
+    // }
+
+    if (stockSnapshot.exists()) {
+      const stockData = stockSnapshot.data(); // ข้อมูลปัจจุบันของ stock
+      const currentQuantity = stockData.quantity || 0; // ตรวจสอบว่า quantity มีค่าหรือไม่
+
+      if (Object.keys(updatedStockData).length > 0 || currentQuantity <= updatedStockData.quantity) {
+        // เพิ่มจำนวน quantity
+        await updateDoc(stockRef, {
+          quantity: currentQuantity + updatedStockData.quantity,
+          addedDate:updatedStockData.addedDate,
+          description: updatedStockData.description,
+        });
+      } else {
+        throw new Error("Not enough stock quantity available.");
+      }
+    } else {
+      throw new Error("Stock document does not exist.");
     }
 
     // เพิ่มรายละเอียดใหม่ในคอลเลกชัน `details`
@@ -189,6 +232,57 @@ export const updateIngredientByIDAndAddDetail = async (
     return { success: false, message: "Failed to update stock or add details", error };
   }
 };
+
+// ฟังก์ชันเพื่ออัปเดตข้อมูลสต็อก
+export const updateIngredientByID = async (
+  stockId: string,
+  updatedStockData: any,  // ข้อมูลที่ได้รับจากแบบฟอร์ม
+  newDetails: Array<{
+    id: string
+    idStock: string;
+    manufactureDate: Date;
+    expiryDate: Date;
+  }>
+) => {
+  try {
+    // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
+    const stockRef = doc(db, "stocks", stockId);
+    const stockSnapshot = await getDoc(stockRef);
+
+    if (!stockSnapshot.exists()) {
+      return { success: false, message: "Stock not found" };
+    }
+
+    // อัปเดตข้อมูล Stock
+    if (Object.keys(updatedStockData).length > 0) {
+      await updateDoc(stockRef, updatedStockData);
+    }
+
+    // // อัปเดตรายละเอียดใหม่ใน stock
+    // if (newDetails.length > 0) {
+    //   const detailsRef = doc(db, "stocks", stockId, "details", "details.id"); // ชื่อ collection สำหรับรายละเอียด
+    //   await updateDoc(detailsRef, { details: newDetails });
+    // }
+
+    // อัปเดตหรือเพิ่มข้อมูลใน subcollection "details"
+    if (newDetails.length > 0) {
+      for (const detail of newDetails) {
+        const detailRef = doc(db, "stocks", stockId, "details", detail.id); // ใช้ id ของรายละเอียดที่ต้องการอัปเดต
+        await updateDoc(detailRef, {
+          idStock: detail.idStock,
+          manufactureDate: detail.manufactureDate,
+          expiryDate: detail.expiryDate,
+        });
+      }
+    }
+
+    return { success: true, message: "Stock updated and details added successfully" };
+  } catch (error) {
+    console.error("Error updating stock and adding details:", error);
+    return { success: false, message: "Failed to update stock or add details", error };
+  }
+};
+
 
 export const getIngredientById = async (stockId: string) => {
   try {
@@ -226,7 +320,7 @@ export const getIngredientById = async (stockId: string) => {
     // รวมข้อมูลเอกสารหลักและข้อมูลคอลเลกชันย่อย
     return {
       id: stockId,
-      ...ingredientData,
+      data: ingredientData,
       details, // เพิ่มข้อมูลจากคอลเลกชันย่อย
     };
   } catch (error) {
@@ -288,7 +382,6 @@ export const getStockIngredients = async (): Promise<Stock[]> => {
       console.warn("No stocks found in the collection.");
       return []; // หากไม่มีข้อมูลใน collection ให้คืนค่า array เปล่า
     }
-
     // // แปลงข้อมูลเป็น array
     // const stockData = stockSnapshot.docs.map((doc) => ({
     //   id: doc.id, // เพิ่ม id ของเอกสารเพื่อใช้งาน
@@ -321,6 +414,8 @@ export const getStockIngredients = async (): Promise<Stock[]> => {
     }));
     console.log("Stocks:", stocks);
     return stocks;
+
+
   } catch (error) {
     console.error("Error fetching stock data:", error);
     throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
@@ -335,5 +430,28 @@ export const deletedStock = async (id: string) => {
     console.error('Error deleting document: ', error);
   }
 };
+
+
+//ลบได้หมด
+// export const deletedStock = async (id: string) => {
+//   try {
+//     // อ้างอิงถึง subcollection `details` ในเอกสาร `stocks`
+//     const detailsCollectionRef = collection(db, 'stocks', id, 'details');
+
+//     // ดึงเอกสารทั้งหมดใน subcollection `details`
+//     const detailsSnapshot = await getDocs(detailsCollectionRef);
+
+//     // ลบเอกสารใน `details` ทีละรายการ
+//     const deletePromises = detailsSnapshot.docs.map((doc) => deleteDoc(doc.ref));
+//     await Promise.all(deletePromises); // รอให้ลบเอกสารทั้งหมดเสร็จสิ้น
+
+//     // ลบเอกสารหลักใน `stocks`
+//     await deleteDoc(doc(db, 'stocks', id));
+//     console.log('Document and its subcollection deleted successfully');
+//   } catch (error) {
+//     console.error('Error deleting document and its subcollection: ', error);
+//   }
+// };
+
 
 
