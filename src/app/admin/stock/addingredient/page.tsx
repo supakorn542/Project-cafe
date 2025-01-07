@@ -34,6 +34,7 @@ const AddIngredient: React.FC<AddIngredientProps> = ({ addIngredientPopup, stock
             ...updatedDetails[index],
             [field]: value, // อัปเดตค่าฟิลด์ที่ระบุ
         };
+        // console.log(updatedDetails);
         setDetails(updatedDetails); // อัปเดต state
     };
 
@@ -89,7 +90,7 @@ const AddIngredient: React.FC<AddIngredientProps> = ({ addIngredientPopup, stock
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
             {currentPopup === 1 && (
                 <div className="bg-white rounded-[2rem] shadow-lg p-14 pt-5 w-[90%] max-w-[520px] h-[370px] ">
-                    <h2 className="text-md text-center font-bold ">{ingredientData?.name}</h2>
+                    <h2 className="text-md text-center font-bold ">{ingredientData?.data.name}</h2>
                     <div className="pt-2">
                         <div className="text-black ">จำนวน</div>
                         <div className="flex justify-between items-center">
@@ -101,7 +102,7 @@ const AddIngredient: React.FC<AddIngredientProps> = ({ addIngredientPopup, stock
                             />
                             <p className=" text-[34px]">/</p>
                             <div className="w-[20%] h-[35px] border-2 border-black rounded-md pt-1">
-                                <p className=" text-center">{ingredientData?.classifier}</p>
+                                <p className=" text-center">{ingredientData?.data.classifier}</p>
                             </div>
                             {/* <select
                                 id="classifier"
@@ -151,7 +152,7 @@ const AddIngredient: React.FC<AddIngredientProps> = ({ addIngredientPopup, stock
             {/* ----nextpopup--- */}
             {currentPopup === 2 && (
                 <div className="bg-white rounded-3xl shadow-lg p-11 pt-8 w-[100%] max-w-[772px] max-h-[90%] ">
-                    <h2 className="text-xl text-center font-bold ">{ingredientData?.name}</h2>
+                    <h2 className="text-xl text-center font-bold ">{ingredientData?.data.name}</h2>
                     <div className=" overflow-auto max-h-[400px]">
                         {quantity > 0 && Array.from({ length: quantity }).map((_, index) => (
                             <div className="flex flex-row justify-between pt-4">
