@@ -1,0 +1,12 @@
+/* ซ่อนลูกศรใน Chrome, Safari, Edge */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ซ่อนลูกศรใน Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+

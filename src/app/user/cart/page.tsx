@@ -18,6 +18,7 @@ import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import Navbar from "@/app/components/Navbar";
 import { MdDeleteOutline } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
+import EditCartPopup from "@/app/components/orderProduct/editCartPopup";
 const timestampToString = (timestamp: Timestamp) => {
   const date = timestamp.toDate(); // แปลง Timestamp เป็น Date
   return date.toLocaleString(); // แปลง Date เป็นข้อความที่อ่านง่าย
@@ -30,8 +31,26 @@ interface CartStateItem extends CartInterface {
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartInterface[]>([]);
   const [loading, setLoading] = useState(true);
-  const userId = "Xc5wn89awbKYcaQGt3OK";
+  const userId = "Z7p6208uvXSyDZnIMr3g";
 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+
+  const handleOpenPopup = (itemId: string) => {
+    setIsPopupOpen(true);
+    setEditingItemId(itemId);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+    setEditingItemId(null);
+  };
+
+  const handleSubmit = (formData: any) => {
+    // Handle form submission (e.g., send data to server)
+    console.log("Form Data:", formData);
+    handleClosePopup();
+  };
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
@@ -45,10 +64,11 @@ const Cart = () => {
           where("status", "==", true)
         );
 
+        console.log("user", userRef);
         const cartSnapshot = await getDocs(cartQuery);
         const cartIds = cartSnapshot.docs.map((doc) => doc.id);
-        console.log("cartIds :", cartIds);
         // ถ้าไม่มี cart ให้หยุดการทำงานและตั้งค่า state เป็นว่าง
+        console.log("cartIds :", cartIds);
         if (cartIds.length === 0) {
           setCartItems([]);
           return;
@@ -57,9 +77,10 @@ const Cart = () => {
         const cartRefIds = cartIds.map((cartId) => doc(db, "carts", cartId));
         // 2. ดึงข้อมูล cartItems ที่ cart_id ตรงกับ cartIds
         const cartItemQuery = query(
-          collection(db, "cartItmes"),
+          collection(db, "cartItem"),
           where("cart_id", "in", cartRefIds)
         );
+        console.log("cartitem", cartItemQuery);
 
         const cartItemSnapshot = await getDocs(cartItemQuery);
         const cartItems = cartItemSnapshot.docs.map((doc) => {
@@ -72,6 +93,7 @@ const Cart = () => {
             cart_id: data.cart_id,
           };
         });
+        console.log("dd", cartItems);
 
         // 3. ดึงข้อมูลสินค้าจาก collection "products"
         const productSnapshots = await Promise.all(
@@ -167,7 +189,7 @@ const Cart = () => {
           return {
             id: item.id,
             product_id: productDetails,
-            optionItems: optionItemsForItem || null,
+            optionItems_id: optionItemsForItem || null,
             status: true,
             totalPrice: productDetails.reduce(
               (sum: number, product: { price: number }) =>
@@ -175,7 +197,7 @@ const Cart = () => {
               0
             ),
             quantity: item.quantity,
-            description: "",
+            
             user_id:
               cartSnapshot.docs.find((doc) => doc.id === item.cart_id)?.data()
                 .user_id || "Unknown",
@@ -208,9 +230,9 @@ const Cart = () => {
         <div className="flex gap-8">
           {/* Left Section: Cart Items */}
           <div className="flex-1">
-        <header className=" text-greenthemewep p-4 ">
-          <h1 className="text-3xl font-bold">Your Cart</h1>
-        </header>
+            <header className=" text-greenthemewep p-4 ">
+              <h1 className="text-3xl font-bold">Your Cart</h1>
+            </header>
             {cartItems.map((item) => (
               <div
                 key={item.id}
@@ -225,9 +247,9 @@ const Cart = () => {
                   {item.product_id.map((product: Product) => (
                     <span key={product.id}>{product.name} </span>
                   ))}
+
                   
-                  <p className="text-gray-600 text-sm">{item.description}</p>
-                  {item.optionItems.map((option: OptionItem) => (
+                  {item.optionItems_id.map((option: OptionItem) => (
                     <p key={option.id}>{option.name} </p>
                   ))}
                   <div className="flex items-center gap-2 mt-2">
@@ -238,9 +260,22 @@ const Cart = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold">${item.totalPrice}</p>
-                  <button className="text-red-500 mt-2"><MdDeleteOutline /></button>
-                  <button className="text-red-500 mt-2"><CiEdit />
+                  <button className="text-red-500 mt-2">
+                    <MdDeleteOutline />
                   </button>
+                  <button
+                    className="text-red-500 mt-2"
+                    onClick={() => handleOpenPopup(item.id)} 
+                  >
+                    <CiEdit />
+                  </button>
+                  {isPopupOpen && (
+                    <EditCartPopup
+                      cartItemId={item.id} 
+                      onClose={handleClosePopup}
+                      onSubmit={handleSubmit}
+                    />
+                  )}
                 </div>
               </div>
             ))}

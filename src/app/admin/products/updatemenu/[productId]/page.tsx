@@ -8,7 +8,7 @@ import { getOptions } from "@/app/services/options";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
-import { fetchProduct } from "@/app/services/getProduct";
+import { getProductById } from "@/app/services/getProduct";
 import { updateProduct } from "@/app/services/updateProduct";
 import {
   addProductOption,
@@ -51,7 +51,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
     const fetchData = async () => {
       if (typeof productId === "string") {
         try {
-          const productData = await fetchProduct(productId);
+          const productData = await getProductById(productId);
           const selectedOptionIds = await getProductOptionsByProductId(
             productId
           );
