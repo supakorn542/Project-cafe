@@ -46,6 +46,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
   const [selectProductType, setSelectProductType] = useState("");
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,7 +115,8 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
           calorie,
           selectProductType,
           selectedStatus,
-          selectedOptions
+          selectedOptions,
+          uploadedImage
         );
 
         if (isUpdated) {
@@ -302,6 +304,15 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
               ))}
             </select>
           </div>
+          <label className="  cursor-pointer bg-white text-black rounded-3xl px-4 py-1 text-xl hover:bg-[#c7c4c4] transition duration-300 font-serif4">
+                  Upload Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => setUploadedImage(e.target.files?.[0] ?? null)} 
+                  />
+                </label>
   
           {/* ปุ่ม */}
           <div className="flex justify-end gap-4">
