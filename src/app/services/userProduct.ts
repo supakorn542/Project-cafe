@@ -54,6 +54,7 @@ export const fetchProductById = async (productId: string): Promise<Product | nul
         calorie: data.calorie || 0,
         productType_id: data.productType_id || "",
         status_id: data.status_id || "",
+        imageProduct: data.imageProduct || "",
       };
     } else {
       console.warn(`No product found for ID: ${productId}`);
