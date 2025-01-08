@@ -8,7 +8,7 @@ export interface CartItemsInterface {
     id : string;
     cart_id : CartInterface;
     product_id : Product;
-    option? : OptionInterface
+   
     quantity: number;
     optionitem_ids: string[];
     pickupdate : Timestamp
