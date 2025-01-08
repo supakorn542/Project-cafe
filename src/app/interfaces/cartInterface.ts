@@ -7,10 +7,10 @@ export interface CartInterface {
   quantity: ReactNode;
     id: string;
   product_id: Product[]; // สินค้าในตะกร้า
-  optionItems: OptionItem, 
+  optionItems_id: OptionItem, 
   status?: boolean;
   totalPrice: number
-  description?: string;
+  
 
   user_id: string;   // ID ของผู้ใช้ที่เป็นเจ้าของตะกร้า
 }

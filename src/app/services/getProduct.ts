@@ -63,7 +63,7 @@ export const getProductType = async (): Promise<productTypeInterface[]> => {
   }));
 };
 
-export const fetchProduct = async (productId: string) => {
+export const getProductById = async (productId: string) => {
   const productRef = doc(db, "products", productId);
   const docSnap = await getDoc(productRef);
 
