@@ -22,6 +22,7 @@ export const getAllProducts = async () => {
       calorie: productData.calorie,  // แคลอรี่
       productType_id: productData.productType_id.id  || productData.productType_id,  // ID ของประเภทสินค้า
       status_id: productData.status_id.id || productData.status_id,  // ID ของสถานะ
+      imageProduct : productData.imageProduct, //
     };
   });
 

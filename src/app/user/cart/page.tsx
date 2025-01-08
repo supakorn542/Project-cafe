@@ -19,6 +19,7 @@ import Navbar from "@/app/components/Navbar";
 import { MdDeleteOutline } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 import EditCartPopup from "@/app/components/orderProduct/editCartPopup";
+import Image from "next/image";
 const timestampToString = (timestamp: Timestamp) => {
   const date = timestamp.toDate(); // แปลง Timestamp เป็น Date
   return date.toLocaleString(); // แปลง Date เป็นข้อความที่อ่านง่าย
@@ -146,8 +147,7 @@ const Cart = () => {
 
         // 5. อัปเดต cartItems พร้อมข้อมูลสินค้าและ optionItems
         const updatedCartItems = cartItems.map((item) => {
-          let productDetails: { id: string; name: string; price: number }[] =
-            [];
+          let productDetails: { id: string; name: string; price: number; imageProduct: string }[] = []; 
 
           if (Array.isArray(item.product_id)) {
             // กรณี product_id เป็น array
@@ -159,10 +159,11 @@ const Cart = () => {
                   id: productId,
                   name: product.name || "Unknown",
                   price: product.price || 0,
+                  imageProduct: product.imageProduct || "",
                 };
               }
               console.warn("Invalid product_id format in array:", productRef);
-              return { id: "", name: "Unknown", price: 0 }; // default object
+              return { id: "", name: "Unknown", price: 0 , imageProduct: ""}; // default object
             });
           } else if (item.product_id instanceof DocumentReference) {
             // กรณี product_id เป็น DocumentReference เดี่ยว
@@ -173,6 +174,9 @@ const Cart = () => {
                 id: productId,
                 name: product.name || "Unknown",
                 price: product.price || 0,
+                imageProduct: product.imageProduct || "",
+                
+                
               },
             ];
           } else {
@@ -197,7 +201,7 @@ const Cart = () => {
               0
             ),
             quantity: item.quantity,
-            
+
             user_id:
               cartSnapshot.docs.find((doc) => doc.id === item.cart_id)?.data()
                 .user_id || "Unknown",
@@ -206,15 +210,15 @@ const Cart = () => {
 
         // 6. อัปเดต State
         setCartItems(updatedCartItems);
-        console.log(updatedCartItems);
+        console.log("dddd",updatedCartItems);
       } catch (error) {
         console.error("Error fetching cart items:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchCartItems();
+    
   }, []);
 
   const totalPrice = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
@@ -238,17 +242,22 @@ const Cart = () => {
                 key={item.id}
                 className="flex items-center border-b pb-4 mb-4 gap-4"
               >
-                <img
-                  src={""}
-                  // alt={item.name}
-                  className="w-24 h-24 rounded-lg"
-                />
                 <div className="flex-1">
                   {item.product_id.map((product: Product) => (
-                    <span key={product.id}>{product.name} </span>
+                    <div key={product.id}>
+                      {product.name}
+                      {product.imageProduct && ( 
+                        <Image
+                          src={product.imageProduct}
+                          alt={product.name}
+                          width={200} // Add width
+                          height={150} // Add height (optional)
+                          className="w-24 h-24 rounded-lg"
+                        />
+                      )}{" "}
+                    </div>
                   ))}
 
-                  
                   {item.optionItems_id.map((option: OptionItem) => (
                     <p key={option.id}>{option.name} </p>
                   ))}
@@ -265,13 +274,13 @@ const Cart = () => {
                   </button>
                   <button
                     className="text-red-500 mt-2"
-                    onClick={() => handleOpenPopup(item.id)} 
+                    onClick={() => handleOpenPopup(item.id)}
                   >
                     <CiEdit />
                   </button>
                   {isPopupOpen && (
                     <EditCartPopup
-                      cartItemId={item.id} 
+                      cartItemId={item.id}
                       onClose={handleClosePopup}
                       onSubmit={handleSubmit}
                     />
