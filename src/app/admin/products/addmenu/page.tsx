@@ -80,8 +80,7 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
       user_id: "",
       status_id: selectedStatus,
       calorie,
-      
-      
+      imageProduct: ""
     };
 
     try {

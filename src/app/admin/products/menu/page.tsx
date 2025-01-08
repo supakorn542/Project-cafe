@@ -18,12 +18,9 @@ import { getOptions } from "@/app/services/options";
 import Link from "next/link";
 import Image from "next/image";
 
-interface ProductMenu extends Product {
-  imageProduct: string
-}
 
 const MenuPage = () => {
-  const [products, setProducts] = useState<ProductMenu[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [productType, setProductType] = useState<productTypeInterface[]>([]);
   const [createpopup, setCreatepopup] = useState(false);
   const [editPopup, setEditPopup] = useState(false);
