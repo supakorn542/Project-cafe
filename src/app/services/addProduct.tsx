@@ -2,10 +2,43 @@ import { collection, addDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Product } from '../interfaces/product';
 import { MdDescription } from 'react-icons/md';
+import axios from 'axios';
 
 // ฟังก์ชันสำหรับการสร้างข้อมูลผลิตภัณฑ์ใหม่พร้อมกับ option หลายตัวในฟิลด์เดียว
-export const createProductWithOptions = async (productData: Product) => {
+export const createProductWithOptions = async (productData: Product, imageFile: File | null) => {
   try {
+    let imageUrl = null;
+     // 1. อัปโหลดรูปภาพไปยัง Cloudinary ก่อน (ถ้ามี)
+     if (imageFile) {
+      const reader = new FileReader();
+      reader.readAsDataURL(imageFile);
+
+      await new Promise<void>((resolve) => {
+        reader.onloadend = async () => {
+          const base64Image = reader.result as string;
+          try {
+            const response = await axios.post("/api/uploads", {
+              image: base64Image,
+              publicId: `product_pics/${productData?.name}`,
+              folder: "product_pics",
+              // (Optional) You can generate a dynamic publicId here if needed
+            });
+
+            if (response.data.url) {
+              imageUrl = response.data.url;
+              console.log("Image uploaded successfully:", imageUrl);
+            } else {
+              console.error("Failed to upload image");
+            }
+          } catch (error) {
+            console.error("Error uploading image:", error);
+          } finally {
+            resolve(); // Resolve the promise after upload attempt
+          }
+        };
+      });
+    }
+
     // สร้าง reference ของ status และ productType
     const productTypeRef = doc(db, 'productTypes', productData.productType_id);
     const statusRef = doc(db, 'status', productData.status_id);
@@ -18,10 +51,11 @@ export const createProductWithOptions = async (productData: Product) => {
       calorie: productData.calorie,
       price: productData.price,
       name: productData.name,
+      imageProduct:imageUrl
     });
 
     // สร้าง array ของ reference ที่อ้างถึง options ที่ถูกเลือก
-    const optionRefs = productData.options.map(optionId => doc(db, 'options', optionId));
+    const optionRefs = productData.options?.map(optionId => doc(db, 'options', optionId));
 
     // บันทึก productOptions ลงใน collection productOptions โดยเก็บ option_id เป็น array ของ reference
     await addDoc(collection(db, "productOptions"), {

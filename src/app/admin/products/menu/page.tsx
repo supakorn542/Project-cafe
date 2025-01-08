@@ -41,7 +41,7 @@ const MenuPage = () => {
         .find((selected) => selected.productId === product.id)
         ?.options.some(({ option, items }) => {
           return (
-            option.name.toLowerCase().includes(search) ||
+            option.name!.toLowerCase().includes(search) ||
             items.some((item) => item.name.toLowerCase().includes(search))
           );
         })
