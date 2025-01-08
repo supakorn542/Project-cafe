@@ -1,51 +1,99 @@
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../lib/firebase";
+import { collection, query, where, getDocs,doc,getDoc } from "firebase/firestore";
+import { Order } from "../interfaces/order";
+import { CartInterface } from "../interfaces/cartInterface";
+import { CartItemsInterface } from "../interfaces/cartItemInterface";
 
-// สร้างฟังก์ชันสำหรับดึงข้อมูล
-export const getPaidOrdersWithCartItems = async () => {
+
+export const getCartsByUserId = async (userId: string): Promise<CartInterface[]> => {
   try {
-    const db = getFirestore();
+    
+    const cartsRef = collection(db, "carts");
 
-    // Step 1: ดึงข้อมูลจากตาราง `order` ที่ payment = 'paid'
-    const ordersRef = collection(db, "order");
-    const ordersQuery = query(ordersRef, where("payment", "==", "paid"));
+    // สร้าง DocumentReference สำหรับ user_id
+    const userRef = doc(db, "users", userId);  // Assume `userId` is the document ID in the "users" collection
+
+    // ใช้ DocumentReference ใน query
+    const q = query(cartsRef, where("user_id", "==", userRef), where("status","==",false));
+    const querySnapshot = await getDocs(q);
+
+    const carts: CartInterface[] = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      // แปลงข้อมูลให้ตรงกับ CartInterface ใหม่
+      return {
+        id: doc.id,
+        status: data.status || false,  // กำหนดค่า default สำหรับ status
+        user_id: data.user_id || '',   // กำหนดค่า default สำหรับ user_id
+      };
+    });
+
+    return carts;
+  } catch (error) {
+    console.error("Error fetching carts:", error);
+    return [];
+  }
+};
+
+
+export const getOrdersByCartId = async (cartIds: string[]): Promise<Order[]> => {
+  try {
+    const cartsRef = collection(db, "carts");
+
+    // Query orders ที่ cart_id อยู่ใน cartIds
+    const ordersRef = collection(db, "orders");
+    const ordersQuery = query(ordersRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))));
     const ordersSnapshot = await getDocs(ordersQuery);
 
-    const ordersWithCartItems = [];
+    // แปลงผลลัพธ์จาก ordersSnapshot ให้เป็นอาร์เรย์ของ Order
+    const orders: Order[] = ordersSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        orderDate: data.orderDate.toDate(), // แปลง Timestamp ให้เป็นวันที่
+        cart_id: data.cart_id || '',
+        total_price: data.total_price || 0,
+        statusOrder: data.statusOrder || 'pending',
+        payment_id: data.payment_id || null,
+      };
+    });
 
-    // Step 2: ดึง `cart_id` จากแต่ละ order และตรวจสอบ `cart` ที่ status = false
-    for (const orderDoc of ordersSnapshot.docs) {
-      const orderData = orderDoc.data();
-      const cartId = orderData.cart_id;
-
-      if (cartId) {
-        const cartRef = collection(db, "cart");
-        const cartQuery = query(cartRef, where("cart_id", "==", cartId), where("status", "==", false));
-        const cartSnapshot = await getDocs(cartQuery);
-
-        if (!cartSnapshot.empty) {
-          // Step 3: ดึงข้อมูล `cartItems` ที่เชื่อมโยงกับ `cart_id`
-          const cartItemsRef = collection(db, "cartItems");
-          const cartItemsQuery = query(cartItemsRef, where("cart_id", "==", cartId));
-          const cartItemsSnapshot = await getDocs(cartItemsQuery);
-
-          const cartItems = cartItemsSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-
-          // รวมข้อมูล order และ cartItems
-          ordersWithCartItems.push({
-            orderId: orderDoc.id,
-            ...orderData,
-            cartItems,
-          });
-        }
-      }
-    }
-
-    return ordersWithCartItems;
+    return orders;
   } catch (error) {
-    console.error("Error fetching orders with cart items:", error);
-    throw error;
+    console.error("Error fetching orders:", error);
+    return [];
+  }
+};
+
+
+
+// ฟังก์ชันเพื่อดึงข้อมูล orders โดยใช้ userId
+export const getOrdersByUserId = async (userId: string): Promise<Order[]> => {
+  try {
+    console.log("UserId:", userId)
+    // ดึง carts ที่เชื่อมโยงกับ userId
+    const carts = await getCartsByUserId(userId);
+    console.log("carts:", carts)
+
+    if (carts.length === 0) {
+      console.log("No carts found for this user.");
+      return [];
+    }
+    
+    const ordersRef = collection(db, "orders");
+    const cartIds = carts.map((cart) => cart.id);
+
+    console.log("cartsId:", cartIds)
+
+    const orders = await getOrdersByCartId(cartIds);
+    // Query เพื่อดึง orders ที่ตรงกับ cart_id
+    // ใช้ `in` เพื่อดึงข้อมูลหลาย `cart_id`
+
+    
+
+    return orders;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return [];
   }
 };
