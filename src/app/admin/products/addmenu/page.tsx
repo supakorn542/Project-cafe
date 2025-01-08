@@ -81,6 +81,7 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
       status_id: selectedStatus,
       calorie,
       
+      
     };
 
     try {
