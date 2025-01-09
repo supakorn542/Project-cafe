@@ -27,10 +27,13 @@ const timestampToString = (timestamp: Timestamp) => {
 
 interface CartStateItem extends CartInterface {
   quantity: number;
+  product_id: Product[]; 
+  optionItems_id: OptionItem, 
+  totalPrice: number
 }
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState<CartInterface[]>([]);
+  const [cartItems, setCartItems] = useState<CartStateItem[]>([]);
   const [loading, setLoading] = useState(true);
   const userId = "Z7p6208uvXSyDZnIMr3g";
 
