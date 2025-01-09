@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createStocks, getIngredientById, updateIngredientByID } from "../../../services/stock";
+import { getIngredientById, updateIngredientByID, updatePackagingByID } from "../../../services/stock";
 
-interface updateIngredientProps {
-    updateIngredientPopup: () => void;
+interface updatePackagingProps {
+    updatePackagingPopup: () => void;
     stockId: string; // รับ stockId เป็น prop
 }
 
-const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPopup, stockId }) => {
+const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup, stockId }) => {
     const [idStock, setIdStock] = useState("");
     const [name, setName] = useState("");
     const [netQuantity, setNetQuantity] = useState(0);
@@ -98,14 +98,55 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
         }
     };
 
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+      
+    //     // ข้อมูลที่อัปเดตจากแบบฟอร์ม
+    //     const updatedStockData = {
+    //       name,
+    //       netQuantity,
+    //       unit,
+    //       price,
+    //       classifier,
+    //       totalPrice,
+    //       quantity,
+    //       addedDate,
+    //       description,
+    //     //   stockType: "ingredient",
+    //     };
+      
+    //     // รายละเอียดที่อัปเดต
+    //     const newDetails = details.map((detail) => ({
+    //         id:detail.id,
+    //       idStock: detail.idStock,
+    //       manufactureDate: detail.manufactureDate,
+    //       expiryDate: detail.expiryDate,
+    //     }));
+
+      
+    //     // เรียกใช้ฟังก์ชัน updateIngredientByID
+    //     try {
+    //       const response = await updateIngredientByID(stockId, updatedStockData, newDetails);
+    //       if (response.success) {
+    //         alert("Stock updated successfully!");
+    //         updatePackagingPopup(); // ปิด Popup
+    //       } else {
+    //         alert("Failed to update Stock");
+    //       }
+    //     } catch (error) {
+    //       console.error("Error updating stock:", error);
+    //       alert("Failed to update Stock");
+    //     }
+    //   };
+      
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
       
         // ข้อมูลที่อัปเดตจากแบบฟอร์ม
         const updatedStockData = {
           name,
-          netQuantity,
-          unit,
+        //   netQuantity,
+        //   unit,
           price,
           classifier,
           totalPrice,
@@ -118,18 +159,18 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
         // รายละเอียดที่อัปเดต
         const newDetails = details.map((detail) => ({
             id:detail.id,
-          idStock: detail.idStock,
-          manufactureDate: detail.manufactureDate,
-          expiryDate: detail.expiryDate,
+            idStock: detail.idStock,
+        //   manufactureDate: detail.manufactureDate,
+        //   expiryDate: detail.expiryDate,
         }));
 
       
         // เรียกใช้ฟังก์ชัน updateIngredientByID
         try {
-          const response = await updateIngredientByID(stockId, updatedStockData, newDetails);
+          const response = await updatePackagingByID(stockId, updatedStockData, newDetails);
           if (response.success) {
             alert("Stock updated successfully!");
-            updateIngredientPopup(); // ปิด Popup
+            updatePackagingPopup(); // ปิด Popup
           } else {
             alert("Failed to update Stock");
           }
@@ -152,7 +193,7 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
 
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             {currentPopup === 1 && (
-                <div className="bg-white rounded-[2rem] shadow-lg p-14 pt-4 w-[90%] max-w-[520px]  h-[90%] max-h-[630px] ">
+                <div className="bg-white rounded-[2rem] shadow-lg p-16 pt-8 w-[90%] max-w-[520px]  h-[90%] max-h-[591px] ">
                     <h2 className="text-md text-center font-bold ">{ingredientData?.data.name}</h2>
                     <div className="">
                         <div className="text-black mb-1">ชื่อ</div>
@@ -163,7 +204,7 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                             className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
                         />
                     </div>
-                    <div className="pt-2">
+                    {/* <div className="pt-2">
                         <div className="text-black ">ปริมาณสุทธิ</div>
                         <div className="flex justify-between items-center">
                             <input
@@ -186,7 +227,7 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                                 <option value="Kg">Kg</option>
                             </select>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="">
                         <div className="text-black ">ราคา</div>
                         <div className="flex justify-between items-center">
@@ -251,9 +292,9 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                         />
                     </div>
 
-                    <div className="flex justify-between pt-3">
+                    <div className="flex justify-between pt-6">
                         <button
-                            onClick={updateIngredientPopup}
+                            onClick={updatePackagingPopup}
                             className="w-[73px] h-[26px] border-2 border-black text-black  rounded-md hover:bg-red-600 hover:text-white hover:border-red-600"
                         >
                             ยกเลิก
@@ -269,25 +310,31 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
 
             {/* ----nextpopup--- */}
             {currentPopup === 2 && (
-                <div className="bg-white rounded-3xl shadow-lg p-11 pt-8 w-[100%] max-w-[772px] max-h-[90%] ">
-                    <h2 className="text-xl text-center font-bold ">{ingredientData?.name}</h2>
-                    <div className=" overflow-auto max-h-[400px]">
+                <div className="bg-white rounded-[2rem] shadow-lg py-8 px-14 w-[100%] max-w-[525px] max-h-[390px] ">
+                    <h2 className="text-xl text-center font-bold pb-2">{ingredientData?.data.name}</h2>
+                    <div className=" overflow-auto max-h-[220px]">
                         {ingredientData?.details?.length > 0 && Array.from({ length: ingredientData?.details?.length}).map((_, index) => (
                             <div className="flex flex-row justify-between pt-4">
-                                <div className="text-black flex items-center text-xl pt-[23px] ">
-                                    {String(index + 1).padStart(2, "0")}
+                                <div className="flex flex-row">
+                                    <div className=" text-black flex items-center text-xl ">
+                                        แพ็คที่ :
+                                    </div>
+                                    <div className="w-[44px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3">
+                                        {String(index + 1).padStart(2, "0")}
+                                    </div>
                                 </div>
-                                <div className="">
-                                    <div className="text-black">หมายเลขไอดี</div>
+                                <div className="flex flex-row">
+                                    <div className="text-black flex items-center text-xl">
+                                        หมายเลขไอดี
+                                    </div>
                                     <input
                                         type="text"
-                                        
                                         value={details[index]?.idStock || ""}
                                         onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
-                                        className="w-[146px] h-[35px] border-2 border-black rounded-md pl-3"
+                                        className="w-[113px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3"
                                     />
                                 </div>
-                                <div className="">
+                                {/* <div className="">
                                     <div className="text-black">วันที่ผลิต</div>
                                     <input
                                         type="date"
@@ -304,11 +351,11 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                                         onChange={(e) => handleDetailChange(index, "expiryDate", e.target.value)}
                                         className="w-[210px] h-[35px] border-2 border-black rounded-md pl-3"
                                     />
-                                </div>
+                                </div> */}
                             </div>
                         ))}
                     </div>
-                    <div className="flex justify-between pt-9">
+                    <div className="flex justify-between pt-6">
                         <button
                             onClick={() => setCurrentPopup(1)} // กลับไป popup แรก
                             className="w-[73px] h-[26px] border-2 border-black text-black  rounded-md hover:bg-red-600 hover:text-white hover:border-red-600"
@@ -328,4 +375,4 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
     );
 };
 
-export default UpdateIngredient;
+export default UpdatePackaging;

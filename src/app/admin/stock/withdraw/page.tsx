@@ -10,7 +10,7 @@ interface WithdrawProps {
 
 
 const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
-    const [ingredientData, setIngredientData] = useState<any>(null); // เก็บข้อมูลส่วนผสม
+    const [stockData, setStockData] = useState<any>(null); // เก็บข้อมูลส่วนผสม
     const [selectedDetails, setSelectedDetails] = useState<any[]>([]);
     const [userName, setUserName] = useState("");
     const [withdrawDate, setwithdrawDate] = useState("");
@@ -31,10 +31,10 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
     const handleCheckboxChange = (detail: any, checked: boolean) => {
         setSelectedDetails((prev) => {
             if (checked) {
-                // console.log([...prev, detail])
+                console.log([...prev, detail])
                 return [...prev, detail]; // เพิ่ม detail หากถูกเลือก
             } else {
-                // console.log(prev.filter((d) => d.id !== detail.id))
+                console.log(prev.filter((d) => d.id !== detail.id))
                 return prev.filter((d) => d.id !== detail.id); // ลบ detail หากยกเลิกเลือก
             }
         });
@@ -45,7 +45,7 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
             const data = await getIngredientById(stockId); // เรียกฟังก์ชัน getIngredientById
             if (data) {
                 console.log(data);
-                setIngredientData(data); // ตั้งค่าข้อมูลที่ดึงมา
+                setStockData(data); // ตั้งค่าข้อมูลที่ดึงมา
             }
         } catch (error) {
             console.error("Error fetching ingredient:", error);
@@ -58,17 +58,18 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
             return;
         }
 
-        const data ={
+        const data = {
             userName,
             withdrawDate,
             description,
-            quantity:selectedDetails.length,
+            quantity: selectedDetails.length,
         };
 
         const detailData = selectedDetails.map((detail) => ({
             idStock: detail.idStock,
-            manufactureDate: detail.manufactureDate,
-            expiryDate: detail.expiryDate,   
+            manufactureDate: detail.manufactureDate || "",
+            expiryDate: detail.expiryDate || "",
+            addedDate: detail.addedDate || ""
         }));
 
         try {
@@ -93,7 +94,7 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50">
             <div className="bg-white rounded-[2rem] shadow-lg p-14 pt-6 w-[594px] h-[618px] ">
-                <h2 className="text-md text-center font-bold ">{ingredientData?.data.name}</h2>
+                <h2 className="text-md text-center font-bold ">{stockData?.data.name}</h2>
                 <div className="flex flex-row justify-between pt-5">
                     <div className="">
                         <div className="text-black pb-1">ชื่อพนักงาน</div>
@@ -125,39 +126,77 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
                 <div className="pt-4">
                     <div className="text-black pb-1">กรุณาเลือกหมายเลขวัตถุดิบที่เบิก</div>
 
-                    <div className="w-full h-[216px] border-2 border-black rounded-md px-6 py-2 overflow-y-auto max-h-[500px]">
-                        {ingredientData?.details?.length ? (
-                            ingredientData.details.map((detail: any) => (
-                                <div className="flex flex-row justify-between text-lg">
-                                    <div className="flex gap-4 ">
-                                        <input
-                                            type="checkbox"
-                                            onChange={(e) =>
-                                                handleCheckboxChange(detail, e.target.checked)
-                                            } className="w-[20px] h-[40px] border-2 border-black rounded-md "
-                                        />
-                                        <div className="flex items-center">
-                                            <span>
-                                                {detail.idStock}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span>
-                                            MFD : {formatDate(String(detail.manufactureDate))}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <span>
-                                            EXP : {formatDate(String(detail.expiryDate))}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="text-center">ไม่มีข้อมูลวัตถุดิบ</div>
-                        )}
-                    </div>
+                    {
+                        stockData?.data.stockType === "packaging" ? (
+                            <>
+                                <div className="w-full h-[216px] border-2 border-black rounded-md px-6 py-2 overflow-y-auto max-h-[500px]">
+                                    {stockData?.details?.length ? (
+                                        stockData.details.map((detail: any) => (
+                                            <div className="flex flex-row   text-lg">
+                                                <div className="flex gap-4 w-24">
+                                                    <input
+                                                        type="checkbox"
+                                                        onChange={(e) =>
+                                                            handleCheckboxChange(detail, e.target.checked)
+                                                        } className="w-[20px] h-[40px] border-2 border-black rounded-md "
+                                                    />
+                                                    <div className="flex items-center">
+                                                        <span>
+                                                            {detail.idStock}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex  pl-5 items-center">
+                                                    <span>
+                                                        วันที่เพิ่มสินค้า : {formatDate(String(detail.addedDate))}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center">ไม่มีข้อมูลวัตถุดิบ</div>
+                                    )}
+                                </div></>) : (<><div className="w-full h-[216px] border-2 border-black rounded-md px-6 py-2 overflow-y-auto max-h-[500px]">
+                                    {stockData?.details?.length ? (
+                                        stockData.details.map((detail: any) => (
+                                            <div className="flex flex-row  justify-between text-lg">
+                                                <div className="flex gap-4 w-16">
+                                                    <input
+                                                        type="checkbox"
+                                                        onChange={(e) =>
+                                                            handleCheckboxChange(detail, e.target.checked)
+                                                        } className="w-[20px] h-[40px] border-2 border-black rounded-md "
+                                                    />
+                                                    <div className="flex items-center">
+                                                        <span>
+                                                            {detail.idStock}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+
+
+
+                                                <div className="flex items-center">
+                                                    <span>
+                                                        MFD : {formatDate(String(detail.manufactureDate))}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <span>
+                                                        EXP : {formatDate(String(detail.expiryDate))}
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center">ไม่มีข้อมูลวัตถุดิบ</div>
+                                    )}
+                                </div></>)
+                    }
+
 
                 </div>
                 <div className="pt-4">

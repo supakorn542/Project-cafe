@@ -10,6 +10,7 @@ import AddIngredient from "../addingredient/page";
 import AddPackaging from "../addpackaging/page";
 import { deletedStock, getStockIngredients, getStockPackags } from "@/app/services/stock";
 import UpdateIngredient from "../updateingredient/page";
+import UpdatePackaging from "../updatepackaging/page";
 
 
 const ShowStock = () => {
@@ -21,6 +22,7 @@ const ShowStock = () => {
     const [addIngredientPopupOpen, setAddIngredientPopupOpen] = useState(false);
     const [addPackagingPopupOpen, setAddPackagingPopupOpen] = useState(false);
     const [updateIngredientPopupOpen, setUpdateIngredientPopupOpen] = useState(false);
+    const [updatePackagingPopupOpen, setUpdatePackagingPopupOpen] = useState(false);
     const [selectedStockId, setSelectedStockId] = useState(null);
     const [selectedIngredientId, setSelectedIngredientId] = useState(null);
 
@@ -43,7 +45,13 @@ const ShowStock = () => {
         setUpdateIngredientPopupOpen(!updateIngredientPopupOpen);
     };
 
-    const addPackagingPopup = () => {
+    const updatePackagingPopup = (stockId: any) => {
+        setSelectedStockId(stockId);
+        setUpdatePackagingPopupOpen(!updatePackagingPopupOpen);
+    };
+
+    const addPackagingPopup = (stockId: any) => {
+        setSelectedStockId(stockId);
         setAddPackagingPopupOpen(!addPackagingPopupOpen);
     };
 
@@ -193,7 +201,7 @@ const ShowStock = () => {
                         </div>
                         {withdrawalPopupOpen && <Withdrawal withdrawalPopup={() => withdrawalPopup(selectedIngredientId)} stockId={selectedIngredientId!} />}
                         {addIngredientPopupOpen && <AddIngredient addIngredientPopup={() => addIngredientPopup(selectedStockId)} stockId={selectedStockId!} />}
-                        {updateIngredientPopupOpen && <UpdateIngredient updateIngredientPopup ={() => updateIngredientPopup(selectedStockId) } stockId={selectedStockId!} />}
+                        {updateIngredientPopupOpen && <UpdateIngredient updateIngredientPopup={() => updateIngredientPopup(selectedStockId)} stockId={selectedStockId!} />}
 
                     </div>
 
@@ -225,21 +233,22 @@ const ShowStock = () => {
                                     </div>
                                     <div className="w-[28%] h-full pt-9 flex flex-row justify-between " >
                                         <button
-                                            onClick={withdrawalPopup}
+                                            onClick={() => withdrawalPopup(packaging.id)}
                                             className="w-[120px] h-8   rounded-3xl font-semibold text-white bg-black"
                                         >
                                             - เบิกของ
                                         </button>
                                         {/* {withdrawalPopupOpen && <Withdrawal withdrawalPopup={withdrawalPopup} />} */}
                                         <button
-                                            onClick={addPackagingPopup}
+                                            onClick={() => addPackagingPopup(packaging.id)}
                                             className="w-[120px] h-8 border-2 border-black rounded-3xl font-semibold  ">
                                             + เพิ่มของ
                                         </button>
-                                        {addPackagingPopupOpen && <AddPackaging addPackagingPopup={addPackagingPopup} />}
 
                                         <div>
-                                            <button className="">
+                                            <button
+                                                onClick={() => updatePackagingPopup(packaging.id)}
+                                                className="">
                                                 <svg
                                                     className="h-7 w-7  "
                                                     width="24"
@@ -281,6 +290,12 @@ const ShowStock = () => {
                                     </div>
                                 </div>)}
                         </div>
+                        {withdrawalPopupOpen && <Withdrawal withdrawalPopup={() => withdrawalPopup(selectedIngredientId)} stockId={selectedIngredientId!} />}
+                        {/* {addIngredientPopupOpen && <AddIngredient addIngredientPopup={() => addIngredientPopup(selectedStockId)} stockId={selectedStockId!} />} */}
+                        {/* {withdrawalPopupOpen && <Withdrawal withdrawalPopup={withdrawalPopup} />} */}
+                        {addPackagingPopupOpen && <AddPackaging addPackagingPopup={() => addPackagingPopup(selectedStockId)} stockId={selectedStockId!} />}
+                        {updatePackagingPopupOpen && <UpdatePackaging updatePackagingPopup={() => updatePackagingPopup(selectedStockId)} stockId={selectedStockId!} />}
+
                     </div>
                 );
             case "withdrawal":
