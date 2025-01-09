@@ -8,6 +8,7 @@ import { getOptions } from "@/app/services/options";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
+import axios from "axios";
 
 import SelectOptionsPopup from "@/app/components/option and optionitem popup/SelectOptionsPopup";
 import { FaPlus } from "react-icons/fa";
@@ -28,6 +29,8 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
   const [selectedOptions, setSelectedOptions] = useState<
     { option: OptionInterface; items: OptionItem[] }[]
   >([]);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
   const [showCreateOptionPopup, setShowCreateOptionPopup] = useState(false);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(
@@ -60,6 +63,7 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("image :",uploadedImage)
     e.preventDefault();
 
     // ดึงเฉพาะ option.id จาก selectedOptions
@@ -76,10 +80,11 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
       user_id: "",
       status_id: selectedStatus,
       calorie,
+      imageProduct: ""
     };
 
     try {
-      await createProductWithOptions(productData);
+      await createProductWithOptions(productData,uploadedImage);
       alert("Product created successfully!");
     } catch (error) {
       console.error("Error creating product:", error);
@@ -112,6 +117,7 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
     }
   };
 
+  
   const handleCreateOptionClick = () => {
     setIsPopupOpen(true);
     setShowOptionsPopup(false);
@@ -279,7 +285,15 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
               ))}
             </select>
           </div>
-
+          <label className="  cursor-pointer bg-white text-black rounded-3xl px-4 py-1 text-xl hover:bg-[#c7c4c4] transition duration-300 font-serif4">
+                  Upload Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => setUploadedImage(e.target.files?.[0] ?? null)} 
+                  />
+                </label>
           {/* ปุ่ม */}
           <div className="flex justify-end gap-4">
             <button

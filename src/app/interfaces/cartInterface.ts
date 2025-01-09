@@ -4,13 +4,7 @@ import { OptionItem } from './optionItemInterface';
 import { ReactNode } from 'react';
 
 export interface CartInterface {
-  quantity: ReactNode;
-    id: string;
-  product_id: Product[]; // สินค้าในตะกร้า
-  optionItems_id: OptionItem, 
+  id: string;
   status?: boolean;
-  totalPrice: number
-  
-
-  user_id: string;   // ID ของผู้ใช้ที่เป็นเจ้าของตะกร้า
+  user_id: string;   
 }

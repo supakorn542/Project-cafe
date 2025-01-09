@@ -3,6 +3,7 @@ import { db } from '../lib/firebase';
 import { Product } from '../interfaces/product';
 import { productTypeInterface } from '../interfaces/productType';
 
+
 export const getProducts = async (): Promise<Product[]> => {
   const productsCol = collection(db, 'products');
   const productSnapshot = await getDocs(productsCol);
@@ -44,7 +45,8 @@ export const getProducts = async (): Promise<Product[]> => {
       price: data.price || 0,
       name: data.name || '',
       description: data.description || '',
-      calorie: data.calorie || ''
+      calorie: data.calorie || '',
+      imageProduct: data.imageProduct
     } as Product;
   }));
 

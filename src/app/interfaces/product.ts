@@ -1,5 +1,6 @@
 export interface Product {
-    id: string;          // ID ของผลิตภัณฑ์
+    imageProduct: string
+    id?: string;          // ID ของผลิตภัณฑ์
     // user_id: string;    // ID ของผู้ดูแลระบบ
     productType_id: string; // ID ของหมวดหมู่
     status_id:string;

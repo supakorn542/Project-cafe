@@ -1,10 +1,10 @@
 import { Payment } from "../interfaces/payment"
 import { CartInterface } from "./cartInterface";
 export interface Order {
-    orderId: string;
+    id: string;
     orderDate: Date;
-    cart_id : CartInterface;
-    total_price: number;
+    cart_id : string;
+    total_price?: number;
     statusOrder: string;
     payment_id: Payment;
 }

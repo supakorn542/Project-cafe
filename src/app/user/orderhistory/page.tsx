@@ -2,79 +2,55 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { addReviewById } from '../../services/review';
-import { getPaidOrdersWithCartItems } from "../../services/orderhistory"; // import ฟังก์ชัน
+import { useAuth } from "../../context/authContext";
+import { Order } from "../../interfaces/order";
 import '../../globals.css';
-
+import { CartInterface } from "@/app/interfaces/cartInterface";
+import { getCartsByUserId,getOrdersByUserId } from "../../services/orderhistory";
 const TrackOrder = () => {
+    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState("trackOrder");
     const [isReviewPopupOpen, setIsReviewPopupOpen] = useState(false);
     const [reviewText, setReviewText] = useState(''); // สำหรับข้อความรีวิว
     const [selectedRating, setSelectedRating] = useState(0); // สำหรับการให้คะแนน
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [carts, setCarts] = useState<CartInterface[]>([])
+
+    useEffect(() => {
+        console.log("User data:", user?.id); // ตรวจสอบข้อมูลของ user
+        const fetchOrders = async () => {
+            if (!user?.id) {
+                console.warn("User is not logged in or userId is missing.");
+                return;
+            }
+            else{
+                try {
+                    const fetchedOrders = await getOrdersByUserId(user.id); 
+                    setOrders(fetchedOrders);
+                    // const fetchedCarts = await getCartsByUserId(user.id);
+                    // setCarts(fetchedCarts);
+                    // console.log("Fetched user orders:", fetchedOrders);
+                } catch (error) {
+                    console.error("Error fetching orders:", error);
+                }
+            }
+        };
     
-    const orders = [
-        {
-          date: "01/04/2025",
-          status: "Order Confirmed",
-          statuscom: "Completed",
-          items: [
-            {
-              image: "/assets/esyen.jpg",
-              name: "Es Yen (เฮสเย็น)",
-              details: "คั่วอ่อน (Ethiopia), ไซรัป 10 ml หวานนิดเดียว",
-              quantity: 1,
-              price: 80,
-            },
-            {
-              image: "/assets/mocha.jpg",
-              name: "Mocha (มอคค่า)",
-              details: "นมโอ๊ต Oat milk (+0 promotion), ไซรัป 10 ml หวานนิดเดียว",
-              quantity: 1,
-              price: 80,
-            },
-          ],
-          totalquantity: 2,
-          total: 160,
-        },
-        {
-          date: "02/04/2025",
-          status: "Processing",
-          statuscom: "Completed",
-          items: [
-            {
-              image: "/assets/escoco.jpg",
-              name: "ES Coconut",
-              details: "ขอแบบหวานน้อย 1 แก้ว อีกแก้วหวามปกติค่ะ",
-              quantity: 2,
-              price: 100,
-            },
-          ],
-          totalquantity: 1,
-          total: 200,
-        },
-        {
-          date: "03/04/2025",
-          status: "Ready for Pickup",
-          statuscom: "Completed",
-          items: [
-            {
-              image: "/assets/beekind.jpg",
-              name: "ชื่นใจ กาแฟรวงผึ้ง",
-              details: "",
-              quantity: 1,
-              price: 60,
-            },
-            {
-              image: "/assets/matcha.jpg",
-              name: "Matcha cold whisk",
-              details: "นมโอ๊ต Oat milk (+0 promotion)",
-              quantity: 1,
-              price: 90,
-            },
-          ],
-          totalquantity: 2,
-          total: 150,
-        },
-      ];
+        fetchOrders();
+    }, [user]);
+
+    // console.log("Carts :",carts)
+    console.log("Orders :",orders)
+    
+
+    const convertTimestampToDate = (timestamp: any) => {
+        return timestamp.toDate().toLocaleDateString("th-TH", {
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+        });
+      };
+     
     const openReviewPopup = () => {
         setIsReviewPopupOpen(true);
     };
@@ -98,7 +74,6 @@ const TrackOrder = () => {
             console.error('Error adding review:', error); // แสดงข้อผิดพลาดในกรณีที่เกิดข้อผิดพลาด
         }
     };
-
     
     return (
         <div
@@ -144,47 +119,51 @@ const TrackOrder = () => {
                                         key={index}
                                         className="w-full p-6 rounded-3xl border-2 border-white text-white">
                                         <div className="flex justify-between items-center mb-4">
-                                            <h2 className="text-white text-xl font-bold">
-                                                Order Date: {order.date}
-                                            </h2>
+                                            {/* <h2 className="text-white text-xl font-bold">
+                                                Order Date: {
+                                                    order?.orderDate
+                                                    ? convertTimestampToDate(order.orderDate)
+                                                    : "N/A"
+                                                }
+                                            </h2> */}
                                             <h3 className="text-white text-lg font-bold">
-                                                {order.status}
+                                                {order.statusOrder}
                                             </h3>
                                         </div>
-                                        {order.items.map((item, idx) => (
+                                        {/* {order.cart_id.product_id.map((item, idx) => (
                                             <div key={idx} className="flex items-start mb-3 w-full">
-                                            <img
-                                                src={item.image}
+                                                <img
+                                                src={item.image || "/default-image.jpg"}
                                                 alt={item.name}
                                                 className="w-20 h-20 rounded-xl mr-4"
-                                            />
-                                            <div className="flex flex-col justify-start">
+                                                />
+                                                <div className="flex flex-col justify-start">
                                                 <h4 className="font-bold mb-2">{item.name}</h4>
                                                 <div className="w-full flex items-start">
                                                     <div className="w-[800px]">
-                                                        {item.details && <p>{item.details}</p>}
+                                                    {item.details && <p>{item.details}</p>}
                                                     </div>
                                                     <div className="w-48 flex justify-end space-x-32">
-                                                        <p>X {item.quantity}</p>
-                                                        <p>฿{item.price}</p>
+                                                    <p>X {item.quantity || 1}</p>
+                                                    <p>฿{item.price || 0}</p>
                                                     </div>
                                                 </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        ))}
+                                        ))} */}
                                         <div className="flex justify-end space-x-2">
                                             <span className="font-bold text-lg">
-                                                <span className="mr-1">{order.totalquantity}</span>
+                                                <span className="mr-1">{order.total_price}</span>
                                                 items:
                                             </span>
-                                            <span className="font-bold text-lg">฿{order.total}</span>
+                                            <span className="font-bold text-lg">฿{order.total_price}</span>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     )}
-                    {activeTab === "myPurchases" && (
+                    {/* {activeTab === "myPurchases" && (
                         <div className="flex justify-center mb-2 pl-10 pr-10">
                             <div className="w-full max-h-[550px]  overflow-y-auto flex flex-col space-y-4 scrollbar-hidden">
                             {orders.map((order, index) => (
@@ -193,10 +172,10 @@ const TrackOrder = () => {
                                         className="w-full p-6 rounded-3xl border-2 border-white text-white">
                                         <div className="flex justify-between items-center mb-4">
                                             <h2 className="text-white text-xl font-bold">
-                                                Order Date: {order.date}
+                                                Order Date: {order.orderDate}
                                             </h2>
                                             <h3 className="text-white text-lg font-bold">
-                                                {order.statuscom}
+                                                {order.statusOrder}
                                             </h3>
                                         </div>
                                         {order.items.map((item, idx) => (
@@ -223,10 +202,10 @@ const TrackOrder = () => {
                                         <div className="flex flex-col justify-end space-y-2">
                                             <div className="flex justify-end space-x-2">
                                                 <span className="font-bold text-lg">
-                                                    <span className="mr-1">{order.totalquantity}</span>
+                                                    <span className="mr-1">{order.total_price}</span>
                                                     items:
                                                 </span>
-                                                <span className="font-bold text-lg">฿{order.total}</span>
+                                                <span className="font-bold text-lg">฿{order.total_price}</span>
                                             </div>
                                             <div className="flex justify-end mt-2">
                                                 <button className="w-24 border-2 border-white text-white p-1 rounded-xl text-xl"
@@ -239,7 +218,7 @@ const TrackOrder = () => {
                                 ))}
                             </div>
                         </div>
-                    )}
+                    )} */}
                 </div>
                 {isReviewPopupOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

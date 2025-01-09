@@ -16,6 +16,8 @@ import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { getProductOptionsByProductId } from "@/app/services/productOption";
 import { getOptions } from "@/app/services/options";
 import Link from "next/link";
+import Image from "next/image";
+
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -41,7 +43,7 @@ const MenuPage = () => {
         .find((selected) => selected.productId === product.id)
         ?.options.some(({ option, items }) => {
           return (
-            option.name.toLowerCase().includes(search) ||
+            option.name!.toLowerCase().includes(search) ||
             items.some((item) => item.name.toLowerCase().includes(search))
           );
         })
@@ -79,7 +81,6 @@ const MenuPage = () => {
     fetchData();
   }, []);
 
-  
   const handleDelete = async (id: string) => {
     await deleteProduct(id);
     setProducts((prevProducts) =>
@@ -103,12 +104,13 @@ const MenuPage = () => {
   //   productType.map((productType) => [productType.id, productType.name])
   // );
 
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
 
-const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-
-const handleEditClick = (productId: string) => {
-  setSelectedProductId(productId);
-};
+  const handleEditClick = (productId: string) => {
+    setSelectedProductId(productId);
+  };
 
   return (
     <div className="bg-[#FBF6F0] h-screen pt-20">
@@ -121,15 +123,15 @@ const handleEditClick = (productId: string) => {
 
           {/* Search Bar */}
           <div className="relative">
-          <input
-            type="text"
-            placeholder="Search"
-            className="border border-gray-300 rounded-full py-2 pl-10 pr-4 w-64"
-            value={searchTerm} // Bind search term to input value
-            onChange={handleSearchChange} // Call handleSearchChange on input change
-          />
-          <FaSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
-        </div>
+            <input
+              type="text"
+              placeholder="Search"
+              className="border border-gray-300 rounded-full py-2 pl-10 pr-4 w-64"
+              value={searchTerm} // Bind search term to input value
+              onChange={handleSearchChange} // Call handleSearchChange on input change
+            />
+            <FaSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+          </div>
 
           {/* Buttons */}
           <div className="flex items-center space-x-4">
@@ -164,10 +166,13 @@ const handleEditClick = (productId: string) => {
               </div>
               <div className="flex">
                 <div className="flex-1 flex space-x-3">
-                  <img
-                    className="w-[100px] h-[100px] rounded-3xl flex self-center"
-                    src=""
-                  ></img>
+                  <Image
+                    alt="Profile"
+                    className=" rounded-3xl flex self-center"
+                    src={product.imageProduct || ""}
+                    width={200} // Add the width property
+                    height={150} // Add the height property (optional)
+                  />
                   <div>
                     {allGroupedOptions
                       .find((selected) => selected.productId === product.id)
