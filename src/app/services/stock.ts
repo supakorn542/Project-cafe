@@ -26,7 +26,7 @@ export const createStocks = async (stockData: Stock, details: Array<{ idStock: s
         idStock: detail.idStock,
         manufactureDate: detail.manufactureDate,
         expiryDate: detail.expiryDate,
-        // name: stockData.name,
+        name: stockData.name,
         // netQuantity: stockData.netQuantity,
         // unit: stockData.unit,
         // price: stockData.price,
@@ -34,7 +34,7 @@ export const createStocks = async (stockData: Stock, details: Array<{ idStock: s
         // totalPrice: stockData.totalPrice,
         // quantity: stockData.quantity,
         // description: stockData.description,
-        // stockType: stockData.stockType,
+        stockType: stockData.stockType,
         addedDate: stockData.addedDate instanceof Date ? stockData.addedDate : new Date(stockData.addedDate),
       })
     );
@@ -76,13 +76,13 @@ export const createPackages = async (stockData: Stock, details: Array<{ idStock:
       addDoc(collection(db, "stocks", stockDocRef.id, "details"), {
         idStock: detail.idStock,
         name: stockData.name,
-        netQuantity: stockData.netQuantity,
-        unit: stockData.unit,
-        price: stockData.price,
+        // netQuantity: stockData.netQuantity,
+        // unit: stockData.unit,
+        // price: stockData.price,
         classifier: stockData.classifier,
-        totalPrice: stockData.totalPrice,
-        quantity: stockData.quantity,
-        description: stockData.description,
+        // totalPrice: stockData.totalPrice,
+        // quantity: stockData.quantity,
+        // description: stockData.description,
         stockType: stockData.stockType,
         addedDate: stockData.addedDate instanceof Date ? stockData.addedDate : new Date(stockData.addedDate),
       })
@@ -167,7 +167,6 @@ export const createWithdrawal = async (
 };
 
 
-
 // ฟังก์ชันสำหรับอัปเดตข้อมูล Stock และเพิ่มรายละเอียดใหม่
 export const updateIngredientByIDAndAddDetail = async (
   stockId: string,
@@ -233,6 +232,72 @@ export const updateIngredientByIDAndAddDetail = async (
   }
 };
 
+
+// ฟังก์ชันสำหรับอัปเดตข้อมูล Stock และเพิ่มรายละเอียดใหม่
+export const updatePackagByIDAndAddDetail = async (
+  stockId: string,
+  updatedStockData: {
+    quantity: number;
+    addedDate: string;
+    description: string;
+  },
+  newDetails: Array<{
+    idStock: string;
+    // manufactureDate: Date;
+    // expiryDate: Date;
+  }>) => {
+  try {
+    console.log(stockId)
+    // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
+    const stockRef = doc(db, "stocks", stockId);
+    const stockSnapshot = await getDoc(stockRef);
+
+    // if (!stockSnapshot.exists()) {
+    //   return { success: false, message: "Stock not found" };
+    // }
+
+    // อัปเดตข้อมูล Stock
+    // if (Object.keys(updatedStockData).length > 0) {
+    //   await updateDoc(stockRef, updatedStockData);
+    // }
+
+    if (stockSnapshot.exists()) {
+      const stockData = stockSnapshot.data(); // ข้อมูลปัจจุบันของ stock
+      const currentQuantity = stockData.quantity || 0; // ตรวจสอบว่า quantity มีค่าหรือไม่
+
+      if (Object.keys(updatedStockData).length > 0 || currentQuantity <= updatedStockData.quantity) {
+        // เพิ่มจำนวน quantity
+        await updateDoc(stockRef, {
+          quantity: currentQuantity + updatedStockData.quantity,
+          addedDate:updatedStockData.addedDate,
+          description: updatedStockData.description,
+        });
+      } else {
+        throw new Error("Not enough stock quantity available.");
+      }
+    } else {
+      throw new Error("Stock document does not exist.");
+    }
+
+    // เพิ่มรายละเอียดใหม่ในคอลเลกชัน `details`
+    const detailsPromises = newDetails.map((detail) =>
+      addDoc(collection(db, "stocks", stockId, "details"), {
+        idStock: detail.idStock,
+        // manufactureDate: detail.manufactureDate,
+        // expiryDate: detail.expiryDate,
+        addedDate: new Date(), // หรือข้อมูลเพิ่มเติมอื่น ๆ
+      })
+    );
+
+    await Promise.all(detailsPromises);
+
+    return { success: true, message: "Stock updated and details added successfully" };
+  } catch (error) {
+    console.error("Error updating stock and adding details:", error);
+    return { success: false, message: "Failed to update stock or add details", error };
+  }
+};
+
 // ฟังก์ชันเพื่ออัปเดตข้อมูลสต็อก
 export const updateIngredientByID = async (
   stockId: string,
@@ -272,6 +337,57 @@ export const updateIngredientByID = async (
           idStock: detail.idStock,
           manufactureDate: detail.manufactureDate,
           expiryDate: detail.expiryDate,
+        });
+      }
+    }
+
+    return { success: true, message: "Stock updated and details added successfully" };
+  } catch (error) {
+    console.error("Error updating stock and adding details:", error);
+    return { success: false, message: "Failed to update stock or add details", error };
+  }
+};
+
+// ฟังก์ชันเพื่ออัปเดตข้อมูลสต็อก
+export const updatePackagingByID = async (
+  stockId: string,
+  updatedStockData: any,  // ข้อมูลที่ได้รับจากแบบฟอร์ม
+  newDetails: Array<{
+    id: string
+    idStock: string;
+    // manufactureDate: Date;
+    // expiryDate: Date;
+  }>
+) => {
+  try {
+    // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
+    const stockRef = doc(db, "stocks", stockId);
+    const stockSnapshot = await getDoc(stockRef);
+
+    if (!stockSnapshot.exists()) {
+      return { success: false, message: "Stock not found" };
+    }
+
+    // อัปเดตข้อมูล Stock
+    if (Object.keys(updatedStockData).length > 0) {
+      await updateDoc(stockRef, updatedStockData);
+    }
+
+    // // อัปเดตรายละเอียดใหม่ใน stock
+    // if (newDetails.length > 0) {
+    //   const detailsRef = doc(db, "stocks", stockId, "details", "details.id"); // ชื่อ collection สำหรับรายละเอียด
+    //   await updateDoc(detailsRef, { details: newDetails });
+    // }
+
+    // อัปเดตหรือเพิ่มข้อมูลใน subcollection "details"
+    if (newDetails.length > 0) {
+      for (const detail of newDetails) {
+        const detailRef = doc(db, "stocks", stockId, "details", detail.id); // ใช้ id ของรายละเอียดที่ต้องการอัปเดต
+        await updateDoc(detailRef, {
+          idStock: detail.idStock,
+          // addedDate: new Date(),
+          // manufactureDate: detail.manufactureDate,
+          // expiryDate: detail.expiryDate,
         });
       }
     }
