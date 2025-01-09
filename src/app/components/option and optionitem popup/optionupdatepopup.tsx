@@ -46,7 +46,7 @@ const OptionupdatePopup: React.FC<OptionPopupProps> = ({
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="text-gray-800">{option.name}</span>
-              <button onClick={() => handleUpdateOption(option)}>อัปเดท</button>
+              <button type="button" onClick={() => handleUpdateOption(option)}>อัปเดท</button>
             </label>
           ))}
         </div>
@@ -55,8 +55,8 @@ const OptionupdatePopup: React.FC<OptionPopupProps> = ({
         <OptionItemPopup
         option={{
           id: selectedOptionForUpdate.id!, // แปลงเป็น string แน่นอน
-          name: selectedOptionForUpdate.name,
-          require: selectedOptionForUpdate.require,
+          name: selectedOptionForUpdate.name!,
+          require: selectedOptionForUpdate.require!,
         }}
           onClose={handleCloseOptionItemPopup}
         />

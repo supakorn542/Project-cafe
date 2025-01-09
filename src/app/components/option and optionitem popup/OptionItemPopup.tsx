@@ -143,6 +143,7 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
                 <span>{item.name}</span>
                 <span>{item.pricemodifier} $</span>
                 <button
+                  type="button"
                   onClick={() => handleDeleteOptionItem(item.id)}
                   className="text-red-500 hover:text-red-700"
                 >
@@ -168,6 +169,7 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
               onChange={(e) => setNewItemPrice(Number(e.target.value))}
             />
           <button
+          type="button"
             onClick={() => handleAddOptionItem(newItemName, newItemPrice)}
             className="bg-black  text-white font-bold py-2 px-4 rounded"
           >
@@ -176,12 +178,14 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
         </div>
         <div className="flex justify-end">
           <button
+          type="button"
             onClick={onClose}
             className="mr-2 bg-white border border-black hover:bg-red-200 text-black font-bold py-2 px-4 rounded"
           >
             ยกเลิก
           </button>
           <button
+          type="button"
             onClick={handleSaveChanges}
             className="bg-black hover:bg-white border border-black text-white hover:text-black font-bold py-2 px-4 rounded"
           >

@@ -73,7 +73,7 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
               />
             <label>{option.name}</label>
               </div>
-            <button onClick={() => handleUpdateOption(option)}>อัปเดท</button>
+            <button type="button" onClick={() => handleUpdateOption(option)}>อัปเดท</button>
           </div>
           <svg
             className="w-full my-4"
@@ -100,6 +100,7 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
         }}
       >
         <button
+        type="button"
           onClick={onClose}
            className="text-black border border-black rounded-md px-4 py-2 hover:bg-black hover:text-white"
         >
@@ -109,14 +110,15 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
           <OptionItemPopup
             option={{
               id: selectedOptionForUpdate.id!, // แปลงเป็น string แน่นอน
-              name: selectedOptionForUpdate.name,
-              require: selectedOptionForUpdate.require,
+              name: selectedOptionForUpdate.name!,
+              require: selectedOptionForUpdate.require!,
             }}
             onClose={handleCloseOptionItemPopup}
           />
         )}
 
         <button
+        type="button"
           onClick={handleOpenCreateOptionPopup}
           className="bg-black text-white border border-black rounded-md px-4 py-2 hover:bg-white hover:text-black"          
         >
