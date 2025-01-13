@@ -30,7 +30,12 @@ function EditCartPopup({
   onSubmit: (formData: any) => void;
   cartItemId: string;
 }) {
-  const [cartItem, setCartItems] = useState<CartItemsInterface | null>(null);
+
+
+  interface cartstateinterface extends CartItemsInterface{
+    option : any
+  }
+  const [cartItem, setCartItems] = useState<cartstateinterface | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
   const [allGroupedOptions, setallGroupedOptions] = useState<
     {
@@ -91,7 +96,7 @@ function EditCartPopup({
                 console.log("productData.id:", productData.id);
 
                 // Now create the CartItemsInterface object
-                const cartItem: CartItemsInterface = {
+                const cartItem: cartstateinterface = {
                   id: cartItemSnapshot.id,
                   cart_id: cartData,
                   product_id: productData,
@@ -210,7 +215,7 @@ function EditCartPopup({
         const updatedCartItemData = updatedCartItemSnapshot.data();
 
         // 3. สร้าง updatedCartItem object
-        const updatedCartItem: CartItemsInterface = {
+        const updatedCartItem: cartstateinterface = {
           id: cartItem.id,
           cart_id: cartItem.cart_id,
           product_id: cartItem.product_id,
