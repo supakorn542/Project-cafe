@@ -29,7 +29,7 @@ const timestampToString = (timestamp: Timestamp) => {
 interface CartStateItem extends CartInterface {
   quantity: number;
   product_id: Product[]; 
-  optionItems_id: OptionItem, 
+  optionItems_id: OptionItem[], 
   totalPrice: number
 }
 
@@ -191,13 +191,19 @@ const Cart = () => {
             } else {
               console.warn("Invalid product_id format:", item.product_id);
             }
-            // ดึงข้อมูล optionItems ที่เชื่อมโยงกับแต่ละ cartItem
-            const optionItemsForItem = item.optionitem_ids.map(
+
+            let optionItemsForItem: any[] = []; 
+
+            if (Array.isArray(item.optionitem_ids)) {
+
+              // ดึงข้อมูล optionItems ที่เชื่อมโยงกับแต่ละ cartItem
+              optionItemsForItem = item.optionitem_ids.map(
               (optionRef: { id: any }) => {
                 const optionId = optionRef.id;
                 return optionItems[optionId] || {}; // เชื่อมโยงข้อมูล optionItem
               }
             );
+          }
   
             return {
               id: item.id,
@@ -205,16 +211,14 @@ const Cart = () => {
               optionItems_id: optionItemsForItem || null,
               status: true,
               totalPrice: productDetails.reduce(
-                (sum: number, product: { price: number }) =>
-                  sum + product.price * (item.quantity || 1),
+                (sum: number, product: { price: number; }) => sum + product.price * (item.quantity || 1),
                 0
               ),
               quantity: item.quantity,
-  
-              user_id:
-                cartSnapshot.docs.find((doc) => doc.id === item.cart_id)?.data()
-                  .user_id || "Unknown",
-            } as CartStateItem;
+
+              user_id: cartSnapshot.docs.find((doc) => doc.id === item.cart_id)?.data()
+                .user_id || "Unknown",
+            } as unknown as CartStateItem;
           });
   
           // 6. อัปเดต State

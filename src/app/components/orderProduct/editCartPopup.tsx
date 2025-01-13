@@ -188,6 +188,7 @@ function EditCartPopup({
   };
   console.log("product :", product);
   console.log("option :", allGroupedOptions);
+
   const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
