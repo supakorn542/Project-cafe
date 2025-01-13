@@ -48,11 +48,12 @@ function EditCartPopup({
     []
   );
   const [pickupdateTime, setPickupdateTime] = useState<string>("");
+  console.log("id :" ,cartItemId )
   useEffect(() => {
     const fetchCartItem = async () => {
       if (cartItemId) {
         try {
-          const cartItemRef = doc(db, "cartItem", cartItemId);
+          const cartItemRef = doc(db, "cartItems", cartItemId);
           const cartItemSnapshot = await getDoc(cartItemRef);
 
           const { options, optionItemsMap } = await getOptions();
@@ -63,7 +64,7 @@ function EditCartPopup({
             // Check if the necessary properties exist in cartItemData
             if (
               cartItemData.cart_id &&
-              cartItemData.optionItem_id && // Use the correct property name
+              cartItemData.optionitem_id && // Use the correct property name
               cartItemData.product_id
             ) {
               // Fetch cart data
@@ -71,9 +72,9 @@ function EditCartPopup({
                 cartItemData.cart_id as DocumentReference<CartInterface>;
               const cartSnapshot = await getDoc(cartRef);
 
-              // Fetch option data (assuming optionItem_id is an array of references)
+              // Fetch option data (assuming optionitem_id is an array of references)
               const optionItemRefs =
-                cartItemData.optionItem_id as DocumentReference<OptionInterface>[];
+                cartItemData.optionitem_id as DocumentReference<OptionInterface>[];
               const optionSnapshots = await Promise.all(
                 optionItemRefs.map((ref) => getDoc(ref))
               );
@@ -104,7 +105,7 @@ function EditCartPopup({
                   option: optionData[0], // Assuming you want the first option
                   quantity: cartItemData.quantity,
                   pickupdate: cartItemData.pickupdate,
-                  optionitem_ids: cartItemData.optionItem_id.map(
+                  optionitem_ids: cartItemData.optionitem_id.map(
                     (ref: { id: any }) => ref.id
                   ),
                 };
@@ -200,8 +201,8 @@ function EditCartPopup({
             ? descriptionElement.value
             : "";
         // 1. อัปเดต cartItem ใน Firestore
-        await updateDoc(doc(db, "cartItem", cartItem.id), {
-          optionItem_id: checkedOptionItemIds.map((id) =>
+        await updateDoc(doc(db, "cartItems", cartItem.id), {
+          optionitem_id: checkedOptionItemIds.map((id) =>
             doc(db, "optionItems", id)
           ),
           quantity: quantity,
@@ -211,7 +212,7 @@ function EditCartPopup({
 
         // 2. อ่านข้อมูล cartItem ที่อัปเดตแล้ว
         const updatedCartItemSnapshot = await getDoc(
-          doc(db, "cartItem", cartItem.id)
+          doc(db, "cartItems", cartItem.id)
         );
         const updatedCartItemData = updatedCartItemSnapshot.data();
 
@@ -225,7 +226,7 @@ function EditCartPopup({
           quantity: cartItem.quantity,
           pickupdate: updatedCartItemData?.pickupdate || Timestamp.now(),
           optionitem_ids:
-            updatedCartItemData?.optionItem_id.map(
+            updatedCartItemData?.optionitem_id.map(
               (ref: { id: any }) => ref.id
             ) || [],
         };

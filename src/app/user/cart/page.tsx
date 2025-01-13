@@ -223,7 +223,7 @@ const Cart = () => {
   
           // 6. อัปเดต State
           setCartItems(updatedCartItems);
-          console.log("dddd",updatedCartItems);
+
         } catch (error) {
           console.error("Error fetching cart items:", error);
         } finally {
@@ -238,7 +238,7 @@ const Cart = () => {
     };
     fetchCartItems();
     
-  }, [user]);
+  }, [user,isPopupOpen]);
 
   const totalPrice = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
 
