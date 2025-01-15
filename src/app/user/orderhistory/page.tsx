@@ -6,7 +6,8 @@ import { useAuth } from "../../context/authContext";
 import { Order } from "../../interfaces/order";
 import '../../globals.css';
 import { CartInterface } from "@/app/interfaces/cartInterface";
-import { getCartsByUserId,getOrdersByUserId } from "../../services/orderhistory";
+import { getCartItemByCartId, getCartsByUserId,getOrdersByUserId } from "../../services/orderhistory";
+import { Product } from "@/app/interfaces/product";
 const TrackOrder = () => {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState("trackOrder");
@@ -27,9 +28,10 @@ const TrackOrder = () => {
                 try {
                     const fetchedOrders = await getOrdersByUserId(user.id); 
                     setOrders(fetchedOrders);
-                    // const fetchedCarts = await getCartsByUserId(user.id);
+                    console.log(fetchedOrders)
+                    const fetchedCarts = await getCartItemByCartId(user.id);
                     // setCarts(fetchedCarts);
-                    // console.log("Fetched user orders:", fetchedOrders);
+                    // console.log("Fetched user orders:", fetchedCarts);
                 } catch (error) {
                     console.error("Error fetching orders:", error);
                 }
@@ -41,6 +43,7 @@ const TrackOrder = () => {
 
     // console.log("Carts :",carts)
     console.log("Orders :",orders)
+    
     
 
     const convertTimestampToDate = (timestamp: any) => {
@@ -130,22 +133,22 @@ const TrackOrder = () => {
                                                 {order.statusOrder}
                                             </h3>
                                         </div>
-                                        {/* {order.cart_id.product_id.map((item, idx) => (
+                                        {/* {order.cart_id?.product_id?.map((product: Product, idx: number) => (
                                             <div key={idx} className="flex items-start mb-3 w-full">
                                                 <img
-                                                src={item.image || "/default-image.jpg"}
-                                                alt={item.name}
+                                                src={product.image || "/default-image.jpg"}
+                                                alt={product.name}
                                                 className="w-20 h-20 rounded-xl mr-4"
                                                 />
                                                 <div className="flex flex-col justify-start">
-                                                <h4 className="font-bold mb-2">{item.name}</h4>
+                                                <h4 className="font-bold mb-2">{product.name}</h4>
                                                 <div className="w-full flex items-start">
                                                     <div className="w-[800px]">
-                                                    {item.details && <p>{item.details}</p>}
+                                                    <p>{product.description}</p>
                                                     </div>
                                                     <div className="w-48 flex justify-end space-x-32">
-                                                    <p>X {item.quantity || 1}</p>
-                                                    <p>฿{item.price || 0}</p>
+                                                    <p>X {product.calorie || 1}</p>
+                                                    <p>฿{product.price || 0}</p>
                                                     </div>
                                                 </div>
                                                 </div>

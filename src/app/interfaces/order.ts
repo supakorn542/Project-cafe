@@ -6,6 +6,6 @@ export interface Order {
     cart_id : string;
     total_price?: number;
     statusOrder: string;
-    payment_id: Payment;
+    payment_id: string;
 }
   

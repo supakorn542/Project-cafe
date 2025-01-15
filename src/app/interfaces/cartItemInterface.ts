@@ -5,9 +5,9 @@ import { Product } from "./product";
 
 
 export interface CartItemsInterface {
-    id : any;
-    cart_id : CartInterface;
-    product_id : Product;
+    id : string;
+    cart_id : string;
+    product_id : string;
     quantity: number;
     optionitem_ids: string[];
     pickupdate : Date
