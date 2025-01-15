@@ -6,11 +6,19 @@ import { OptionInterface } from "@/app/interfaces/optioninterface";
 import {
   fetchOptionsByProductId,
   fetchOptionItemsByOptionIds,
-  fetchProductById
+  fetchProductById,
 } from "@/app/services/userProduct";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { Product } from "@/app/interfaces/product";
-
+import { CartItemsInterface } from "@/app/interfaces/cartItemInterface";
+import { CartInterface } from "@/app/interfaces/cartInterface";
+import {
+  fetchCartByUserId,
+  createCart,
+  addCartItem,
+} from "@/app/services/userCart";
+import { useAuth } from "@/app/context/authContext";
+import { Timestamp } from "firebase/firestore";
 
 interface OptionPopupProps {
   onClose: () => void;
@@ -18,18 +26,70 @@ interface OptionPopupProps {
 }
 
 export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
+  const { user } = useAuth();
   const [options, setOptions] = useState<OptionInterface[]>([]);
   const [groupedOptionItems, setGroupedOptionItems] = useState<
     Record<string, OptionItem[]>
   >({});
   const [product, setProduct] = useState<Product | null>(null);
 
+  const [quantity, setQuantity] = useState<number>(1);
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<string, string>
+  >({});
+  const [description, setDescription] = useState<string>("");
+  const [pickupDate, setPickupDate] = useState<string>("");
+
+  const handleIncrease = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  const handleDecrease = () => {
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  };
+
+  const handleOptionChange = (optionId: string, itemId: string) => {
+    setSelectedOptions((prev) => ({ ...prev, [optionId]: itemId }));
+  };
+
+  const handleAddToCart = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!user || !product) {
+      alert("Please log in or select a product.");
+      return;
+    }
+
+    const pickupDateAsDate = new Date(pickupDate);
+
+    const cart = await fetchCartByUserId(user.id);
+
+    let cartId: string;
+
+    if (cart) {
+      cartId = cart.id;
+    } else {
+      cartId = await createCart(user.id);
+    }
+
+    const cartItem = {
+      cart_id: { id: cartId } as CartInterface,
+      product_id: { id: product.id } as Product,
+      quantity,
+      optionitem_ids: Object.values(selectedOptions),
+      pickupdate: pickupDateAsDate,
+      description,
+    };
+
+    await addCartItem(cartItem);
+    alert("Added to cart successfully!");
+    onClose();
+  };
+
   useEffect(() => {
     const fetchData = async () => {
-
       const fetchedProduct = await fetchProductById(productId);
       setProduct(fetchedProduct);
-
 
       const fetchedOptions = await fetchOptionsByProductId(productId);
       setOptions(fetchedOptions);
@@ -46,7 +106,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
 
   console.log("Options : ", options);
   console.log("Grouped Option Items:", groupedOptionItems);
-  console.log("Product: ",product)
+  console.log("Product: ", product);
 
   return (
     <>
@@ -67,65 +127,79 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
             <div>
               <h1>{product?.name}</h1>
             </div>
-            <div>
-              {options.map((option) => (
-                <div key={option.id}>
-                  <h3>{option.name}</h3>
-                  <ul>
-                    {groupedOptionItems[option.id]?.map((item) => (
-                      <li key={item.id}>
-                        <input type="radio" 
-                        id={item.id}
-                        name={`option-${option.id}`} // กำหนด name ตาม option.id
-                        value={item.id} 
-                        />
-                        <label htmlFor={item.id}>
-                          {item.name} (+${item.pricemodifier})
-                        </label>
-                      </li>
-                    )) || <li>No items available</li>}
-                  </ul>
+            <form onSubmit={handleAddToCart}>
+              <div>
+                {options.map((option) => (
+                  <div key={option.id}>
+                    <h3>{option.name}</h3>
+                    <ul>
+                      {groupedOptionItems[option.id]?.map((item) => (
+                        <li key={item.id}>
+                          <input
+                            type="radio"
+                            id={item.id}
+                            name={`option-${option.id}`}
+                            value={item.id}
+                            onChange={() =>
+                              handleOptionChange(option.id, item.id)
+                            }
+                          />
+                          <label htmlFor={item.id}>
+                            {item.name} (+${item.pricemodifier})
+                          </label>
+                        </li>
+                      )) || <li>No items available</li>}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col">
+                <label htmlFor="">รายละเอียดเพิ่มเติม</label>
+                <input
+                  type="text"
+                  className="border border-2 border-black rounded-lg p-1"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="">วันและเวลาที่ต้องการรับสินค้า</label>
+                <input
+                  type="datetime-local"
+                  className="border border-2 border-black rounded-lg p-1"
+                  value={pickupDate}
+                  onChange={(e) => setPickupDate(e.target.value)}
+                />
+              </div>
+              <div className="flex justify-between">
+                <div className="flex  px-3 border border-1 border-black rounded-2xl gap-x-2 items-center">
+                  <FaMinus
+                    className="cursor-pointer"
+                    onClick={handleDecrease}
+                  />
+                  <h3>{quantity}</h3>
+                  <FaPlus className="cursor-pointer" onClick={handleIncrease} />
                 </div>
-              ))}
-            </div>
+                <input type="hidden" name="quantity" value={quantity} />
+                <div>
+                  <h3>${product?.price}</h3>
+                </div>
+              </div>
 
-            <div className="flex flex-col">
-              <label htmlFor="">รายละเอียดเพิ่มเติม</label>
-              <input
-                type="text"
-                className="border border-2 border-black rounded-lg p-1"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="">วันและเวลาที่ต้องการรับสินค้า</label>
-              <input
-                type="text"
-                className="border border-2 border-black rounded-lg p-1"
-              />
-            </div>
-            <div className="flex justify-between">
-              <div className="flex  px-3 border border-1 border-black rounded-2xl gap-x-2 items-center">
-                <FaMinus className="cursor-pointer" />
-                <h3>1</h3>
-                <FaPlus className="cursor-pointer" />
+              <div className="flex justify-between">
+                <div>
+                  <button className="border border-1 border-black px-2 rounded-2xl">
+                    ADD TO CART
+                  </button>
+                </div>
+                <div>
+                  <button className="bg-black px-2 border border-1 border-black rounded-2xl text-white">
+                    BUY NOW
+                  </button>
+                </div>
               </div>
-              <div>
-                <h3>${product?.price}</h3>
-              </div>
-            </div>
-
-            <div className="flex justify-between">
-              <div>
-                <button className="border border-1 border-black px-2 rounded-2xl">
-                  ADD TO CART
-                </button>
-              </div>
-              <div>
-                <button className="bg-black px-2 border border-1 border-black rounded-2xl text-white">
-                  BUY NOW
-                </button>
-              </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>

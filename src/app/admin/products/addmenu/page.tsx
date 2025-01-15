@@ -15,7 +15,7 @@ import { FaPlus } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
 import CreateProductTypePopup from "@/app/components/option and optionitem popup/CreateproductTypepopup";
 
-const AddProductForm = ({onClose}:{onClose: () => void}) => {
+const AddProductForm = ({ onClose }: { onClose: () => void }) => {
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState(0);
   const [calorie, setCalorie] = useState(0);
@@ -31,6 +31,7 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
   >([]);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
 
+  const [showPopup, setShowPopup] = useState<boolean>(false);
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
   const [showCreateOptionPopup, setShowCreateOptionPopup] = useState(false);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(
@@ -60,10 +61,10 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
     fetchStatus();
     fetchData();
     fetchCategories();
-  }, []);
+  }, [showOptionsPopup, showPopup]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("image :",uploadedImage)
+    console.log("image :", uploadedImage);
     e.preventDefault();
 
     // ดึงเฉพาะ option.id จาก selectedOptions
@@ -80,11 +81,11 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
       user_id: "",
       status_id: selectedStatus,
       calorie,
-      imageProduct: ""
+      imageProduct: "",
     };
 
     try {
-      await createProductWithOptions(productData,uploadedImage);
+      await createProductWithOptions(productData, uploadedImage);
       alert("Product created successfully!");
     } catch (error) {
       console.error("Error creating product:", error);
@@ -95,7 +96,6 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectProductType(e.target.value);
   };
-  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   const handleOptionCheckboxChange = (option: OptionInterface) => {
     if (!option.id) {
@@ -117,7 +117,6 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
     }
   };
 
-  
   const handleCreateOptionClick = () => {
     setIsPopupOpen(true);
     setShowOptionsPopup(false);
@@ -265,11 +264,13 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
               ))}
             </select>
             <div>
-      <button onClick={() => setShowPopup(true)}>Create Product Type</button>
-      {showPopup && (
-        <CreateProductTypePopup onClose={() => setShowPopup(false)} />
-      )}
-    </div>
+              <button onClick={() => setShowPopup(true)}>
+                Create Product Type
+              </button>
+              {showPopup && (
+                <CreateProductTypePopup onClose={() => setShowPopup(false)} />
+              )}
+            </div>
 
             <label htmlFor="status">Select Status:</label>
             <select
@@ -286,14 +287,14 @@ const AddProductForm = ({onClose}:{onClose: () => void}) => {
             </select>
           </div>
           <label className="  cursor-pointer bg-white text-black rounded-3xl px-4 py-1 text-xl hover:bg-[#c7c4c4] transition duration-300 font-serif4">
-                  Upload Image
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => setUploadedImage(e.target.files?.[0] ?? null)} 
-                  />
-                </label>
+            Upload Image
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => setUploadedImage(e.target.files?.[0] ?? null)}
+            />
+          </label>
           {/* ปุ่ม */}
           <div className="flex justify-end gap-4">
             <button
