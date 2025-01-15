@@ -20,6 +20,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 import EditCartPopup from "@/app/components/orderProduct/editCartPopup";
 import Image from "next/image";
+import { useAuth } from "@/app/context/authContext";
 const timestampToString = (timestamp: Timestamp) => {
   const date = timestamp.toDate(); // แปลง Timestamp เป็น Date
   return date.toLocaleString(); // แปลง Date เป็นข้อความที่อ่านง่าย
@@ -27,12 +28,15 @@ const timestampToString = (timestamp: Timestamp) => {
 
 interface CartStateItem extends CartInterface {
   quantity: number;
+  product_id: Product[]; 
+  optionItems_id: OptionItem[], 
+  totalPrice: number
 }
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState<CartInterface[]>([]);
+  const { user } = useAuth()
+  const [cartItems, setCartItems] = useState<CartStateItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const userId = "Z7p6208uvXSyDZnIMr3g";
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -54,172 +58,187 @@ const Cart = () => {
   };
   useEffect(() => {
     const fetchCartItems = async () => {
-      try {
-        setLoading(true);
-
-        // 1. ดึงข้อมูล cart ที่ user_id == userRef และ status == true
-        const userRef = doc(db, "users", userId);
-        const cartQuery = query(
-          collection(db, "carts"),
-          where("user_id", "==", userRef),
-          where("status", "==", true)
-        );
-
-        console.log("user", userRef);
-        const cartSnapshot = await getDocs(cartQuery);
-        const cartIds = cartSnapshot.docs.map((doc) => doc.id);
-        // ถ้าไม่มี cart ให้หยุดการทำงานและตั้งค่า state เป็นว่าง
-        console.log("cartIds :", cartIds);
-        if (cartIds.length === 0) {
-          setCartItems([]);
-          return;
-        }
-
-        const cartRefIds = cartIds.map((cartId) => doc(db, "carts", cartId));
-        // 2. ดึงข้อมูล cartItems ที่ cart_id ตรงกับ cartIds
-        const cartItemQuery = query(
-          collection(db, "cartItem"),
-          where("cart_id", "in", cartRefIds)
-        );
-        console.log("cartitem", cartItemQuery);
-
-        const cartItemSnapshot = await getDocs(cartItemQuery);
-        const cartItems = cartItemSnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            product_id: data.product_id,
-            quantity: data.quantity,
-            optionitem_ids: data.optionitem_id || [], // array ของ optionitem_id
-            cart_id: data.cart_id,
-          };
-        });
-        console.log("dd", cartItems);
-
-        // 3. ดึงข้อมูลสินค้าจาก collection "products"
-        const productSnapshots = await Promise.all(
-          cartItems.map((item) => getDoc(item.product_id))
-        );
-
-        const products = productSnapshots.reduce(
-          (acc: Record<string, any>, snapshot) => {
-            if (snapshot.exists()) {
-              acc[snapshot.id] = snapshot.data();
-            }
-            return acc;
-          },
-          {}
-        );
-
-        // 4. ดึงข้อมูล optionItems ที่เกี่ยวข้อง
-        const optionItemSnapshots = await Promise.all(
-          cartItems.flatMap((item) => {
-            // ตรวจสอบว่า item.optionitem_ids เป็น array ของ DocumentReference
-            if (Array.isArray(item.optionitem_ids)) {
-              return item.optionitem_ids.map((optionRef) => {
-                // ใช้ getDoc เพื่อดึงข้อมูลจาก DocumentReference
-                return getDoc(optionRef); // optionRef เป็น DocumentReference
+      if (user && user.id) {
+        // ดึงข้อมูลจาก Firestore
+        console.log("User are login",user)
+        try {
+          setLoading(true);
+  
+          // 1. ดึงข้อมูล cart ที่ user_id == userRef และ status == true
+          const userRef = doc(db, "users", user.id);
+          const cartQuery = query(
+            collection(db, "carts"),
+            where("user_id", "==", userRef),
+            where("status", "==", true)
+          );
+  
+          console.log("user", userRef);
+          const cartSnapshot = await getDocs(cartQuery);
+          const cartIds = cartSnapshot.docs.map((doc) => doc.id);
+          // ถ้าไม่มี cart ให้หยุดการทำงานและตั้งค่า state เป็นว่าง
+          console.log("cartIds :", cartIds);
+          if (cartIds.length === 0) {
+            setCartItems([]);
+            return;
+          }
+  
+          const cartRefIds = cartIds.map((cartId) => doc(db, "carts", cartId));
+          console.log("cartRefIds :", cartRefIds);
+          // 2. ดึงข้อมูล cartItems ที่ cart_id ตรงกับ cartIds
+          const cartItemQuery = query(
+            collection(db, "cartItems"),
+            where("cart_id", "in", cartRefIds)
+          );
+          console.log("cartitem", cartItemQuery);
+  
+          const cartItemSnapshot = await getDocs(cartItemQuery);
+          console.log("cartItemSnapshot", cartItemSnapshot);
+          const cartItems = cartItemSnapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              product_id: data.product_id,
+              quantity: data.quantity,
+              optionitem_ids: data.optionitem_id || [], // array ของ optionitem_id
+              cart_id: data.cart_id,
+            };
+          });
+          console.log("dd", cartItems);
+  
+          // 3. ดึงข้อมูลสินค้าจาก collection "products"
+          const productSnapshots = await Promise.all(
+            cartItems.map((item) => getDoc(item.product_id))
+          );
+  
+          const products = productSnapshots.reduce(
+            (acc: Record<string, any>, snapshot) => {
+              if (snapshot.exists()) {
+                acc[snapshot.id] = snapshot.data();
+              }
+              return acc;
+            },
+            {}
+          );
+  
+          // 4. ดึงข้อมูล optionItems ที่เกี่ยวข้อง
+          const optionItemSnapshots = await Promise.all(
+            cartItems.flatMap((item) => {
+              // ตรวจสอบว่า item.optionitem_ids เป็น array ของ DocumentReference
+              if (Array.isArray(item.optionitem_ids)) {
+                return item.optionitem_ids.map((optionRef) => {
+                  // ใช้ getDoc เพื่อดึงข้อมูลจาก DocumentReference
+                  return getDoc(optionRef); // optionRef เป็น DocumentReference
+                });
+              } else {
+                console.error(
+                  "optionitem_ids is not an array or is missing",
+                  item.optionitem_ids
+                );
+                return []; // คืนค่า empty array ถ้าไม่ใช่ array ของ DocumentReference
+              }
+            })
+          );
+  
+          // รอให้ Promise ทั้งหมดเสร็จสิ้น
+          const resolvedOptionItems = await Promise.all(optionItemSnapshots);
+  
+          const optionItems = resolvedOptionItems.reduce(
+            (acc: Record<string, any>, snapshot) => {
+              if (snapshot.exists()) {
+                acc[snapshot.id] = snapshot.data();
+              }
+              return acc;
+            },
+            {}
+          );
+  
+          console.log("optionItems: ", optionItems);
+  
+          // 5. อัปเดต cartItems พร้อมข้อมูลสินค้าและ optionItems
+          const updatedCartItems = cartItems.map((item) => {
+            let productDetails: { id: string; name: string; price: number; imageProduct: string }[] = []; 
+  
+            if (Array.isArray(item.product_id)) {
+              // กรณี product_id เป็น array
+              productDetails = item.product_id.map((productRef) => {
+                if (productRef instanceof DocumentReference) {
+                  const productId = productRef.id;
+                  const product = products[productId] || {};
+                  return {
+                    id: productId,
+                    name: product.name || "Unknown",
+                    price: product.price || 0,
+                    imageProduct: product.imageProduct || "",
+                  };
+                }
+                console.warn("Invalid product_id format in array:", productRef);
+                return { id: "", name: "Unknown", price: 0 , imageProduct: ""}; // default object
               });
-            } else {
-              console.error(
-                "optionitem_ids is not an array or is missing",
-                item.optionitem_ids
-              );
-              return []; // คืนค่า empty array ถ้าไม่ใช่ array ของ DocumentReference
-            }
-          })
-        );
-
-        // รอให้ Promise ทั้งหมดเสร็จสิ้น
-        const resolvedOptionItems = await Promise.all(optionItemSnapshots);
-
-        const optionItems = resolvedOptionItems.reduce(
-          (acc: Record<string, any>, snapshot) => {
-            if (snapshot.exists()) {
-              acc[snapshot.id] = snapshot.data();
-            }
-            return acc;
-          },
-          {}
-        );
-
-        console.log("optionItems: ", optionItems);
-
-        // 5. อัปเดต cartItems พร้อมข้อมูลสินค้าและ optionItems
-        const updatedCartItems = cartItems.map((item) => {
-          let productDetails: { id: string; name: string; price: number; imageProduct: string }[] = []; 
-
-          if (Array.isArray(item.product_id)) {
-            // กรณี product_id เป็น array
-            productDetails = item.product_id.map((productRef) => {
-              if (productRef instanceof DocumentReference) {
-                const productId = productRef.id;
-                const product = products[productId] || {};
-                return {
+            } else if (item.product_id instanceof DocumentReference) {
+              // กรณี product_id เป็น DocumentReference เดี่ยว
+              const productId = item.product_id.id;
+              const product = products[productId] || {};
+              productDetails = [
+                {
                   id: productId,
                   name: product.name || "Unknown",
                   price: product.price || 0,
                   imageProduct: product.imageProduct || "",
-                };
-              }
-              console.warn("Invalid product_id format in array:", productRef);
-              return { id: "", name: "Unknown", price: 0 , imageProduct: ""}; // default object
-            });
-          } else if (item.product_id instanceof DocumentReference) {
-            // กรณี product_id เป็น DocumentReference เดี่ยว
-            const productId = item.product_id.id;
-            const product = products[productId] || {};
-            productDetails = [
-              {
-                id: productId,
-                name: product.name || "Unknown",
-                price: product.price || 0,
-                imageProduct: product.imageProduct || "",
-                
-                
-              },
-            ];
-          } else {
-            console.warn("Invalid product_id format:", item.product_id);
-          }
-          // ดึงข้อมูล optionItems ที่เชื่อมโยงกับแต่ละ cartItem
-          const optionItemsForItem = item.optionitem_ids.map(
-            (optionRef: { id: any }) => {
-              const optionId = optionRef.id;
-              return optionItems[optionId] || {}; // เชื่อมโยงข้อมูล optionItem
+                  
+                  
+                },
+              ];
+            } else {
+              console.warn("Invalid product_id format:", item.product_id);
             }
-          );
 
-          return {
-            id: item.id,
-            product_id: productDetails,
-            optionItems_id: optionItemsForItem || null,
-            status: true,
-            totalPrice: productDetails.reduce(
-              (sum: number, product: { price: number }) =>
-                sum + product.price * (item.quantity || 1),
-              0
-            ),
-            quantity: item.quantity,
+            let optionItemsForItem: any[] = []; 
 
-            user_id:
-              cartSnapshot.docs.find((doc) => doc.id === item.cart_id)?.data()
+            if (Array.isArray(item.optionitem_ids)) {
+
+              // ดึงข้อมูล optionItems ที่เชื่อมโยงกับแต่ละ cartItem
+              optionItemsForItem = item.optionitem_ids.map(
+              (optionRef: { id: any }) => {
+                const optionId = optionRef.id;
+                return optionItems[optionId] || {}; // เชื่อมโยงข้อมูล optionItem
+              }
+            );
+          }
+  
+            return {
+              id: item.id,
+              product_id: productDetails,
+              optionItems_id: optionItemsForItem || null,
+              status: true,
+              totalPrice: productDetails.reduce(
+                (sum: number, product: { price: number; }) => sum + product.price * (item.quantity || 1),
+                0
+              ),
+              quantity: item.quantity,
+
+              user_id: cartSnapshot.docs.find((doc) => doc.id === item.cart_id)?.data()
                 .user_id || "Unknown",
-          } as CartStateItem;
-        });
+            } as unknown as CartStateItem;
+          });
+  
+          // 6. อัปเดต State
+          setCartItems(updatedCartItems);
 
-        // 6. อัปเดต State
-        setCartItems(updatedCartItems);
-        console.log("dddd",updatedCartItems);
-      } catch (error) {
-        console.error("Error fetching cart items:", error);
-      } finally {
-        setLoading(false);
+        } catch (error) {
+          console.error("Error fetching cart items:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // รอให้ข้อมูลผู้ใช้ถูกโหลด
+        console.log("User not logged in or user ID not found.");
+        return; // หรือสามารถใช้การแสดงข้อความหรือการเปลี่ยนเส้นทางไปยังหน้า login
       }
+ 
     };
     fetchCartItems();
     
-  }, []);
+  }, [user,isPopupOpen]);
 
   const totalPrice = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
 

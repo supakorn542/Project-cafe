@@ -69,6 +69,7 @@ function CreateProductTypePopup({ onClose }: { onClose: () => void }) {
         </div>
         <div className="flex justify-end gap-2">
           <button
+          type="button"
             onClick={onClose}
             className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded disabled:opacity-50"
             disabled={loading}
@@ -76,6 +77,7 @@ function CreateProductTypePopup({ onClose }: { onClose: () => void }) {
             Cancel
           </button>
           <button
+          type="button"
             onClick={handleCreateProductType}
             className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
             disabled={loading}

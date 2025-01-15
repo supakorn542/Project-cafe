@@ -129,8 +129,10 @@ const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               onChange={(e) => setNewItemPriceModifier(Number(e.target.value))}
             />
             <button
+              type="button"
               onClick={handleAddItem}
-              className="bg-black hover:bg-white text-white hover:text-black border border-black font-bold py-2 px-4 rounded">
+              className="bg-black hover:bg-white text-white hover:text-black border border-black font-bold py-2 px-4 rounded"
+            >
               เพิ่ม
             </button>
           </div>
@@ -139,12 +141,14 @@ const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         {/* ปุ่ม Action */}
         <div className="flex justify-end gap-2 mt-4">
           <button
+            type="button"
             onClick={onClose}
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
           >
             ยกเลิก
           </button>
           <button
+            type="button"
             onClick={handleCreateOption}
             className="bg-black hover:bg-white text-white hover:text-black border border-black font-bold py-2 px-4 rounded"
           >

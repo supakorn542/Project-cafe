@@ -78,7 +78,10 @@ export const fetchOptionsByProductId = async (productId: string): Promise<Option
     );
     const productOptionsSnapshot = await getDocs(productOptionsQuery);
 
+    console.log("productOptionsSnapshot: ",productOptionsSnapshot.docs)
+
     const optionRefs = productOptionsSnapshot.docs.flatMap(doc => doc.data().option_id || []);
+    console.log("optionRefs",optionRefs)
     if (optionRefs.length === 0) {
       console.warn("No options found for productId:", productId);
       return [];
@@ -95,6 +98,7 @@ export const fetchOptionsByProductId = async (productId: string): Promise<Option
         return { id: optionDoc.id, ...data } as OptionInterface;
       })
     );
+    console.log("Options After Promise: ",options)
 
     return options.filter((option): option is OptionInterface => option !== null);
   } catch (error) {

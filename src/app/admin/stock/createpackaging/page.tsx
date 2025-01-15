@@ -1,7 +1,7 @@
 "use client";
 
 import { createPackages, createStocks } from "@/app/services/stock";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface CreatePackagingProps {
     togglePopup: () => void;
@@ -82,7 +82,9 @@ const CreatePackaging: React.FC<CreatePackagingProps> = ({ togglePopup }) => {
             alert("Failed to create Stock");
         }
     };
-
+    useEffect(() => {
+        setTotalPrice(quantity * price); // คำนวณ totalPrice ทุกครั้งที่ quantity หรือ price เปลี่ยนแปลง
+    }, [quantity, price]);
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -122,21 +124,23 @@ const CreatePackaging: React.FC<CreatePackagingProps> = ({ togglePopup }) => {
                             </select>
                         </div>
                     </div>
-                    <div className="">
-                        <div className="text-black mb-1">ราคารวม</div>
-                        <input
-                            type="text"
-                            value={totalPrice}
-                            onChange={(e) => setTotalPrice(Number(e.target.value))}
-                            className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
-                        />
-                    </div>
+                   
                     <div className="pt-[7px]">
                         <div className="text-black mb-1">จำนวน</div>
                         <input
                             type="text"
                             value={quantity}
                             onChange={(e) => setQuantity(Number(e.target.value))}
+                            className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
+                        />
+                    </div>
+                    <div className="">
+                        <div className="text-black mb-1">ราคารวม</div>
+                        <input
+                            type="text"
+                            disabled
+                            value={totalPrice}
+                            onChange={(e) => setTotalPrice(Number(e.target.value))}
                             className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
                         />
                     </div>
