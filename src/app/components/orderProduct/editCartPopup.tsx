@@ -33,6 +33,7 @@ function EditCartPopup({
 
 
   interface cartstateinterface extends CartItemsInterface{
+    
     option : any
   }
   const [cartItem, setCartItems] = useState<cartstateinterface | null>(null);
@@ -99,8 +100,8 @@ function EditCartPopup({
                 // Now create the CartItemsInterface object
                 const cartItem: cartstateinterface = {
                   id: cartItemSnapshot.id,
-                  cart_id: cartData,
-                  product_id: productData,
+                  cart_id: cartData.id,
+                  product_id: productData.id,
                   description: cartItemData.description,
                   option: optionData[0], // Assuming you want the first option
                   quantity: cartItemData.quantity,
