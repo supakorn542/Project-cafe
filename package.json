@@ -9,11 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    
     "@cloudinary/react": "^1.13.1",
     "@cloudinary/url-gen": "^1.21.0",
+    "aos": "^2.3.4",
     "axios": "^1.7.7",
-
     "cloudinary": "^2.5.1",
     "firebase": "^10.14.1",
     "firebase-admin": "^12.7.0",
@@ -26,6 +25,7 @@
     "react-modal": "^3.16.1"
   },
   "devDependencies": {
+    "@types/aos": "^3.0.7",
     "@types/node": "^20",
     "@types/nookies": "^1.1.0",
     "@types/react": "^18",
