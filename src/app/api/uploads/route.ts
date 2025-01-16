@@ -30,3 +30,25 @@ export const POST = async (req : NextRequest) => {
     return new Response(JSON.stringify({ message: 'Upload failed', error }), { status: 500 });
   }
 };
+
+
+export const DELETE = async (req: NextRequest) => {
+  const body = await req.json();
+  const { publicId } = body;
+
+  if (!publicId) {
+    return new Response(JSON.stringify({ message: 'Public ID is required' }), { status: 400 });
+  }
+
+  try {
+    const deleteResult = await cloudinary.uploader.destroy(publicId);
+
+    if (deleteResult.result === 'ok') {
+      return new Response(JSON.stringify({ message: 'Image deleted' }), { status: 200 });
+    } else {
+      return new Response(JSON.stringify({ message: 'Image not found' }), { status: 404 });
+    }
+  } catch (error) {
+    return new Response(JSON.stringify({ message: 'Delete failed', error }), { status: 500 });
+  }
+};
