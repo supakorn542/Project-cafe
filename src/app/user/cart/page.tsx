@@ -21,6 +21,7 @@ import { CiEdit } from "react-icons/ci";
 import EditCartPopup from "@/app/components/orderProduct/editCartPopup";
 import Image from "next/image";
 import { useAuth } from "@/app/context/authContext";
+import Payment from "@/app/components/payment popup/payment";
 const timestampToString = (timestamp: Timestamp) => {
   const date = timestamp.toDate(); // แปลง Timestamp เป็น Date
   return date.toLocaleString(); // แปลง Date เป็นข้อความที่อ่านง่าย
@@ -28,17 +29,18 @@ const timestampToString = (timestamp: Timestamp) => {
 
 interface CartStateItem extends CartInterface {
   quantity: number;
-  product_id: Product[]; 
-  optionItems_id: OptionItem[], 
-  totalPrice: number
+  product_id: Product[];
+  optionItems_id: OptionItem[];
+  totalPrice: number;
 }
 
 const Cart = () => {
-  const { user } = useAuth()
+  const { user } = useAuth();
   const [cartItems, setCartItems] = useState<CartStateItem[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [cartId ,setCartId] = useState(String || "")
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isPopupPaymentOpen, setIsPopupPaymentOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
   const handleOpenPopup = (itemId: string) => {
@@ -48,6 +50,7 @@ const Cart = () => {
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
+    setIsPopupPaymentOpen(false);
     setEditingItemId(null);
   };
 
@@ -60,10 +63,10 @@ const Cart = () => {
     const fetchCartItems = async () => {
       if (user && user.id) {
         // ดึงข้อมูลจาก Firestore
-        console.log("User are login",user)
+        console.log("User are login", user);
         try {
           setLoading(true);
-  
+
           // 1. ดึงข้อมูล cart ที่ user_id == userRef และ status == true
           const userRef = doc(db, "users", user.id);
           const cartQuery = query(
@@ -71,17 +74,20 @@ const Cart = () => {
             where("user_id", "==", userRef),
             where("status", "==", true)
           );
-  
-          console.log("user", userRef);
+
+         
           const cartSnapshot = await getDocs(cartQuery);
+        
           const cartIds = cartSnapshot.docs.map((doc) => doc.id);
           // ถ้าไม่มี cart ให้หยุดการทำงานและตั้งค่า state เป็นว่าง
           console.log("cartIds :", cartIds);
+          setCartId(cartIds[0])
+
           if (cartIds.length === 0) {
             setCartItems([]);
             return;
           }
-  
+
           const cartRefIds = cartIds.map((cartId) => doc(db, "carts", cartId));
           console.log("cartRefIds :", cartRefIds);
           // 2. ดึงข้อมูล cartItems ที่ cart_id ตรงกับ cartIds
@@ -90,7 +96,7 @@ const Cart = () => {
             where("cart_id", "in", cartRefIds)
           );
           console.log("cartitem", cartItemQuery);
-  
+
           const cartItemSnapshot = await getDocs(cartItemQuery);
           console.log("cartItemSnapshot", cartItemSnapshot);
           const cartItems = cartItemSnapshot.docs.map((doc) => {
@@ -104,12 +110,12 @@ const Cart = () => {
             };
           });
           console.log("dd", cartItems);
-  
+
           // 3. ดึงข้อมูลสินค้าจาก collection "products"
           const productSnapshots = await Promise.all(
             cartItems.map((item) => getDoc(item.product_id))
           );
-  
+
           const products = productSnapshots.reduce(
             (acc: Record<string, any>, snapshot) => {
               if (snapshot.exists()) {
@@ -119,7 +125,7 @@ const Cart = () => {
             },
             {}
           );
-  
+
           // 4. ดึงข้อมูล optionItems ที่เกี่ยวข้อง
           const optionItemSnapshots = await Promise.all(
             cartItems.flatMap((item) => {
@@ -138,10 +144,10 @@ const Cart = () => {
               }
             })
           );
-  
+
           // รอให้ Promise ทั้งหมดเสร็จสิ้น
           const resolvedOptionItems = await Promise.all(optionItemSnapshots);
-  
+
           const optionItems = resolvedOptionItems.reduce(
             (acc: Record<string, any>, snapshot) => {
               if (snapshot.exists()) {
@@ -151,13 +157,18 @@ const Cart = () => {
             },
             {}
           );
-  
+
           console.log("optionItems: ", optionItems);
-  
+
           // 5. อัปเดต cartItems พร้อมข้อมูลสินค้าและ optionItems
           const updatedCartItems = cartItems.map((item) => {
-            let productDetails: { id: string; name: string; price: number; imageProduct: string }[] = []; 
-  
+            let productDetails: {
+              id: string;
+              name: string;
+              price: number;
+              imageProduct: string;
+            }[] = [];
+
             if (Array.isArray(item.product_id)) {
               // กรณี product_id เป็น array
               productDetails = item.product_id.map((productRef) => {
@@ -172,7 +183,7 @@ const Cart = () => {
                   };
                 }
                 console.warn("Invalid product_id format in array:", productRef);
-                return { id: "", name: "Unknown", price: 0 , imageProduct: ""}; // default object
+                return { id: "", name: "Unknown", price: 0, imageProduct: "" }; // default object
               });
             } else if (item.product_id instanceof DocumentReference) {
               // กรณี product_id เป็น DocumentReference เดี่ยว
@@ -184,46 +195,45 @@ const Cart = () => {
                   name: product.name || "Unknown",
                   price: product.price || 0,
                   imageProduct: product.imageProduct || "",
-                  
-                  
                 },
               ];
             } else {
               console.warn("Invalid product_id format:", item.product_id);
             }
 
-            let optionItemsForItem: any[] = []; 
+            let optionItemsForItem: any[] = [];
 
             if (Array.isArray(item.optionitem_ids)) {
-
               // ดึงข้อมูล optionItems ที่เชื่อมโยงกับแต่ละ cartItem
               optionItemsForItem = item.optionitem_ids.map(
-              (optionRef: { id: any }) => {
-                const optionId = optionRef.id;
-                return optionItems[optionId] || {}; // เชื่อมโยงข้อมูล optionItem
-              }
-            );
-          }
-  
+                (optionRef: { id: any }) => {
+                  const optionId = optionRef.id;
+                  return optionItems[optionId] || {}; // เชื่อมโยงข้อมูล optionItem
+                }
+              );
+            }
+
             return {
               id: item.id,
               product_id: productDetails,
               optionItems_id: optionItemsForItem || null,
               status: true,
               totalPrice: productDetails.reduce(
-                (sum: number, product: { price: number; }) => sum + product.price * (item.quantity || 1),
+                (sum: number, product: { price: number }) =>
+                  sum + product.price * (item.quantity || 1),
                 0
               ),
               quantity: item.quantity,
 
-              user_id: cartSnapshot.docs.find((doc) => doc.id === item.cart_id)?.data()
-                .user_id || "Unknown",
+              user_id:
+                cartSnapshot.docs.find((doc) => doc.id === item.cart_id)?.data()
+                  .user_id || "Unknown",
             } as unknown as CartStateItem;
           });
-  
+
           // 6. อัปเดต State
           setCartItems(updatedCartItems);
-
+          
         } catch (error) {
           console.error("Error fetching cart items:", error);
         } finally {
@@ -234,11 +244,9 @@ const Cart = () => {
         console.log("User not logged in or user ID not found.");
         return; // หรือสามารถใช้การแสดงข้อความหรือการเปลี่ยนเส้นทางไปยังหน้า login
       }
- 
     };
     fetchCartItems();
-    
-  }, [user,isPopupOpen]);
+  }, [user, isPopupOpen]);
 
   const totalPrice = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
 
@@ -265,7 +273,7 @@ const Cart = () => {
                   {item.product_id.map((product: Product) => (
                     <div key={product.id}>
                       {product.name}
-                      {product.imageProduct && ( 
+                      {product.imageProduct && (
                         <Image
                           src={product.imageProduct}
                           alt={product.name}
@@ -314,6 +322,7 @@ const Cart = () => {
             <h2 className="text-xl font-bold text-white mb-4">Total</h2>
             {cartItems.map((item) => (
               <div key={item.id} className=" text-sm  py-2 text-white">
+                
                 {item.product_id.map((product: Product) => (
                   <div key={product.id} className="flex justify-between ">
                     <span>{product.name}</span>
@@ -326,9 +335,12 @@ const Cart = () => {
               <span>Total</span>
               <span>${totalPrice}</span>
             </div>
-            <button className="mt-4 w-full bg-green-800 text-white py-2 rounded">
+            <button onClick={() => setIsPopupPaymentOpen(true)} className="mt-4 w-full bg-green-800 text-white py-2 rounded">
               Proceed to Checkout
             </button>
+            {isPopupPaymentOpen && (
+                  <Payment cartId={cartId} onClose={handleClosePopup} data-aos="fade-up" />
+                )}
           </div>
         </div>
 
