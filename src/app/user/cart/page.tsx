@@ -10,6 +10,7 @@ import {
   doc,
   getDoc,
   DocumentReference,
+  deleteDoc,
 } from "firebase/firestore";
 import { CartInterface } from "@/app/interfaces/cartInterface"; // นำเข้า CartInterface
 import { Timestamp } from "firebase/firestore";
@@ -206,24 +207,33 @@ const Cart = () => {
 
             if (Array.isArray(item.optionitem_ids)) {
               // ดึงข้อมูล optionItems ที่เชื่อมโยงกับแต่ละ cartItem
-              optionItemsForItem = item.optionitem_ids.map(
-                (optionRef: { id: any }) => {
-                  const optionId = optionRef.id;
-                  return optionItems[optionId] || {}; // เชื่อมโยงข้อมูล optionItem
-                }
-              );
+              optionItemsForItem = item.optionitem_ids.map((optionRef: DocumentReference) => {
+                const optionId = optionRef.id;
+                const optionData = optionItems[optionId] || {};
+                return {
+                  id: optionId,
+                  name: optionData.name || "Unknown",
+                  pricemodifier: optionData.pricemodifier || 0,
+                };
+              });
             }
+
+            const totalProductPrice = productDetails.reduce(
+              (sum, product) => sum + product.price * (item.quantity || 1),
+              0
+            );
+          
+            const totalOptionPrice = optionItemsForItem.reduce(
+              (sum, option) => sum + option.pricemodifier * (item.quantity || 1),
+              0
+            );
 
             return {
               id: item.id,
               product_id: productDetails,
               optionItems_id: optionItemsForItem || null,
               status: true,
-              totalPrice: productDetails.reduce(
-                (sum: number, product: { price: number }) =>
-                  sum + product.price * (item.quantity || 1),
-                0
-              ),
+              totalPrice: totalProductPrice + totalOptionPrice,
               quantity: item.quantity,
 
               user_id:
@@ -250,7 +260,21 @@ const Cart = () => {
   }, [user, isPopupOpen]);
 
   const totalPrice = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
-
+  const handleDeleteCartItem = async (itemId: string) => {
+    try {
+      // ลบเอกสารใน Firestore
+      await deleteDoc(doc(db, "cartItems", itemId));
+      
+      // ลบ item ออกจาก State
+      setCartItems((prevItems) =>
+        prevItems.filter((item) => item.id !== itemId)
+      );
+  
+      console.log(`Deleted cart item with ID: ${itemId}`);
+    } catch (error) {
+      console.error("Error deleting cart item:", error);
+    }
+  };
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -269,7 +293,7 @@ const Cart = () => {
               <div
                 key={item.id}
                 className="flex items-center border-b pb-4 mb-4 gap-4"
-              >
+              > 
                 <div className="flex-1">
                   {item.product_id.map((product: Product) => (
                     <div key={product.id}>
@@ -297,7 +321,7 @@ const Cart = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold">${item.totalPrice}</p>
-                  <button className="text-red-500 mt-2">
+                  <button className="text-red-500 mt-2" onClick={() => handleDeleteCartItem(item.id)}>
                     <MdDeleteOutline />
                   </button>
                   <button
@@ -308,7 +332,7 @@ const Cart = () => {
                   </button>
                   {isPopupOpen && (
                     <EditCartPopup
-                      cartItemId={item.id}
+                      cartItemId={editingItemId!}
                       onClose={handleClosePopup}
                       onSubmit={handleSubmit}
                     />
@@ -327,7 +351,7 @@ const Cart = () => {
                 {item.product_id.map((product: Product) => (
                   <div key={product.id} className="flex justify-between ">
                     <span>{product.name}</span>
-                    <span>{product.price}</span>
+                    <span>{item.totalPrice}</span>
                   </div>
                 ))}
               </div>
