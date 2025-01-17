@@ -22,6 +22,7 @@ import EditCartPopup from "@/app/components/orderProduct/editCartPopup";
 import Image from "next/image";
 import { useAuth } from "@/app/context/authContext";
 import Payment from "@/app/components/payment popup/payment";
+import FooterUser from "@/app/components/footer/footerUser";
 const timestampToString = (timestamp: Timestamp) => {
   const date = timestamp.toDate(); // แปลง Timestamp เป็น Date
   return date.toLocaleString(); // แปลง Date เป็นข้อความที่อ่านง่าย
@@ -343,18 +344,8 @@ const Cart = () => {
                 )}
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="bg-green-800 text-white p-4 text-center mt-8">
-          <div className="flex justify-between text-sm">
-            <div>Forest Tales</div>
-            <div>
-              <p>Contacts</p>
-              <p>0640691 2709</p>
-            </div>
-          </div>
-        </footer>
       </div>
+        <FooterUser />
     </div>
   );
 };

@@ -7,6 +7,7 @@ import Image from "next/image"; // Import from 'next/image'
 import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // You can also use <link> for styles
+import FooterUser from "./components/footer/footerUser";
 
 export default function Home() {
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function Home() {
           </button>
         </div>
       </section>
+      <FooterUser/>
     </div>
   );
 }
