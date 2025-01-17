@@ -40,7 +40,7 @@ const Cart = () => {
   const { user } = useAuth();
   const [cartItems, setCartItems] = useState<CartStateItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cartId ,setCartId] = useState(String || "")
+  const [cartId, setCartId] = useState(String || "");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isPopupPaymentOpen, setIsPopupPaymentOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -77,13 +77,12 @@ const Cart = () => {
             where("status", "==", true)
           );
 
-         
           const cartSnapshot = await getDocs(cartQuery);
-        
+
           const cartIds = cartSnapshot.docs.map((doc) => doc.id);
           // ถ้าไม่มี cart ให้หยุดการทำงานและตั้งค่า state เป็นว่าง
           console.log("cartIds :", cartIds);
-          setCartId(cartIds[0])
+          setCartId(cartIds[0]);
 
           if (cartIds.length === 0) {
             setCartItems([]);
@@ -207,24 +206,27 @@ const Cart = () => {
 
             if (Array.isArray(item.optionitem_ids)) {
               // ดึงข้อมูล optionItems ที่เชื่อมโยงกับแต่ละ cartItem
-              optionItemsForItem = item.optionitem_ids.map((optionRef: DocumentReference) => {
-                const optionId = optionRef.id;
-                const optionData = optionItems[optionId] || {};
-                return {
-                  id: optionId,
-                  name: optionData.name || "Unknown",
-                  pricemodifier: optionData.pricemodifier || 0,
-                };
-              });
+              optionItemsForItem = item.optionitem_ids.map(
+                (optionRef: DocumentReference) => {
+                  const optionId = optionRef.id;
+                  const optionData = optionItems[optionId] || {};
+                  return {
+                    id: optionId,
+                    name: optionData.name || "Unknown",
+                    pricemodifier: optionData.pricemodifier || 0,
+                  };
+                }
+              );
             }
 
             const totalProductPrice = productDetails.reduce(
               (sum, product) => sum + product.price * (item.quantity || 1),
               0
             );
-          
+
             const totalOptionPrice = optionItemsForItem.reduce(
-              (sum, option) => sum + option.pricemodifier * (item.quantity || 1),
+              (sum, option) =>
+                sum + option.pricemodifier * (item.quantity || 1),
               0
             );
 
@@ -244,7 +246,6 @@ const Cart = () => {
 
           // 6. อัปเดต State
           setCartItems(updatedCartItems);
-          
         } catch (error) {
           console.error("Error fetching cart items:", error);
         } finally {
@@ -264,12 +265,12 @@ const Cart = () => {
     try {
       // ลบเอกสารใน Firestore
       await deleteDoc(doc(db, "cartItems", itemId));
-      
+
       // ลบ item ออกจาก State
       setCartItems((prevItems) =>
         prevItems.filter((item) => item.id !== itemId)
       );
-  
+
       console.log(`Deleted cart item with ID: ${itemId}`);
     } catch (error) {
       console.error("Error deleting cart item:", error);
@@ -283,71 +284,97 @@ const Cart = () => {
     <div className="bg-beige min-h-screen pt-16">
       <Navbar />
       <div className="container mx-auto px-4 py-8 ">
-        <div className="flex gap-8">
+        <div className="flex gap-8 flex-wrap">
           {/* Left Section: Cart Items */}
-          <div className="flex-1">
+          <div className="grow md:flex-0 lg:flex-2 ">
             <header className=" text-greenthemewep p-4 ">
               <h1 className="text-3xl font-bold">Your Cart</h1>
             </header>
+
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center border-b pb-4 mb-4 gap-4"
-              > 
-                <div className="flex-1">
-                  {item.product_id.map((product: Product) => (
-                    <div key={product.id}>
-                      {product.name}
-                      {product.imageProduct && (
-                        <Image
-                          src={product.imageProduct}
-                          alt={product.name}
-                          width={200} // Add width
-                          height={150} // Add height (optional)
-                          className="w-24 h-24 rounded-lg"
-                        />
-                      )}{" "}
-                    </div>
-                  ))}
-
-                  {item.optionItems_id.map((option: OptionItem) => (
-                    <p key={option.id}>{option.name} </p>
-                  ))}
-                  <div className="flex items-center gap-2 mt-2">
-                    <button className="p-2 bg-gray-200 rounded">-</button>
-                    <span>{item.quantity}</span>
-                    <button className="p-2 bg-gray-200 rounded">+</button>
+                className="bg-white rounded-lg shadow-md mb-4 p-4 relative"
+              >
+                <div className="flex flex-col md:flex-row md:items-center">
+                  {" "}
+                  {/* ปรับ layout ให้เป็น column บน mobile และ row บน tablet/desktop */}
+                  <div className="md:w-1/2">
+                    {" "}
+                    {/* กำหนดความกว้างของ column บน tablet/desktop */}
+                    {item.product_id.map((product: Product) => (
+                      <div key={product.id} className="flex items-center mb-2">
+                        {product.imageProduct && (
+                          <Image
+                            src={product.imageProduct}
+                            alt={product.name}
+                            width={100} // ปรับขนาดรูปภาพ
+                            height={100}
+                            className="w-20 h-20 rounded-md object-cover mr-4" // เพิ่ม object-cover เพื่อจัดการรูปภาพให้พอดีกับ frame
+                          />
+                        )}
+                        
+                        <div>
+                          <h3 className="font-medium text-gray-800">
+                            {product.name}
+                          </h3>{" "}
+                          {/* เพิ่ม h3 และ class font-medium */}
+                          {item.optionItems_id.map((option: OptionItem) => (
+                            <p
+                              key={option.id}
+                              className="text-gray-600 text-sm"
+                            >
+                              {option.name}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold">${item.totalPrice}</p>
-                  <button className="text-red-500 mt-2" onClick={() => handleDeleteCartItem(item.id)}>
-                    <MdDeleteOutline />
-                  </button>
-                  <button
-                    className="text-red-500 mt-2"
-                    onClick={() => handleOpenPopup(item.id)}
-                  >
-                    <CiEdit />
-                  </button>
-                  {isPopupOpen && (
-                    <EditCartPopup
-                      cartItemId={editingItemId!}
-                      onClose={handleClosePopup}
-                      onSubmit={handleSubmit}
-                    />
-                  )}
+                  <div className="md:w-1/2 md:text-right mt-4 md:mt-0">
+                    {" "}
+                    {/* จัดข้อความชิดขวาบน tablet/desktop */}
+                    <div className="flex items-center justify-between md:justify-end">
+                      {" "}
+                      {/* จัดตำแหน่งปุ่มต่างๆ */}
+                     
+                    </div>
+                      <p className="absolute top-4 right-4 text-lg font-bold text-gray-800">
+                        ${item.totalPrice}
+                      </p>
+                    <div className="flex mt-2 lg:justify-end">
+                      <button
+                        className="text-red-500 hover:text-red-700 mr-2"
+                        onClick={() => handleDeleteCartItem(item.id)}
+                      >
+                        <MdDeleteOutline className="w-5 h-5" />{" "}
+                        {/* กำหนดขนาด icon */}
+                      </button>
+                      <button
+                        className="text-blue-500 hover:text-blue-700"
+                        onClick={() => handleOpenPopup(item.id)}
+                      >
+                        <CiEdit className="w-5 h-5" />
+                      </button>
+                    </div>
+                    {isPopupOpen && (
+                      <EditCartPopup
+                        cartItemId={editingItemId!}
+                        onClose={handleClosePopup}
+                        onSubmit={handleSubmit}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Right Section: Total Price */}
-          <div className="w-1/3 bg-greenthemewep p-4 rounded-lg shadow-lg">
+          <div className="w-full sm:w-1/3   bg-greenthemewep p-4 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold text-white mb-4">Total</h2>
             {cartItems.map((item) => (
               <div key={item.id} className=" text-sm  py-2 text-white">
-                
                 {item.product_id.map((product: Product) => (
                   <div key={product.id} className="flex justify-between ">
                     <span>{product.name}</span>
@@ -360,16 +387,23 @@ const Cart = () => {
               <span>Total</span>
               <span>${totalPrice}</span>
             </div>
-            <button onClick={() => setIsPopupPaymentOpen(true)} className="mt-4 w-full bg-green-800 text-white py-2 rounded">
+            <button
+              onClick={() => setIsPopupPaymentOpen(true)}
+              className="mt-4 w-full bg-green-800 text-white py-2 rounded"
+            >
               Proceed to Checkout
             </button>
             {isPopupPaymentOpen && (
-                  <Payment cartId={cartId} onClose={handleClosePopup} data-aos="fade-up" />
-                )}
+              <Payment
+                cartId={cartId}
+                onClose={handleClosePopup}
+                data-aos="fade-up"
+              />
+            )}
           </div>
         </div>
       </div>
-        <FooterUser />
+      <FooterUser />
     </div>
   );
 };
