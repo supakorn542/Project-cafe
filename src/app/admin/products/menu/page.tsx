@@ -17,6 +17,7 @@ import { getProductOptionsByProductId } from "@/app/services/productOption";
 import { getOptions } from "@/app/services/options";
 import Link from "next/link";
 import Image from "next/image";
+import axios from "axios";
 
 
 const MenuPage = () => {
@@ -78,20 +79,43 @@ const MenuPage = () => {
       setProductType(productTypeData);
     };
 
+    
     fetchData();
   }, []);
+  
+  console.log("product list:",filteredProducts)
+  const handleDelete = async (id: string, productName: string) => {
 
-  const handleDelete = async (id: string) => {
+    // ลบข้อมูลสินค้า
     await deleteProduct(id);
     setProducts((prevProducts) =>
       prevProducts.filter((product) => product.id !== id)
     );
-
+  
+    // ลบตัวเลือกสินค้า
     try {
       await deleteProductOptionsByProductId(id);
       console.log("Product options deleted successfully.");
     } catch (error) {
       console.error("Error deleting product options:", error);
+    }
+  
+    
+    try {
+      const publicId = `product_pics/product_pics/${productName}`;
+      const response = await axios.delete('/api/uploads', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        data: JSON.stringify({ publicId }), 
+      });
+  
+      if (response) {
+        console.log("Image deleted successfully.");
+      } else {
+        console.error("Error deleting image:");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
     }
   };
 
@@ -111,6 +135,10 @@ const MenuPage = () => {
   const handleEditClick = (productId: string) => {
     setSelectedProductId(productId);
   };
+
+
+  
+
 
   return (
     <div className="bg-[#FBF6F0] h-screen pt-20">
@@ -206,7 +234,7 @@ const MenuPage = () => {
                   <div className="flex justify-between w-20 absolute bottom-0 right-0">
                     <button
                       className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-red-800"
-                      onClick={() => handleDelete(product.id || "")}
+                      onClick={() => handleDelete(product.id!,product.name!)}
                     >
                       <FaTrash />
                     </button>
