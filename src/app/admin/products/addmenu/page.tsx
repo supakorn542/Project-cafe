@@ -133,7 +133,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-xl p-6 max-h-[90vh]  overflow-auto">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <h2 className="text-center text-2xl font-bold">เพิ่มเมนู</h2>
 
@@ -196,15 +196,15 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
           </div>
 
           {/* ตัวเลือก */}
-          <div>
+          <div className="overflow-y-auto max-h-[60vh]">
             <label className="block font-medium">ตัวเลือก</label>
             {selectedOptions.map(({ option, items }) => (
               <div key={option.id}>
-                <h4>{option.name}</h4>
+                <h4 className="text-sm font-semibold">{option.name}</h4>
                 <ul>
                   {items.map((item) => (
-                    <li key={item.id}>
-                      {item.name} - Price Modifier: {item.pricemodifier}
+                    <li key={item.id} className="text-sm text-gray-400">
+                      {item.name} - $ {item.pricemodifier}
                     </li>
                   ))}
                 </ul>
@@ -274,6 +274,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
 
             <label htmlFor="status">Select Status:</label>
             <select
+              className="border border-black rounded-md p-2 w-full"
               id="status"
               value={selectedStatus}
               onChange={handleStatusChange}
