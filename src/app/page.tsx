@@ -8,7 +8,37 @@ import { Key, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // You can also use <link> for styles
 import FooterUser from "./components/footer/footerUser";
+import dynamic from "next/dynamic";
 
+const OwlCarousel = dynamic(() => import("react-owl-carousel"), {
+  ssr: false,
+});
+import "owl.carousel/dist/assets/owl.carousel.css";
+import "owl.carousel/dist/assets/owl.theme.default.css";
+
+
+const sdata = [
+  {
+    imageproduct:
+      "https://res.cloudinary.com/donlonxid/image/upload/v1737210054/product_pics/product_pics/som%20yu.png",
+  },
+  {
+    imageproduct:
+      "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
+  },
+  {
+    imageproduct:
+      "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
+  },
+  {
+    imageproduct:
+      "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
+  },
+  {
+    imageproduct:
+      "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
+  },
+];
 const mdata = [
   {
     name: "Chanakon",
@@ -81,7 +111,7 @@ export default function Home() {
             className="rounded-r-full border border-black p-4"
             src={"/assets/esyen.jpg"}
             alt="iamge"
-            width={400}
+            width={700}
             height={200}
           />
         </div>
@@ -118,9 +148,8 @@ export default function Home() {
               <div key={index} className="w-1/2 flex self-center flex-col mt-4">
                 {/* Display _item.name, _item.price, _item.desc here */}
                 <div className="flex justify-between border-b-2 ">
-
-                <p className="text-xl font-semibold">{_item.name}</p>
-                <p className="text-xl font-semibold">${_item.price}</p>
+                  <p className="text-xl font-semibold">{_item.name}</p>
+                  <p className="text-xl font-semibold">${_item.price}</p>
                 </div>
                 <p className="mt-4 ">{_item.desc}</p>
               </div>
@@ -140,10 +169,49 @@ export default function Home() {
             className="rounded-l-full border border-black p-4"
             src={"/assets/esyen.jpg"}
             alt="iamge"
-            width={400}
+            width={700}
             height={200}
           />
         </div>
+      </section>
+      <section
+        className=" container mx-auto mt-20  flex flex-col gap-14"
+        data-aos="zoom-out-up"
+        data-aos-delay="50"
+        data-aos-duration="1000"
+        data-aos-easing="ease-in-out"
+      >
+        <OwlCarousel items={3}            
+           
+          nav  
+          autoplay={true}
+          responsive={{
+            0: {
+              items: 1,
+            },
+            600: {
+              items: 2,
+            },
+            1000: {
+              items: 3,
+            },
+          }}
+          margin={100} className="owl-theme">
+          {sdata.map((item, index) => (
+            <div key={index} className="shadow-xl rounded-full border p-3">
+              <Image
+                src={item.imageproduct}
+                alt={""}
+                width={300}
+                height={700}
+              ></Image>
+            </div>
+          ))}
+        </OwlCarousel>
+        <button className="border border-black rounded-full px-12 py-2 text-2xl font-semibold max-w-[50vh] self-center">
+          {" "}
+          Order now
+        </button>
       </section>
       <FooterUser />
     </div>
