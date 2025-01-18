@@ -16,7 +16,6 @@ const OwlCarousel = dynamic(() => import("react-owl-carousel"), {
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 
-
 const sdata = [
   {
     imageproduct:
@@ -62,7 +61,7 @@ export default function Home() {
       <section className="h-screen w-full">
         <Image
           className="-z-10"
-          src="https://wallpapercave.com/wp/pHUqeRn.jpg"
+          src={"/assets/profile-background.jpg"}
           alt="A description of your image"
           layout="fill"
           objectFit="cover" // หรือ "contain" ตามความต้องการ
@@ -181,9 +180,9 @@ export default function Home() {
         data-aos-duration="1000"
         data-aos-easing="ease-in-out"
       >
-        <OwlCarousel items={3}            
-           
-          nav  
+        <OwlCarousel
+          items={3}
+          nav
           autoplay={true}
           responsive={{
             0: {
@@ -196,7 +195,9 @@ export default function Home() {
               items: 3,
             },
           }}
-          margin={100} className="owl-theme">
+          margin={100}
+          className="owl-theme"
+        >
           {sdata.map((item, index) => (
             <div key={index} className="shadow-xl rounded-full border p-3">
               <Image
@@ -212,6 +213,73 @@ export default function Home() {
           {" "}
           Order now
         </button>
+      </section>
+      <section className="mt-20">
+        <Image
+          src={"/assets/profile-background.jpg"}
+          alt="bg"
+          width={0}
+          height={0}
+          sizes="100vw"
+          className="-z-20 "
+          style={{ width: "100%", height: "auto" }}
+        >
+        </Image>
+        <div className="container mx-auto ">
+          {/* กล่องบนข้อความ */}
+          <div>
+            <label>
+              POURING{" "}
+              <span>
+                <Image
+                  src={"/assets/basisbalck.png"}
+                  alt=""
+                  width={100}
+                  height={100}
+                ></Image>
+              </span>
+              MOMENTS OF BLISS INTO{" "}
+              <span>
+                <Image
+                  src={"/assets/basisbalck.png"}
+                  alt=""
+                  width={100}
+                  height={100}
+                ></Image>
+              </span>
+              CUP OF{" "}
+              <span>
+                <Image
+                  src={"/assets/basisbalck.png"}
+                  alt=""
+                  width={100}
+                  height={100}
+                ></Image>
+              </span>
+              COFFEE
+              <span>
+                <Image
+                  src={"/assets/basisbalck.png"}
+                  alt=""
+                  width={100}
+                  height={100}
+                ></Image>
+              </span>
+              at
+              <span>
+                <Image
+                  src={"/assets/basisbalck.png"}
+                  alt=""
+                  width={100}
+                  height={100}
+                ></Image>
+              </span>
+              FOREST TALES
+            </label>
+          </div>
+          {/* กล่องล่างรีวิว */}
+          <div></div>
+        </div>
       </section>
       <FooterUser />
     </div>

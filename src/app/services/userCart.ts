@@ -39,6 +39,7 @@ export async function createCart(userId: string): Promise<string> {
   const cartDoc = await addDoc(cartRef, {
     user_id: userRef,
     status: true,
+    createAt: new Date()
   });
   return cartDoc.id;
 }

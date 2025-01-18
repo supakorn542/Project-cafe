@@ -51,7 +51,8 @@ export const createProductWithOptions = async (productData: Product, imageFile: 
       calorie: productData.calorie,
       price: productData.price,
       name: productData.name,
-      imageProduct:imageUrl
+      imageProduct:imageUrl,
+      createAt : new Date()
     });
 
     // สร้าง array ของ reference ที่อ้างถึง options ที่ถูกเลือก
