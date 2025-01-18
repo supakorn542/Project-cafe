@@ -64,7 +64,7 @@ export const createOption = async (
         batch.set(newOptionItemRef, {
           name: item.name,
           option_id: doc(db, "options", addOption.id), // บันทึก `option_id` เป็น id ของ option
-          priceModifier: item.pricemodifier,
+          pricemodifier: item.pricemodifier,
         });
       });
 
