@@ -1,9 +1,22 @@
+// next.config.js
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    images: {
-        domains: ['res.cloudinary.com','wallpapercave.com'], // เพิ่ม Cloudinary domain ที่นี่
 
-      },
+import webpack from "webpack";
+
+const nextConfig = {
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    config.plugins.push(
+      new webpack.ProvidePlugin({
+        $: "jquery",
+        jQuery: "jquery",
+        "window.jQuery": "jquery",
+      })
+    );
+    return config;
+  },
+  images: {
+    domains: ["res.cloudinary.com", "wallpapercave.com"],
+  },
 };
 
 export default nextConfig;
