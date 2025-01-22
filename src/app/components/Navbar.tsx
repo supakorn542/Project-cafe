@@ -82,7 +82,12 @@ const Navbar = ( {textColor = "text-black" } : NavnarProp) => {
       <div className="flex items-center gap-8">
         {user ? (
           <>
+          <div>
+            <Link href={"/user/cart"}>
             <FaShoppingBasket className={`text-3xl cursor-pointer ${textColor} `}  />
+            </Link>
+          </div>
+
             <div className="relative" ref={dropdownRef}>
               <MdAccountCircle
                 onClick={toggleDropdown}

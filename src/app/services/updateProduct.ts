@@ -51,7 +51,8 @@ productId: string, productName: string, description: string, price: number, calo
       calorie: calorie,
       productType_id: productTypeRef,  // อัปเดตเป็น reference
       status_id: statusRef,            // อัปเดตเป็น reference
-     imageProduct: imageUrl
+     imageProduct: imageUrl,
+     updateAt: new Date()
     });
     return true;
   } catch (error) {

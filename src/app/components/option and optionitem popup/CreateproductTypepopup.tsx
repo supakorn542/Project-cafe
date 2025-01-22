@@ -69,7 +69,7 @@ function CreateProductTypePopup({ onClose }: { onClose: () => void }) {
         </div>
         <div className="flex justify-end gap-2">
           <button
-          type="button"
+          type="reset"
             onClick={onClose}
             className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded disabled:opacity-50"
             disabled={loading}

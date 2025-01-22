@@ -17,7 +17,7 @@ import { getProductOptionsByProductId } from "@/app/services/productOption";
 import { getOptions } from "@/app/services/options";
 import Link from "next/link";
 import Image from "next/image";
-
+import axios from "axios";
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -34,6 +34,11 @@ const MenuPage = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
+  const [currentPage, setCurrentPage] = useState(0);
+  const productsPerPage = 2; // จำนวนสินค้าต่อหน้า
+
+  // คำนวณ Products ในหน้าปัจจุบัน
+
   const filteredProducts = products.filter((product) => {
     const search = searchTerm.toLowerCase();
     return (
@@ -81,17 +86,37 @@ const MenuPage = () => {
     fetchData();
   }, []);
 
-  const handleDelete = async (id: string) => {
+  console.log("product list:", filteredProducts);
+  const handleDelete = async (id: string, productName: string) => {
+    // ลบข้อมูลสินค้า
     await deleteProduct(id);
     setProducts((prevProducts) =>
       prevProducts.filter((product) => product.id !== id)
     );
 
+    // ลบตัวเลือกสินค้า
     try {
       await deleteProductOptionsByProductId(id);
       console.log("Product options deleted successfully.");
     } catch (error) {
       console.error("Error deleting product options:", error);
+    }
+
+    try {
+      const publicId = `product_pics/product_pics/${productName}`;
+      const response = await axios.delete("/api/uploads", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify({ publicId }),
+      });
+
+      if (response) {
+        console.log("Image deleted successfully.");
+      } else {
+        console.error("Error deleting image:");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
     }
   };
 
@@ -99,6 +124,21 @@ const MenuPage = () => {
     setEditPopup(false);
     setSelectedProductId(null);
   };
+
+  const handleNextPage = () => {
+    if ((currentPage + 1) * productsPerPage < products.length) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const startIndex = currentPage * productsPerPage;
+  
 
   // const productTypeMap = Object.fromEntries(
   //   productType.map((productType) => [productType.id, productType.name])
@@ -155,35 +195,44 @@ const MenuPage = () => {
 
         {/* Product List */}
         <div className="flex flex-col gap-5">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-transparen rounded-md overflow-hidden p-6 min-h-[200px] max-h-[300px]  "
-            >
-              <div className="flex justify-between font-semibold text-[20px]">
-                <div>{product.name}</div>
-                <div>$ {product.price}</div>
-              </div>
-              <div className="flex">
-                <div className="flex-1 flex space-x-3">
-                  <Image
-                    alt="Profile"
-                    className=" rounded-3xl flex self-center"
-                    src={product.imageProduct || ""}
-                    width={200} // Add the width property
-                    height={150} // Add the height property (optional)
-                  />
-                  <div>
+          {filteredProducts
+            .slice(startIndex, startIndex + productsPerPage)
+            .map((product) => (
+              <div
+                key={product.id}
+                className="bg-transparent rounded-md overflow-hidden p-6 min-h-[230px] max-h-[230px] h-auto flex flex-col justify-between shadow-md relative"
+              >
+                {/* Header */}
+                <div className="flex justify-between items-center font-semibold text-[20px]">
+                  <div>{product.name}</div>
+                  <div>$ {product.price}</div>
+                </div>
+
+                {/* Content */}
+                <div className="flex space-x-4 h-full overflow-hidden">
+                  <div className="flex-1 flex items-center">
+                    <Image
+                      alt="Profile"
+                      className="rounded-3xl object-cover"
+                      src={product.imageProduct || ""}
+                      width={80}
+                      height={80}
+                    />
+                  </div>
+                  <div className="flex-1 overflow-y-auto max-h-[150px]">
                     {allGroupedOptions
                       .find((selected) => selected.productId === product.id)
                       ?.options?.map(({ option, items }) => (
-                        <div key={option.id}>
-                          <h4 className="text-xl font-semibold">
+                        <div key={option.id} className="mb-2">
+                          <h4 className="text-lg font-semibold">
                             {option.name}
                           </h4>
                           <ul>
                             {items.map((item) => (
-                              <li key={item.id}>
+                              <li
+                                key={item.id}
+                                className="text-sm text-gray-600"
+                              >
                                 {item.name} - Price Modifier:{" "}
                                 {item.pricemodifier}
                               </li>
@@ -193,54 +242,67 @@ const MenuPage = () => {
                       ))}
                   </div>
                 </div>
-                <div className="flex-1 relative border-l-2 border-black pl-4">
-                  <label className="block break-words whitespace-pre-wrap">
+
+                {/* Footer */}
+                <div className="border-t mt-4 pt-2">
+                  <label className="block break-words whitespace-pre-wrap text-sm text-gray-700">
                     คำอธิบาย:{" "}
-                    {product.description.length > 40
-                      ? `${product.description.slice(
-                          0,
-                          40
-                        )}\n${product.description.slice(100)}`
+                    {product.description.length > 60
+                      ? `${product.description.slice(0, 60)}...`
                       : product.description}
                   </label>
-                  <div className="flex justify-between w-20 absolute bottom-0 right-0">
-                    <button
-                      className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-red-800"
-                      onClick={() => handleDelete(product.id || "")}
-                    >
-                      <FaTrash />
-                    </button>
-                    <button
-                      onClick={() => handleEditClick(product.id || "")}
-                      className="flex items-center space-x-2 text-black border border-black rounded-full p-2 hover:text-blue-800"
-                    >
-                      <FaEdit />
-                    </button>
-                    {selectedProductId === product.id && (
-                      <UpdateProductForm
-                        productId={product.id || ""}
-                        onClose={handleCloseUpdatePopup}
-                      />
-                    )}
-                  </div>
                 </div>
+
+                {/* Buttons */}
+                <div className="absolute bottom-4 right-4 flex space-x-2">
+                  <button
+                    className="flex items-center justify-center text-black border border-black rounded-full p-2 hover:text-red-800"
+                    onClick={() => handleDelete(product.id!, product.name!)}
+                  >
+                    <FaTrash />
+                  </button>
+                  <button
+                    onClick={() => handleEditClick(product.id || "")}
+                    className="flex items-center justify-center text-black border border-black rounded-full p-2 hover:text-blue-800"
+                  >
+                    <FaEdit />
+                  </button>
+                </div>
+
+                {selectedProductId === product.id && (
+                  <UpdateProductForm
+                    productId={product.id || ""}
+                    onClose={handleCloseUpdatePopup}
+                  />
+                )}
               </div>
-              <svg
-                className="w-full my-4"
-                height="1"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <line
-                  x1="0"
-                  y1="0"
-                  x2="100%"
-                  y2="0"
-                  stroke="#000000"
-                  strokeWidth="2"
-                />
-              </svg>
-            </div>
-          ))}
+            ))}
+          <div className="flex justify-between mt-4">
+            <button
+              className={`px-4 py-2 rounded-md text-white ${
+                currentPage === 0
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-green-800"
+              }`}
+              onClick={handlePreviousPage}
+              disabled={currentPage === 0}
+            >
+              Previous
+            </button>
+            <button
+              className={`px-4 py-2 rounded-md text-white ${
+                (currentPage + 1) * productsPerPage >= filteredProducts.length
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-green-800"
+              }`}
+              onClick={handleNextPage}
+              disabled={
+                (currentPage + 1) * productsPerPage >= filteredProducts.length
+              }
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -66,6 +66,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
           setDescription(productData.description);
           setSelectedStatus(productData.status_id.id);
           setSelectProductType(productData.productType_id.id);
+          setUploadedImage(productData.imageProduct)
 
           const selectedOptionsData = options
             .filter((option) => selectedOptionIds.includes(option.id))
@@ -158,7 +159,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-xl p-6 max-h-[90vh] overflow-auto">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <h2 className="text-center text-2xl font-bold">แก้ไขเมนู</h2>
   
@@ -221,14 +222,14 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
           {/* ตัวเลือก */}
           <div>
             <div className="selected-options">
-              <h3>Selected Options:</h3>
+              <h3>ตัวเลือก</h3>
               {selectedOptions.map(({ option, items }) => (
-                <div key={option.id}>
+                <div key={option.id} className="text-sm font-semibold">
                   <h4>{option.name}</h4>
                   <ul>
                     {items.map((item) => (
-                      <li key={item.id}>
-                        {item.name} - Price Modifier: {item.pricemodifier}
+                      <li key={item.id} className="text-sm text-gray-500">
+                        {item.name} - $ {item.pricemodifier}
                       </li>
                     ))}
                   </ul>
@@ -325,7 +326,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
             </button>
             <button
               type="submit"
-              className="text-white bg-blue-500 rounded-md px-4 py-2 hover:bg-blue-700"
+               className="bg-black text-white border border-black rounded-md px-4 py-2 hover:bg-white hover:text-black"
             >
               Update Product
             </button>
