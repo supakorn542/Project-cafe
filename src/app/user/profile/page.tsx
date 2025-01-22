@@ -9,6 +9,7 @@ import { User } from "../../interfaces/user";
 import { BiSolidEdit } from "react-icons/bi";
 import Image from "next/image";
 import axios from "axios";
+import Link from "next/link";
 
 function Profile() {
   const { user } = useAuth();
@@ -335,7 +336,10 @@ function Profile() {
               </div>
             ) : (
               <div className="col-start-1 place-self-center py-1 px-4   rounded-3xl bg-white text-black font-serif4 text-xl">
+                <Link href={"orderhistory"}>
                 <button>Order History</button>
+                </Link>
+                
               </div>
             )}
           </div>

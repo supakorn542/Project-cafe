@@ -1,14 +1,23 @@
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Review } from '../interfaces/review';
 
-export const addReviewById = async (id: string, newReview: Omit<Review, 'id'>): Promise<void> => {
-    const reviewsCol = collection(db, 'reviews'); // อ้างอิง collection 'reviews'
-    const reviewDoc = doc(reviewsCol, id); // ระบุ ID ของเอกสารที่ต้องการสร้าง
-    await setDoc(reviewDoc, {
-        rating: newReview.rating,
-        comment: newReview.comment,
-        payment_id: newReview.payment_id,
-    });
+export const createReview = async (review: Review): Promise<void> => {
+    try {
+        const userRef = doc(db, "users", review.user_id);
+        const orderRef = doc(db, "orders", review.order_id);
+
+        const reviewCollection = collection(db, 'reviews');
+        await addDoc(reviewCollection, {
+            user_id: userRef,
+            rating: review.rating,
+            comment: review.comment,
+            order_id: orderRef,
+            createdAt: new Date(),
+        });
+    } catch (error) {
+        console.error("Error creating review:", error);
+        throw new Error("Failed to create review");
+    }
 };
 
