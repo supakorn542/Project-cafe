@@ -49,7 +49,7 @@ export const getOrdersByCartId = async (cartIds: string[], statusOrder: string):
       ordersSnapshot = await getDocs(ordersQuery);
     }
     else{
-      const ordersQuery = query(ordersRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))));
+      const ordersQuery = query(ordersRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))), where("statusOrder", "!=","Completed"));
       ordersSnapshot = await getDocs(ordersQuery);
     }
     
@@ -75,7 +75,7 @@ export const getOrdersByCartId = async (cartIds: string[], statusOrder: string):
 
 export const getCartItemByCartId = async (
   userId: string
-): Promise<(CartItemsInterface & { productDetails?: { id: string; name: string; price: number; imageProduct: string } })[]> => {
+) => {
   try {
     console.log("UserId:", userId);
     const carts = await getCartsByUserId(userId);
@@ -87,82 +87,133 @@ export const getCartItemByCartId = async (
 
     const cartIds = carts.map((cart) => cart.id);
     console.log(cartIds);
-
-    // ดึง cartItems จาก Firestore
     const cartItemsRef = collection(db, "cartItems");
     const cartItemsQuery = query(cartItemsRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))));
     const cartItemsSnapshot = await getDocs(cartItemsQuery);
 
-    const cartItems: CartItemsInterface[] = cartItemsSnapshot.docs.map((doc) => {
+    // แปลงผลลัพธ์จาก cartItemsSnapshot ให้เป็นอาร์เรย์ของ cartItem
+    const cartItems = Promise.all(cartItemsSnapshot.docs.map(async (doc) => {
       const data = doc.data();
+      console.log("gggg", data);
+
+      const productRef = data.product_id;
+      const productSnap = await getDoc(productRef);
+      if (productSnap) {
+        const productData = productSnap.data();
+        data.product_id = { id: productRef.id, ...productData || {} }; // กำหนดเป็น object ที่มี id
+      } else {
+        throw new Error("product not found");
+      }
+      const cartRef = data.cart_id;
+      const cartSnap = await getDoc(cartRef);
+      if (cartSnap) {
+        const cartData = cartSnap.data();
+        data.cart_id = { id: cartRef.id, ...cartData || {} }; // กำหนดเป็น object ที่มี id
+      } else {
+        throw new Error("cart not found");
+      }
+      const optionItemRef = data.optionitem_id;
+      console.log(optionItemRef)
+      // const optionItemSnap = await getDoc(optionItemRef);
+      if (optionItemRef) {
+        const optionItems = await Promise.all(
+          optionItemRef.map(async (optionItemRef: any) => {
+            const optionItemSnap = await getDoc(optionItemRef);
+            if (optionItemSnap) {
+              const optionItemData = optionItemSnap.data();
+              return { id: optionItemRef.id, ...optionItemData || {} };
+            } else {
+              throw new Error("optionItem not found");
+            }
+          })
+        );
+        data.optionitem_id = optionItems;
+        console.log(data.optionitem_id);
+      } else {
+        throw new Error("optionItem not found");
+      }
+
       return {
         id: doc.id,
-        cart_id: data.cart_id, // product_id เป็น DocumentReference
-        product_id: data.product_id, // product_id เป็น DocumentReference
-        quantity: data.quantity || 0,
-        optionitem_ids: data.optionitem_ids || [],
-        pickupdate: data.pickupdate?.toDate() || new Date(),
-        description: data.description || "",
+        description: data.description, // แปลง Timestamp ให้เป็นวันที่
+        quantity: data.quantity,
+        pickupdate: data.pickupdate,
+        product_id: data.product_id,
+        cart_id: data.cart_id,
+        optionitem_id: data.optionitem_id,
       };
-    });
+    }));
+    console.log(cartItems)
+    return cartItems;
 
-    const productIds = cartItems.map((item: any) => {
-      if (typeof item.product_id !== "string" && item.product_id instanceof DocumentReference) {
-        const pathSegments = item.product_id.path.split("/");
-        return pathSegments[pathSegments.length - 1]; // ดึง ID ส่วนสุดท้ายของ path
-      }
-      return null; // หาก product_id เป็น string หรือไม่มี path
-    });
-    console.log("================================", productIds)
-    
-    const productData = await Promise.all(
-      productIds.map(async (i) => {
-        const productRef = doc(db, "products", i);
-        const docSnap = await getDoc(productRef);
-        if (docSnap.exists()) {
-          return { id: i, data: docSnap.data() }; // ดึงข้อมูลจาก Firestore
-        } else {
-          console.log(`Document with ID ${i} does not exist.`);
-          return null; // คืนค่า null หากเอกสารไม่มี
-        }
-      })
-    );
-
-    console.log("djeihiwjdiw", productData)
-    console.log("test2", cartItems)
-
-    // รวม productDetails เข้ากับ cartItems
-    const result = cartItems.map((item, index) => {
-      const productDetails =
-        item.product_id
-          ? (() => {
-              const productId = item.product_id;
-              const product = productData[index]; 
-              console.log(productId)
-              console.log(product)
-              return {
-                id: productId,
-                name: product!.data.name || "Unknown",
-                price: product!.data.price,
-                imageProduct: product!.data.imageProduct,
-              };
-            })()
-          : undefined;
-
-      return {
-        ...item,
-        productDetails,
-      };
-    });
-
-    console.log("productDetails:", result);
-    return result;
   } catch (error) {
     console.error("Error fetching cart items:", error);
     return [];
   }
 };
 
+export const getCartItemByCartIdFromAom = async (cartIds: string[]) => {
+  try {
+    const cartItemsRef = collection(db, "cartItems");
+    const cartItemsQuery = query(cartItemsRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))));
+    const cartItemsSnapshot = await getDocs(cartItemsQuery);
+
+    // แปลงผลลัพธ์จาก cartItemsSnapshot ให้เป็นอาร์เรย์ของ cartItem
+    const cartItems = Promise.all(cartItemsSnapshot.docs.map(async (doc) => {
+      const data = doc.data();
+
+      const productRef = data.product_id;
+      const productSnap = await getDoc(productRef);
+      if (productSnap.exists()) {
+        const productData = productSnap.data();
+        data.product_id = { id: productRef.id, ...productData || {} }; // กำหนดเป็น object ที่มี id
+      } else {
+        throw new Error("product not found");
+      }
+      const cartRef = data.cart_id;
+      const cartSnap = await getDoc(cartRef);
+      if (cartSnap.exists()) {
+        const cartData = cartSnap.data();
+        data.cart_id = { id: cartRef.id, ...cartData || {} }; // กำหนดเป็น object ที่มี id
+      } else {
+        throw new Error("cart not found");
+      }
+      const optionItemRef = data.optionitem_id;
+      // const optionItemSnap = await getDoc(optionItemRef);
+      if (optionItemRef) {
+        const optionItems = await Promise.all(
+          optionItemRef.map(async (optionItemRef: any) => {
+            const optionItemSnap = await getDoc(optionItemRef);
+            if (optionItemSnap) {
+              const optionItemData = optionItemSnap.data();
+              return { id: optionItemRef.id, ...optionItemData || {} };
+            } else {
+              throw new Error("optionItem not found");
+            }
+          })
+        );
+        data.optionitem_id = optionItems;
+      } else {
+        throw new Error("optionItem not found");
+      }
+
+      return {
+        id: doc.id,
+        description: data.description, // แปลง Timestamp ให้เป็นวันที่
+        quantity: data.quantity,
+        pickupdate: data.pickupdate,
+        product_id: data.product_id,
+        cart_id: data.cart_id,
+        optionitem_id: data.optionitem_id,
+      };
+    }));
+
+    return cartItems;
+  } catch (error) {
+    console.error("Error fetching cart items:", error);
+    return [];
+  }
+};
 
 
 
@@ -190,7 +241,6 @@ export const getOrdersByUserId = async (userId: string): Promise<Order[]> => {
     // ใช้ `in` เพื่อดึงข้อมูลหลาย `cart_id`
     console.log("test ",orders)
 
-    
 
     return orders;
   } catch (error) {
@@ -218,12 +268,8 @@ export const getCompletedOrdersByUserId = async (userId: string): Promise<Order[
     const orders = await getOrdersByCartId(cartIds, "Completed");
 
     console.log("orderscomplete:", orders)
-    // const cartItems = await getCartItemByCartId(cartIds);
-    // Query เพื่อดึง orders ที่ตรงกับ cart_id
-    // ใช้ `in` เพื่อดึงข้อมูลหลาย `cart_id`
 
     
-
     return orders;
   } catch (error) {
     console.error("Error fetching orders:", error);
