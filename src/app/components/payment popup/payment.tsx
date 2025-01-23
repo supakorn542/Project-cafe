@@ -3,7 +3,7 @@ import axios from "axios";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/app/lib/firebase";
 
-function Payment({ cartId, onClose }: { cartId: string; onClose: () => void }) {
+function Payment({ cartId, onClose, totalPrice }: { cartId: string; onClose: () => void;totalPrice: number }) {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -50,7 +50,7 @@ function Payment({ cartId, onClose }: { cartId: string; onClose: () => void }) {
         const orderData = {
           orderDate: new Date(),
           cart_id: cartRef,
-          total_price: 20,
+          total_price: totalPrice,
           statusOrder: "Processing",
           payment_id: paymentRef,
         };
@@ -58,8 +58,8 @@ function Payment({ cartId, onClose }: { cartId: string; onClose: () => void }) {
         console.log("Order saved with ID:", orderDocRef.id);
 
         // อัปเดตสถานะของ cart
-        const cartDocRef = doc(db, "carts", cartId);
-        await updateDoc(cartDocRef, { status: false });
+       
+        await updateDoc(cartRef, { status: false ,});
 
         alert("การสั่งซื้อเสร็จสมบูรณ์!");
         onClose();

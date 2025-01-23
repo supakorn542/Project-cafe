@@ -395,6 +395,7 @@ const Cart = () => {
             </button>
             {isPopupPaymentOpen && (
               <Payment
+               totalPrice={totalPrice}
                 cartId={cartId}
                 onClose={handleClosePopup}
                 data-aos="fade-up"
