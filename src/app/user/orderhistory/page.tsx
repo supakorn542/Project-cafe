@@ -34,7 +34,7 @@ const TrackOrder = () => {
                     console.log("fetchedOrders: ", fetchedOrders)
                     const fetchedCompletedOrders = await getCompletedOrdersByUserId(user.id);
                     setStatusComplete(fetchedCompletedOrders)
-                    console.log("JUKKRUUUU",fetchedCompletedOrders);
+                    console.log("JUKKRUUUU", fetchedCompletedOrders);
                     const fetchedCarts = await getCartItemByCartId(user.id);
                     setCarts(fetchedCarts);
                     console.log("fetchedCarts :", fetchedCarts)
@@ -55,7 +55,7 @@ const TrackOrder = () => {
 
     const convertTimestampToDate = (timestamp: any) => {
         let date: Date;
-    
+
         if (timestamp?.toDate) {
             // กรณี Firebase Timestamp
             date = timestamp.toDate();
@@ -68,14 +68,14 @@ const TrackOrder = () => {
         } else {
             throw new Error("Invalid timestamp format");
         }
-    
+
         return date.toLocaleDateString("th-TH", {
             day: "numeric",
             month: "numeric",
             year: "numeric",
         });
     };
-    
+
 
     const openReviewPopup = (id: string) => {
         setCurrentReviewId(id);
@@ -84,17 +84,19 @@ const TrackOrder = () => {
 
     const closeReviewPopup = () => {
         setIsReviewPopupOpen(false);
-    setCurrentReviewId(null);
+        setCurrentReviewId(null);
+        setReviewText('');
+        setSelectedRating(0);
     };
 
     const submitReview = async (e: React.FormEvent) => {
         e.preventDefault(); // ป้องกันการรีเฟรชหน้าหลังจาก submit form
-    
+
         if (!user?.id) {
             console.warn("User is not logged in.");
             return;
         }
-    
+
         if (selectedRating === 0 || !reviewText.trim()) {
             alert("Please provide a rating and a review text.");
             return;
@@ -104,15 +106,15 @@ const TrackOrder = () => {
             alert("Unable to identify the review context.");
             return;
         }
-    
+
         const reviewData = {
             user_id: user.id,
             rating: selectedRating,
             comment: reviewText,
             order_id: currentReviewId,
-      
+
         };
-    
+
         try {
             await createReview(reviewData);
             alert("Review submitted successfully.");
@@ -174,8 +176,8 @@ const TrackOrder = () => {
                                             <h2 className="text-white text-xl font-bold">
                                                 Order Date: {
                                                     order?.orderDate
-                                                    ? convertTimestampToDate(order.orderDate)
-                                                    : "N/A"
+                                                        ? convertTimestampToDate(order.orderDate)
+                                                        : "N/A"
                                                 }
                                             </h2>
                                             <h3 className="text-white text-lg font-bold">
@@ -185,23 +187,26 @@ const TrackOrder = () => {
                                         {carts.map((value, idx) => (
                                             <div key={idx} className="flex items-start mb-3 w-full">
                                                 <Image
-                                           src={value.productDetails.imageProduct}
-                                           width={150}
-                                           height={150}
-                                           alt="Image"
-                                           className="rounded-2xl mr-4"
-                                           >
-
-                                           </Image>
+                                                    src={value.product_id.imageProduct}
+                                                    width={85}
+                                                    height={100}
+                                                    style={{ aspectRatio: '1 / 1' }}
+                                                    alt="Image"
+                                                    className="rounded-xl mr-4 "
+                                                ></Image>
                                                 <div className="flex flex-col justify-start text-white">
-                                                    <h4 className="font-bold mb-2">{value.productDetails.name}</h4>
+                                                    <h4 className="font-bold mb-2">{value.product_id.name}</h4>
                                                     <div className="w-full flex items-start">
-                                                        <div className="w-[800px]"> 
-                                                            <p>{value.description}</p>
+                                                        <div className="w-[800px] flex">
+                                                            {value.optionitem_id.map((i: any) => 
+                                                                <p className="mr-3">{i.name}</p>
+                                                            )}
+                                                            
+
                                                         </div>
                                                         <div className="w-48 flex justify-between space-x-32">
-                                                            <p>X {value.calorie || 1}</p>
-                                                            <p>฿{value.productDetails.price || 0}</p>
+                                                            <p>X {value.quantity}</p>
+                                                            <p>฿{value.product_id.price || 0}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -230,8 +235,8 @@ const TrackOrder = () => {
                                             <h2 className="text-white text-xl font-bold">
                                                 Order Date: {
                                                     value?.orderDate
-                                                    ? convertTimestampToDate(value.orderDate)
-                                                    : "N/A"
+                                                        ? convertTimestampToDate(value.orderDate)
+                                                        : "N/A"
                                                 }
                                             </h2>
 
@@ -241,28 +246,27 @@ const TrackOrder = () => {
                                         </div>
                                         {carts.map((value, idx) => (
                                             <div key={idx} className="flex items-start mb-3 w-full">
-                                           
-                                           <Image
-                                           src={value.productDetails.imageProduct}
-                                           width={250}
-                                           height={250}
-                                           alt="Image"
-                                           >
-
-                                           </Image>
-                                            <div className="flex flex-col justify-start">
-                                                <h4 className="font-bold mb-2">{value.productDetails.name}</h4>
-                                                <div className="w-full flex items-start">
-                                                    <div className="w-[800px]">
-                                                        {/* {value.details && <p>{item.details}</p>} */}
-                                                    </div>
-                                                    <div className="w-48 flex justify-end space-x-32">
-                                                        <p>X {value.productDetails.quantity}</p>
-                                                        <p>฿{value.productDetails.price}</p>
+                                                <Image
+                                                    src={value.product_id.imageProduct}
+                                                    width={85}
+                                                    height={100}
+                                                    style={{ aspectRatio: '1 / 1' }}
+                                                    alt="Image"
+                                                    className="rounded-xl mr-4 "
+                                                ></Image>
+                                                <div className="flex flex-col justify-start">
+                                                    <h4 className="font-bold mb-2">{value.product_id.name}</h4>
+                                                    <div className="w-full flex items-start">
+                                                        <div className="w-[800px]">
+                                                            <p>{value.optionitem_id[0].name}</p>
+                                                        </div>
+                                                        <div className="w-48 flex justify-end space-x-32">
+                                                            <p>X {value.product_id.quantity}</p>
+                                                            <p>฿{value.product_id.price}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
                                         ))}
                                         <div className="flex flex-col justify-end space-y-2">
                                             <div className="flex justify-end space-x-2">
@@ -274,7 +278,7 @@ const TrackOrder = () => {
                                             </div>
                                             <div className="flex justify-end mt-2">
                                                 <button className="w-24 border-2 border-white text-white p-1 rounded-xl text-xl"
-                                                 onClick={() => openReviewPopup(value.id)}>
+                                                    onClick={() => openReviewPopup(value.id)}>
                                                     Review
                                                 </button>
                                             </div>
@@ -325,7 +329,7 @@ const TrackOrder = () => {
                                 <button
                                     type="submit"
                                     className="px-4 py-1 border-2 border-black rounded-3xl text-sm hover:bg-black hover:text-white transition duration-200"
-                                    >
+                                >
                                     Submit
                                 </button>
                             </div>
