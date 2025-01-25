@@ -38,7 +38,9 @@ export const getCartsByUserId = async (userId: string): Promise<CartInterface[]>
 };
 
 
-export const getOrdersByCartId = async (cartIds: string[], statusOrder: string): Promise<Order[]> => {
+
+
+export const getOrdersByCartId = async (cartIds: string[], statusOrder: string) => {
   try {
     const cartsRef = collection(db, "carts");
     // Query orders ที่ cart_id อยู่ใน cartIds
@@ -53,18 +55,29 @@ export const getOrdersByCartId = async (cartIds: string[], statusOrder: string):
       ordersSnapshot = await getDocs(ordersQuery);
     }
     
+    
     // แปลงผลลัพธ์จาก ordersSnapshot ให้เป็นอาร์เรย์ของ Order
-    const orders: Order[] = ordersSnapshot.docs.map((doc) => {
+    const orders= Promise.all(ordersSnapshot.docs.map(async (doc) => {
       const data = doc.data();
+    
+      const cartRef = data.cart_id;
+      const cartSnap = await getDoc(cartRef);
+      if (cartSnap) {
+        const cartData = cartSnap.data();
+        data.cart_id = { id: cartRef.id, ...cartData || {} }; // กำหนดเป็น object ที่มี id
+      } else {
+        throw new Error("cart not found");
+      }
+
       return {
         id: doc.id,
         orderDate: data.orderDate.toDate(), // แปลง Timestamp ให้เป็นวันที่
-        cart_id: data.cart_id || '',
+        cart_id: data.cart_id,
         total_price: data.total_price || 0,
         statusOrder: data.statusOrder || 'pending',
         payment_id: data.payment_id || null,
       };
-    });
+    }));
 
     return orders;
   } catch (error) {
@@ -72,6 +85,7 @@ export const getOrdersByCartId = async (cartIds: string[], statusOrder: string):
     return [];
   }
 };
+
 
 export const getCartItemByCartId = async (
   userId: string
@@ -218,7 +232,7 @@ export const getCartItemByCartIdFromAom = async (cartIds: string[]) => {
 
 
 // ฟังก์ชันเพื่อดึงข้อมูล orders โดยใช้ userId
-export const getOrdersByUserId = async (userId: string): Promise<Order[]> => {
+export const getOrdersByUserId = async (userId: string) => {
   try {
     console.log("UserId:", userId)
     // ดึง carts ที่เชื่อมโยงกับ userId

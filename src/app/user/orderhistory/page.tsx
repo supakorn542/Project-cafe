@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
-import { createReview } from '../../services/review';
+import { createReview, getReviewByUserId } from '../../services/review';
 import { useAuth } from "../../context/authContext";
 import { Order } from "../../interfaces/order";
 import '../../globals.css';
@@ -15,8 +15,10 @@ const TrackOrder = () => {
     const [isReviewPopupOpen, setIsReviewPopupOpen] = useState(false);
     const [reviewText, setReviewText] = useState(''); // สำหรับข้อความรีวิว
     const [selectedRating, setSelectedRating] = useState(0); // สำหรับการให้คะแนน
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [orders, setOrders] = useState<any[]>([]);
     const [carts, setCarts] = useState<any[]>([]);
+    const [cartsids, setCartsIds] = useState<any[]>([]);
+    const [reviews, setReviews] = useState<any[]>([]);
     const [statusComplete, setStatusComplete] = useState<any[]>([]);
     const [currentReviewId, setCurrentReviewId] = useState<string | null>(null);
 
@@ -29,9 +31,17 @@ const TrackOrder = () => {
             }
             else {
                 try {
+                    const review = await getReviewByUserId(user.id);
+                    setReviews(review);
+                    console.log("reviews :", review)
                     const fetchedOrders = await getOrdersByUserId(user.id);
                     setOrders(fetchedOrders);
                     console.log("fetchedOrders: ", fetchedOrders)
+                    const cartIds = fetchedOrders.map((order) => {
+                        return order!.cart_id.id;
+                    });
+                    setCartsIds(cartIds)
+                    console.log(cartIds)
                     const fetchedCompletedOrders = await getCompletedOrdersByUserId(user.id);
                     setStatusComplete(fetchedCompletedOrders)
                     console.log("JUKKRUUUU", fetchedCompletedOrders);
@@ -167,7 +177,8 @@ const TrackOrder = () => {
                 <div className="mt-5">
                     {activeTab === "trackOrder" && (
                         <div className="flex justify-center mb-2 pl-10 pr-10">
-                            <div className="w-full max-h-[550px]  overflow-y-auto flex flex-col space-y-4 scrollbar-hidden">
+                           
+                                <div className="w-full max-h-[550px]  overflow-y-auto flex flex-col space-y-4 scrollbar-hidden">
                                 {orders.map((order, index) => (
                                     <div
                                         key={index}
@@ -184,7 +195,7 @@ const TrackOrder = () => {
                                                 {order.statusOrder}
                                             </h3>
                                         </div>
-                                        {carts.map((value, idx) => (
+                                        {carts.filter(item => item.cart_id.id == order.cart_id.id).map((value, idx) => (
                                             <div key={idx} className="flex items-start mb-3 w-full">
                                                 <Image
                                                     src={value.product_id.imageProduct}
@@ -214,7 +225,10 @@ const TrackOrder = () => {
                                         ))}
                                         <div className="flex justify-end space-x-2">
                                             <span className="font-bold text-lg">
-                                                <span className="mr-1">{carts.length}</span>
+                                                <span className="mr-1">{carts
+                                                    .filter(item => item.cart_id.id == order.cart_id.id)
+                                                    .reduce((acc, item) => acc + item.quantity, 0)}
+                                                </span>
                                                 items:
                                             </span>
                                             <span className="font-bold text-lg">฿{order.total_price}</span>
@@ -244,7 +258,7 @@ const TrackOrder = () => {
                                                 {value.statusOrder}
                                             </h3>
                                         </div>
-                                        {carts.map((value, idx) => (
+                                        {carts.filter(item => item.cart_id.id == value.cart_id.id).map((value, idx) => (
                                             <div key={idx} className="flex items-start mb-3 w-full">
                                                 <Image
                                                     src={value.product_id.imageProduct}
@@ -258,10 +272,12 @@ const TrackOrder = () => {
                                                     <h4 className="font-bold mb-2">{value.product_id.name}</h4>
                                                     <div className="w-full flex items-start">
                                                         <div className="w-[800px]">
-                                                            <p>{value.optionitem_id[0].name}</p>
+                                                            {value.optionitem_id.map((i: any) => 
+                                                                <p className="mr-3">{i.name}</p>
+                                                            )}
                                                         </div>
                                                         <div className="w-48 flex justify-end space-x-32">
-                                                            <p>X {value.product_id.quantity}</p>
+                                                            <p>X {value.quantity}</p>
                                                             <p>฿{value.product_id.price}</p>
                                                         </div>
                                                     </div>
@@ -271,17 +287,25 @@ const TrackOrder = () => {
                                         <div className="flex flex-col justify-end space-y-2">
                                             <div className="flex justify-end space-x-2">
                                                 <span className="font-bold text-lg">
-                                                    <span className="mr-1">{carts.length}</span>
+                                                <span className="mr-1">{carts
+                                                    .filter(item => item.cart_id.id == value.cart_id.id)
+                                                    .reduce((acc, item) => acc + item.quantity, 0)}
+                                                </span>
                                                     items:
                                                 </span>
                                                 <span className="font-bold text-lg">฿{value.total_price}</span>
                                             </div>
-                                            <div className="flex justify-end mt-2">
-                                                <button className="w-24 border-2 border-white text-white p-1 rounded-xl text-xl"
-                                                    onClick={() => openReviewPopup(value.id)}>
-                                                    Review
-                                                </button>
-                                            </div>
+                                                {reviews.filter(item => item.order_id.id == value.id ).length > 0?(<div className="flex justify-end mt-2">
+                                                    <button className="w-24 border-2 border-white text-white p-1 rounded-xl text-xl"
+                                                        onClick={() => openReviewPopup(value.id)}>
+                                                        Review
+                                                    </button>
+                                                </div>): (<div className="flex justify-end mt-2">
+                                                    <button className="w-24 border-2 border-white text-white p-1 rounded-xl text-xl"
+                                                        onClick={() => openReviewPopup(value.id)}>
+                                                        addReview
+                                                    </button>
+                                                </div>)}
                                         </div>
                                     </div>
                                 ))}
