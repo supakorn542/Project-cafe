@@ -73,23 +73,23 @@ const Menu = () => {
             />
           )}
 
-          <div className="grid grid-cols-3 ">
+          <div className="grid grid-cols-3 place-items-center">
             <Image
-              src={"/assets/menu/menu-coffee-1.png"}
+              src={"/assets/menu/menu-semi-circle-1ver2.png"}
               alt="Profile"
               width={300}
               height={300}
               className="rounded-tl-[150px] rounded-tr-[150px] rounded-br-[0] rounded-bl-[0]"
             />
             <Image
-              src={"/assets/menu/menu-coffee-1.png"}
+              src={"/assets/menu/menu-semi-circle-2ver2.png"}
               alt="Profile"
               width={300}
               height={300}
               className="rounded-tl-[150px] rounded-tr-[150px] rounded-br-[0] rounded-bl-[0]"
             />
             <Image
-              src={"/assets/menu/menu-coffee-1.png"}
+              src={"/assets/menu/menu-semi-circle-3ver2.png"}
               alt="Profile"
               width={300}
               height={300}
@@ -117,7 +117,7 @@ const Menu = () => {
                     className="bg-white p-4 shadow-xl rounded-2xl w-72"
                   >
                     <Image
-                      src={product.imageProduct||"/assets/menu/menu-coffee-1.png"}
+                      src={product.imageProduct}
                       layout="responsive"
                       width={1}
                       height={1}

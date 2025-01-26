@@ -17,7 +17,9 @@ export async function fetchCartByUserId(
   userId: string
 ): Promise<CartInterface | null> {
   const cartsRef = collection(db, "carts");
-  const q = query(cartsRef, where("user_id", "==", userId));
+  const userRef = doc(db, "users", userId);
+
+  const q = query(cartsRef, where("user_id", "==", userRef));
   const querySnapshot = await getDocs(q);
 
   if (!querySnapshot.empty) {
@@ -47,15 +49,15 @@ export async function createCart(userId: string): Promise<string> {
 export async function addCartItem(cartItem: CartItemsInterface) {
   const cartItemsRef = collection(db, "cartItems");
 
-  if (!cartItem.cart_id?.id || !cartItem.product_id?.id) {
+  if (!cartItem.cart_id || !cartItem.product_id) {
     throw new Error("Cart ID or Product ID is missing.");
   }
 
-  const cartRef: DocumentReference = doc(db, "carts", cartItem.cart_id.id);
+  const cartRef: DocumentReference = doc(db, "carts", cartItem.cart_id);
   const productRef: DocumentReference = doc(
     db,
     "products",
-    cartItem.product_id.id
+    cartItem.product_id
   );
 
   const optionItemRefs = cartItem.optionitem_ids.map((optionId) =>

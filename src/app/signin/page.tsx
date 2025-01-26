@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../context/authContext";
 import nookies from "nookies";
 import Image from "next/image";
+import { db } from "../lib/firebase";
+import { getDoc,doc } from "firebase/firestore";
 
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
@@ -18,7 +20,7 @@ const SignIn = () => {
   const router = useRouter();
   const { user, loading, signInWithGoogle } = useAuth();
 
-  useEffect(() => {}, []);
+
 
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault();
@@ -31,14 +33,29 @@ const SignIn = () => {
       if (userCredential.user) {
         console.log("User signed in:", userCredential.user);
 
-        const token = await userCredential.user.getIdToken();
-        console.log("Token Client:", token);
+        const tokenResult = await userCredential.user.getIdTokenResult();
+        const token = tokenResult.token;
+        const role = tokenResult.claims?.role; 
+
+        console.log("User role:", role)
+ 
+
+  
+
 
         nookies.set(null, "token", token, {
           maxAge: 60 * 60 * 24,
           path: "/",
         });
-        router.push("/user/profile");
+
+        console.log("Cookies set successfully");
+
+        if (role === "admin") {
+          router.push("/admin/products/menu"); // ถ้าเป็น admin ให้ไปหน้า admin
+        } else {
+          router.push("/user/profile"); // ถ้าไม่ใช่ admin ให้ไปหน้าโปรไฟล์
+        }
+
       } else {
         throw new Error("No user returned");
       }
@@ -172,7 +189,7 @@ const SignIn = () => {
               className="w-[45%] border font-serif4 font-bold text-2xl border-white text-white py-3 rounded-full flex items-center justify-center hover:bg-[#174839] transition duration-300"
             >
               <svg
-                className="h-8 w-7 mr-5" 
+                className="h-8 w-7 mr-5"
                 fill="#ffffff"
                 viewBox="0 0 236.271 236.271"
                 xmlns="http://www.w3.org/2000/svg"

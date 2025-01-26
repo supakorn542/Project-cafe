@@ -107,7 +107,7 @@ function Profile() {
         try {
           const response = await axios.post("/api/uploads", {
             image: base64Image,
-            publicId: `profile_pics/${user?.id}`,
+            publicId: `${user?.id}`,
             folder: "profile_pics",
           });
   

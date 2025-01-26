@@ -10,10 +10,11 @@ import { FaShoppingBasket } from "react-icons/fa";
 
 interface NavnarProp {
   textColor?: string;
+  color?: string;
 
 }
 
-const Navbar = ( {textColor = "text-black" } : NavnarProp) => {
+const Navbar = ( {textColor = "text-black", color = "black" } : NavnarProp) => {
   const { user, signOutUser } = useAuth();
   const router = useRouter();
 
@@ -121,12 +122,12 @@ const Navbar = ( {textColor = "text-black" } : NavnarProp) => {
         ) : (
           <>
             <Link href="/signin">
-              <button className="bg-transparent px-2 py-1 rounded-3xl border border-black hover:bg-blue-400">
+              <button className={`bg-transparent px-2 py-1 rounded-3xl border border-${color} hover:bg-slate-400 ${textColor}`}>
                 Sign in
               </button>
             </Link>
             <Link href="/signup">
-              <button className="bg-transparent px-2 py-1 rounded-3xl border border-black hover:bg-blue-400">
+              <button className={`bg-transparent px-2 py-1 rounded-3xl border border-${color} hover:bg-slate-400 ${textColor}`}>
                 Sign up
               </button>
             </Link>
