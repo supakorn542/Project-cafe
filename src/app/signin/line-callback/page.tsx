@@ -19,8 +19,10 @@ const LineCallback = () => {
         try {
           const userCredential = await signInWithCustomToken(auth, token);
           if (userCredential.user) {
-            const idToken = await userCredential.user.getIdToken(true);
-            nookies.set(null, "token", idToken, {
+            const tokenResult = await userCredential.user.getIdTokenResult();
+            const token = tokenResult.token;
+            const role = tokenResult.claims?.role; 
+            nookies.set(null, "token", token, {
               maxAge: 60 * 60 * 24, 
               path: "/",
             });

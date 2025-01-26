@@ -42,6 +42,12 @@ export default function Signup() {
         createdAt: new Date(),
       });
 
+      await fetch("/api/role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid: user.uid, role: "user" }), 
+      });
+
       alert("User registered successfully");
 
       router.push("/signin");

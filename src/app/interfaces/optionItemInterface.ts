@@ -2,7 +2,7 @@
 export interface OptionItem {
     id: string;
     name: string;
-    pricemodifier: number;
+    priceModifier: number;
     option_id : string;
   }
   

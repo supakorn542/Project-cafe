@@ -64,6 +64,8 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
 
     const cart = await fetchCartByUserId(user.id);
 
+    console.log("Cart",cart);
+
     let cartId: string;
 
     if (cart) {
@@ -73,8 +75,8 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
     }
 
     const cartItem = {
-      cart_id: { id: cartId } as CartInterface,
-      product_id: { id: product.id } as Product,
+      cart_id:  cartId ,
+      product_id: product.id!  ,
       quantity,
       optionitem_ids: Object.values(selectedOptions),
       pickupdate: pickupDateAsDate,
@@ -145,7 +147,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                             }
                           />
                           <label htmlFor={item.id}>
-                            {item.name} (+${item.pricemodifier})
+                            {item.name} (+${item.priceModifier})
                           </label>
                         </li>
                       )) || <li>No items available</li>}

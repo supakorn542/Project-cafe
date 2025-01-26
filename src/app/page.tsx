@@ -129,7 +129,7 @@ export default function Home() {
   });
   return (
     <div>
-      <Navbar />
+      <Navbar textColor="text-white" color="white" />
       <section className="h-screen w-full">
         <Image
           className="-z-10"
