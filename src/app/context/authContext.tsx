@@ -74,7 +74,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         createdAt: new Date(),
     
       };
-      const token = await result.user.getIdToken();
+      const tokenResult = await result.user.getIdTokenResult();
+      const token = tokenResult.token;
+      const role = tokenResult.claims?.role; 
    
       nookies.set(null, "token", token, {
         maxAge: 60 * 60 * 24, 
