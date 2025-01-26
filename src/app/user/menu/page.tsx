@@ -4,7 +4,7 @@ import Image from "next/image";
 import Navbar from "@/app/components/Navbar";
 import { FaCirclePlus } from "react-icons/fa6";
 import { useState, useEffect } from "react";
-import OptionPopup from "../../components/menu/OptionPopup";
+import OptionPopup from "@/app/components/menu/OptionPopup";
 import { getAllProducts, getAllProductTypes } from "@/app/services/userProduct";
 import { Product } from "@/app/interfaces/product";
 import { productTypeInterface } from "@/app/interfaces/productType";
@@ -61,7 +61,7 @@ const Menu = () => {
 
   return (
     <>
-       <>
+     
       <div className="min-h-screen bg-[#FBF6F0] overflow-y-auto scroll-smooth">
         <Navbar />
 
@@ -126,10 +126,10 @@ const Menu = () => {
                     <h3 className="text-xl font-serif4 pt-2">{index + 1}</h3>
                     <div className="flex justify-between pb-1">
                       <h2 className="text-xl font-serif4 font-semibold">
-                        {product.name}
+                        {product?.name}
                       </h2>
                       <h3 className="font-serif4 text-xl font-semibold">
-                        ${product.price}
+                        ${product?.price}
                       </h3>
                     </div>
                     <hr className="border-black" />
@@ -151,7 +151,7 @@ const Menu = () => {
           ))}
         </div>
       </div>
-    </>
+
     </>
   );
 };
