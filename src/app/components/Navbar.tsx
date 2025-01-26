@@ -24,6 +24,21 @@ const Navbar = ( {textColor = "text-black", color = "black" } : NavnarProp) => {
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+      const handleScroll = (): void => {
+          const isScrolled = window.scrollY > 10;
+          if (isScrolled !== scrolled) {
+              setScrolled(isScrolled);
+          }
+      };
+
+      document.addEventListener("scroll", handleScroll);
+      return () => {
+          document.removeEventListener("scroll", handleScroll);
+      };
+  }, [scrolled]);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -53,7 +68,9 @@ const Navbar = ( {textColor = "text-black", color = "black" } : NavnarProp) => {
   }, []);
 
   return (
-    <nav className="absolute top-0 left-0 w-full z-50 bg-transparent  py-4 px-11 flex justify-between items-center">
+   <nav className={`fixed top-0 left-0 right-0 transition-all duration-300 z-50 flex justify-between ${
+            scrolled ? "bg-white/80 text-black shadow-md saturate-[180%] backdrop-blur-md" : "bg-transparent text-white"
+        } p-2`}>
       <div>
         <Link href="/" className={`font-gloock font-bold text-2xl ${textColor}`}>
           Forest Tale
