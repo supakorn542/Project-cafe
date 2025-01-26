@@ -38,6 +38,7 @@ const sdata = [
       "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
   },
 ];
+
 const mdata = [
   {
     name: "Chanakon",
@@ -51,6 +52,77 @@ const mdata = [
   },
 ];
 
+const reviewData = [
+  {
+    rating: 5,
+    comment: "กระป๋องกาแฟเท่มาก น้ำแข็งก้อนกลมถูกใจคอกาแฟ เข้มกล่อมกล่อม",
+    order: [
+      {
+        name: "latte",
+      },
+      {
+        name: "espresso",
+      },
+    ],
+    used: {
+      profileImage:
+        "https://res.cloudinary.com/donlonxid/image/upload/v1736325901/profile_pics/profile_pics/5GA3T2LIo5EpxUVZb4EgXsUCqTzM.png",
+      name: "jay",
+    },
+  },
+  {
+    rating: 3,
+    comment: "อร่อยทุกเมนูเลย ชดชื่นมากกกกกก ไอเลิฟๆ",
+    order: [
+      {
+        name: "milk",
+      },
+      {
+        name: "shayen",
+      },
+    ],
+    used: {
+      profileImage:
+        "https://res.cloudinary.com/donlonxid/image/upload/v1736325901/profile_pics/profile_pics/5GA3T2LIo5EpxUVZb4EgXsUCqTzM.png",
+      name: "jay",
+    },
+  },
+  {
+    rating: 2,
+    comment: "อร่อยทุกเมนูเลย ชดชื่นมากกกกกก ไอเลิฟๆ",
+    order: [
+      {
+        name: "milk",
+      },
+      {
+        name: "shayen",
+      },
+    ],
+    used: {
+      profileImage:
+        "https://res.cloudinary.com/donlonxid/image/upload/v1736325901/profile_pics/profile_pics/5GA3T2LIo5EpxUVZb4EgXsUCqTzM.png",
+      name: "jay",
+    },
+  },
+  {
+    rating: 1,
+    comment: "อร่อยทุกเมนูเลย ชดชื่นมากกกกกก ไอเลิฟๆ",
+    order: [
+      {
+        name: "milk",
+      },
+      {
+        name: "shayen",
+      },
+    ],
+    used: {
+      profileImage:
+        "https://res.cloudinary.com/donlonxid/image/upload/v1736325901/profile_pics/profile_pics/5GA3T2LIo5EpxUVZb4EgXsUCqTzM.png",
+      name: "jay",
+    },
+  },
+];
+
 export default function Home() {
   useEffect(() => {
     AOS.init();
@@ -61,7 +133,7 @@ export default function Home() {
       <section className="h-screen w-full">
         <Image
           className="-z-10"
-          src={"/assets/profile-background.jpg"}
+          src={"/assets/bgweb.png"}
           alt="A description of your image"
           layout="fill"
           objectFit="cover" // หรือ "contain" ตามความต้องการ
@@ -216,69 +288,66 @@ export default function Home() {
       </section>
       <section className="mt-20">
         <Image
-          src={"/assets/profile-background.jpg"}
+          src={"/assets/greenscreen.png"}
           alt="bg"
           width={0}
           height={0}
           sizes="100vw"
-          className="-z-20 "
+          className="-z-20 absolute"
           style={{ width: "100%", height: "auto" }}
-        >
-        </Image>
-        <div className="container mx-auto ">
-          {/* กล่องบนข้อความ */}
-          <div>
-            <label>
-              POURING{" "}
-              <span>
-                <Image
-                  src={"/assets/basisbalck.png"}
-                  alt=""
-                  width={100}
-                  height={100}
-                ></Image>
-              </span>
-              MOMENTS OF BLISS INTO{" "}
-              <span>
-                <Image
-                  src={"/assets/basisbalck.png"}
-                  alt=""
-                  width={100}
-                  height={100}
-                ></Image>
-              </span>
-              CUP OF{" "}
-              <span>
-                <Image
-                  src={"/assets/basisbalck.png"}
-                  alt=""
-                  width={100}
-                  height={100}
-                ></Image>
-              </span>
-              COFFEE
-              <span>
-                <Image
-                  src={"/assets/basisbalck.png"}
-                  alt=""
-                  width={100}
-                  height={100}
-                ></Image>
-              </span>
-              at
-              <span>
-                <Image
-                  src={"/assets/basisbalck.png"}
-                  alt=""
-                  width={100}
-                  height={100}
-                ></Image>
-              </span>
-              FOREST TALES
-            </label>
+        />
+        <div className="container mx-auto text-white">
+          <div className="flex flex-col text-[70px] bg-[url(/img/mountains.jpg) bg-scroll]">
+            <div className="flex justify-center gap-2"></div>
           </div>
-          {/* กล่องล่างรีวิว */}
-          <div></div>
+          <div className="container mx-auto text-white p-8 bg-white bg-opacity-20 backdrop-blur-lg mt-10 rounded-3xl flex flex-col">
+            <h2 className=" font-bold mb-4 self-center flex text-4xl">Impression</h2>
+            <div className="space-y-6 overflow-auto max-h-[400px]">
+              {reviewData.map((review, index) => (
+                <div
+                  key={index}
+                  className="bg-opacity-50 bg-black p-4 rounded-lg"
+                >
+                  <div className="flex items-center mb-2">
+                    <Image
+                      src={review.used.profileImage}
+                      alt={review.used.name}
+                      width={50}
+                      height={50}
+                      className="rounded-full mr-2"
+                    />
+                    <div>
+                      <h3 className="font-medium">{review.used.name}</h3>
+                      <div className="flex gap-1">
+                        {Array.from({ length: review.rating }, (_, i) => (
+                          <svg
+                            key={i}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="w-5 h-5 text-yellow-400"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="mb-2">{review.comment}</p>
+                  <div className="flex gap-2">
+                    {review.order.map((item, i) => (
+                      <span
+                        key={i}
+                        className="bg-gray-700 px-2 py-1 rounded-md text-sm"
+                      >
+                        {item.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
       <FooterUser />
