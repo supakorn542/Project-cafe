@@ -282,7 +282,7 @@ const Cart = () => {
 
   return (
     <div className="bg-beige min-h-screen pt-16">
-      <Navbar />
+      <Navbar textColor="text-black" color="white"/>
       <div className="container mx-auto px-4 py-8 ">
         <div className="flex gap-8 flex-wrap">
           {/* Left Section: Cart Items */}
