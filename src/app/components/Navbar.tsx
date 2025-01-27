@@ -97,7 +97,7 @@ const Navbar = ( {textColor = "text-black", color = "black" } : NavnarProp) => {
         </ul>
       </div>
 
-      <div className="flex items-center gap-8 pr-2">
+      <div className="flex items-center gap-8">
         {user ? (
           <>
           <div>
@@ -112,7 +112,7 @@ const Navbar = ( {textColor = "text-black", color = "black" } : NavnarProp) => {
                 className={`text-3xl cursor-pointer ${textColor}`}
               />
               {isOpen && (
-                <div  className="absolute  -translate-x-1/2 min-w-max z-10 mt-2 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow  dark:bg-gray-700 dark:divide-gray-600">
+                <div  className="absolute left-1/2 -translate-x-1/2 min-w-max z-10 mt-2 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow  dark:bg-gray-700 dark:divide-gray-600">
                   <ul className="py-2 text-sm text-gray-700 dark:text-gray-400">
                     <li>
                       <Link

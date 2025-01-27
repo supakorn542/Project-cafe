@@ -2,100 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .react-datepicker-wrapper {
   width: 100%;
+ 
 }
 
-/* Header */
+
+
+.custom-datepicker .react-datepicker {
+  background-color: #f6dfbf; /* เปลี่ยนพื้นหลัง */
+  border: 2px solid #000; /* กำหนดเส้นขอบ */
+  border-radius: 10px; /* ปรับขอบให้โค้งมน */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* เพิ่มเงา */
+
+}
+
+/* สำหรับ header */
 .custom-datepicker .react-datepicker__header {
-  background-color: #C8963E;
+  background-color: #f7e3c8;
   border-bottom: none;
 }
 
-/* Days of the week (Su Mo Tu We Th Fr Sa) */
-.custom-datepicker .react-datepicker__day-names .react-datepicker__day-name {
-  color: #333; /* สีขาว */
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-/* Day cells */
+/* สำหรับ day*/
 .custom-datepicker .react-datepicker__day {
-  color: #333; /* สีดำ */
+  color: #333;
   font-weight: bold;
 }
 
-/* Selected day */
+/* สำหรับ selected day */
 .custom-datepicker .react-datepicker__day--selected {
-  background-color: #333; /* พื้นหลังสีดำ */
-  color: #f7e3c8; /* สีตัวอักษร */
-  border-radius: 50%; /* รูปทรงกลม */
+  background-color: #333;
+  color: #f7e3c8;
 }
 
-/* Hovered day */
-.custom-datepicker .react-datepicker__day:hover {
-  background-color: #f7e3c8; /* สีพื้นหลังเมื่อ hover */
-  color: #333; /* สีตัวอักษรเมื่อ hover */
-}
-
-/* Current Month and Year (January 2025) */
-.custom-datepicker .react-datepicker__current-month {
-  color: #333; /* สีขาว */
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-/* Dropdown selectors (Year and Month) */
+/* สำหรับ selected year and selected month  */
 .custom-datepicker .react-datepicker__year-select,
 .custom-datepicker .react-datepicker__month-select {
-  background-color: #C8963E; /* พื้นหลัง */
-  color: #000000; /* สีตัวอักษร */
-  border: 1px solid #333;
+  background-color: #f9f1e9;
+  color: #333;
+  border: 1px solid #000;
   border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  padding: 3px;
+
+  font-size: 0.875rem;
 }
 
-/* Dropdown options */
+/* สำหรับ dropdown options */
 .custom-datepicker .react-datepicker__year-select option,
 .custom-datepicker .react-datepicker__month-select option {
-  background-color: #C8963E; /* พื้นหลัง */
-  color: #000000; /* สีตัวอักษร */
+  background-color: #f6dfbf;
+  color: #333;
   padding: 5px;
 }
 
-/* Scrollbar for dropdown */
+/* สำหรับ Year and Month Dropdown */
 .custom-datepicker .react-datepicker__year-select::-webkit-scrollbar,
 .custom-datepicker .react-datepicker__month-select::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-/* Scrollbar track */
+/* สำหรับ Background Scrollbar */
 .custom-datepicker .react-datepicker__year-select::-webkit-scrollbar-track,
 .custom-datepicker .react-datepicker__month-select::-webkit-scrollbar-track {
-  background: #C8963E;
+  background: #f6dfbf;
   border-radius: 10px;
 }
 
-/* Scrollbar thumb */
+/* สำหรับ Scrollbar */
 .custom-datepicker .react-datepicker__year-select::-webkit-scrollbar-thumb,
 .custom-datepicker .react-datepicker__month-select::-webkit-scrollbar-thumb {
-  background-color: #ffffff;
+  background-color: #333;
   border-radius: 10px;
-  border: 2px solid #C8963E;
+  border: 2px solid #f6dfbf;
 }
 
-/* Scrollbar hover */
+/* สำหรับตอนเลื่อน Scrollbar */
 .custom-datepicker
   .react-datepicker__year-select::-webkit-scrollbar-thumb:hover,
 .custom-datepicker
   .react-datepicker__month-select::-webkit-scrollbar-thumb:hover {
-  background-color: #989898;
+  background-color: #9f9e9e;
 }
 
-/* Hide scrollbar */
+/* ซ่อน scrollbar */
 .scrollbar-hidden {
   -ms-overflow-style: none; /* สำหรับ IE และ Edge */
   scrollbar-width: none; /* สำหรับ Firefox */
@@ -109,6 +99,6 @@
   display: none;
 }
 .custom-scroll {
-  -ms-overflow-style: none; /* สำหรับ IE และ Edge */
-  scrollbar-width: none; /* สำหรับ Firefox */
+  -ms-overflow-style: none;  /* For Internet Explorer 10+ */
+  scrollbar-width: none; /* For Firefox */
 }

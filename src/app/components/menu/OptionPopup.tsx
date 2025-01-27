@@ -10,13 +10,15 @@ import {
 } from "@/app/services/userProduct";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { Product } from "@/app/interfaces/product";
+import { CartItemsInterface } from "@/app/interfaces/cartItemInterface";
+import { CartInterface } from "@/app/interfaces/cartInterface";
 import {
   fetchCartByUserId,
   createCart,
   addCartItem,
 } from "@/app/services/userCart";
 import { useAuth } from "@/app/context/authContext";
-import { useRouter } from "next/navigation";
+import { Timestamp } from "firebase/firestore";
 
 interface OptionPopupProps {
   onClose: () => void;
@@ -38,8 +40,6 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
   const [description, setDescription] = useState<string>("");
   const [pickupDate, setPickupDate] = useState<string>("");
 
-  const router = useRouter()
-
   const handleIncrease = () => {
     setQuantity((prev) => prev + 1);
   };
@@ -59,13 +59,12 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
       alert("Please log in or select a product.");
       return;
     }
-    const action = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
 
     const pickupDateAsDate = new Date(pickupDate);
 
     const cart = await fetchCartByUserId(user.id);
 
-    console.log("Cart", cart);
+    console.log("Cart",cart);
 
     let cartId: string;
 
@@ -76,30 +75,17 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
     }
 
     const cartItem = {
-      cart_id: cartId,
-      product_id: product.id!,
+      cart_id:  cartId ,
+      product_id: product.id!  ,
       quantity,
       optionitem_ids: Object.values(selectedOptions),
       pickupdate: pickupDateAsDate,
       description,
     };
-    if (action.value === "add_to_cart") {
-      console.log("Adding to cart...");
-      await addCartItem(cartItem);
-      alert("Added to cart successfully!");
-      onClose();
 
-    } else if (action.value === "buy_now") {
-
-      console.log("Buying now...");
-      await addCartItem(cartItem);
-      alert("Added to cart successfully!");
-      router.push("cart")
-
-    }
-
-   
- 
+    await addCartItem(cartItem);
+    alert("Added to cart successfully!");
+    onClose();
   };
 
   useEffect(() => {
@@ -205,22 +191,12 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
 
               <div className="flex justify-between">
                 <div>
-                  <button
-                    type="submit"
-                    name="action"
-                    value="add_to_cart"
-                    className="border border-1 border-black px-2 rounded-2xl"
-                  >
+                  <button className="border border-1 border-black px-2 rounded-2xl">
                     ADD TO CART
                   </button>
                 </div>
                 <div>
-                  <button
-                    type="submit"
-                    name="action"
-                    value="buy_now"
-                    className="bg-black px-2 border border-1 border-black rounded-2xl text-white"
-                  >
+                  <button className="bg-black px-2 border border-1 border-black rounded-2xl text-white">
                     BUY NOW
                   </button>
                 </div>
