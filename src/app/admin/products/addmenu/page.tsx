@@ -86,16 +86,15 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
 
     try {
       await createProductWithOptions(productData, uploadedImage);
+      
       alert("Product created successfully!");
+      window.location.reload();
     } catch (error) {
       console.error("Error creating product:", error);
       alert("Failed to create product");
     }
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectProductType(e.target.value);
-  };
 
   const handleOptionCheckboxChange = (option: OptionInterface) => {
     if (!option.id) {
@@ -161,7 +160,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
                   id="price"
                   className="border border-black rounded-md p-2 w-full"
                   type="number"
-                  value={price}
+                  value={price || ""}
                   onChange={(e) => setPrice(Number(e.target.value))}
                   required
                 />
@@ -174,7 +173,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
                   id="price"
                   className="border border-black rounded-md p-2 w-full"
                   type="number"
-                  value={calorie}
+                  value={calorie || ""}
                   onChange={(e) => setCalorie(Number(e.target.value))}
                   required
                 />
@@ -204,7 +203,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
                 <ul>
                   {items.map((item) => (
                     <li key={item.id} className="text-sm text-gray-400">
-                      {item.name} - $ {item.pricemodifier}
+                      {item.name} - $ {item.priceModifier}
                     </li>
                   ))}
                 </ul>

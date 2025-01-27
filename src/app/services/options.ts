@@ -30,7 +30,7 @@ export const getOptions = async (): Promise<{ options: OptionInterface[], option
           optionItemsMapTemp[optionId].push({
               id: doc.id,
               name: data.name || '',
-              pricemodifier: data.pricemodifier || 0,
+              priceModifier: data.pricemodifier || 0,
               option_id: optionId // เพิ่ม option_id ลงใน OptionItem
           });
       }
@@ -44,7 +44,7 @@ export const getOptions = async (): Promise<{ options: OptionInterface[], option
 // สร้าง option โดยมีการสร้าง optionitem เข้าไปด้วย
 export const createOption = async (
   data: OptionInterface,
-  optionItems?: { name: string; pricemodifier: number }[]
+  optionItems?: { name: string; priceModifier: number }[]
 ) => {
   try {
     // 1. เพิ่มเอกสารใหม่ใน collection "options"
@@ -64,7 +64,7 @@ export const createOption = async (
         batch.set(newOptionItemRef, {
           name: item.name,
           option_id: doc(db, "options", addOption.id), // บันทึก `option_id` เป็น id ของ option
-          pricemodifier: item.pricemodifier,
+          pricemodifier: item.priceModifier,
         });
       });
 

@@ -6,7 +6,7 @@ import OptionItemPopup from "./OptionItemPopup";
 interface OptionItem {
   id: string;
   name: string;
-  pricemodifier: number;
+  priceModifier: number;
 }
 
 interface SelectOptionsPopupProps {

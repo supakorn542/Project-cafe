@@ -13,16 +13,19 @@ import { getOptionItemsByOptionId } from "@/app/services/optionItem";
 interface OptionItem {
   id: string;
   name: string;
-  pricemodifier: number;
+  priceModifier: number;
 }
 
 interface OptionItemPopupProps {
   option: { id: string; name: string; require: boolean };
   onClose: () => void;
+  
+  
 }
 
 const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
   option,
+
   onClose,
 }) => {
   const [optionItems, setOptionItems] = useState<OptionItem[]>([]);
@@ -49,7 +52,7 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
   }, [option.id]);
 
   const handleAddOptionItem = (name: string, price: number) => {
-    const newItem = { id: "", name, pricemodifier: price }; // Temporary ID
+    const newItem = { id: "", name, priceModifier: price }; // Temporary ID
     setPendingAddItems((prev) => [...prev, newItem]);
     setOptionItems((prev) => [...prev, newItem]);
   };
@@ -74,7 +77,7 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
         const newItemRef = doc(optionItemsCollection);
         batch.set(newItemRef, {
           name: item.name,
-          pricemodifier: item.pricemodifier,
+          pricemodifier: item.priceModifier,
           option_id: optionRef,
         });
       });
@@ -141,7 +144,7 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
             {optionItems.map((item) => (
               <li key={item.id} className="flex items-center justify-between py-2">
                 <span>{item.name}</span>
-                <span>{item.pricemodifier} $</span>
+                <span>{item.priceModifier} $</span>
                 <button
                   type="button"
                   onClick={() => handleDeleteOptionItem(item.id)}

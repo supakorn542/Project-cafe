@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/app/lib/firebase";
+import Image from "next/image"
 
 function Payment({ cartId, onClose, totalPrice }: { cartId: string; onClose: () => void;totalPrice: number }) {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -77,9 +78,10 @@ function Payment({ cartId, onClose, totalPrice }: { cartId: string; onClose: () 
   return (
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex flex-col justify-between items-center">
-            <h2 className="text-xl font-bold text-black">Payment</h2>
+        <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between items-center relative">
+        <button onClick={onClose} className="absolute top-6 right-6 ">X</button> 
+          <div className="">
+            <Image src="/assets/Payment.png" alt="payment" width={400} height={400}></Image>
           </div>
 
           <label
@@ -97,7 +99,7 @@ function Payment({ cartId, onClose, totalPrice }: { cartId: string; onClose: () 
           />
           <button
             type="submit"
-            className="border rounded-lg bg-green-800 px-3 py-2"
+            className="border rounded-lg bg-green-800 px-3 py-2 text-white mt-4 w-full"
             onClick={savePayment}
             disabled={isUploading}
           >

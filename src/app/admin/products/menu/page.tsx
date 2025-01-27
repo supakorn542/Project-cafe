@@ -125,20 +125,7 @@ const MenuPage = () => {
     setSelectedProductId(null);
   };
 
-  const handleNextPage = () => {
-    if ((currentPage + 1) * productsPerPage < products.length) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
-
-  const startIndex = currentPage * productsPerPage;
-  
+ 
 
   // const productTypeMap = Object.fromEntries(
   //   productType.map((productType) => [productType.id, productType.name])
@@ -153,7 +140,7 @@ const MenuPage = () => {
   };
 
   return (
-    <div className="bg-[#FBF6F0] h-screen pt-20">
+    <div className="bg-[#FBF6F0] min-h-screen pt-20">
       <Navbar />
       {/* Main Container */}
       <div className="container mx-auto border-2 rounded-3xl border-black p-6  bg-background shadow-md">
@@ -194,10 +181,8 @@ const MenuPage = () => {
         )}
 
         {/* Product List */}
-        <div className="flex flex-col gap-5">
-          {filteredProducts
-            .slice(startIndex, startIndex + productsPerPage)
-            .map((product) => (
+        <div className="flex flex-col gap-5 max-h-[500px] overflow-auto min-h-[500px]">
+          {filteredProducts.map((product) => (
               <div
                 key={product.id}
                 className="bg-transparent rounded-md overflow-hidden p-6 min-h-[230px] max-h-[230px] h-auto flex flex-col justify-between shadow-md relative"
@@ -219,7 +204,7 @@ const MenuPage = () => {
                       height={80}
                     />
                   </div>
-                  <div className="flex-1 overflow-y-auto max-h-[150px]">
+                  <div className="flex-1 overflow-y-auto max-h-[150px] border-l-2 border-black p-2">
                     {allGroupedOptions
                       .find((selected) => selected.productId === product.id)
                       ?.options?.map(({ option, items }) => (
@@ -233,8 +218,8 @@ const MenuPage = () => {
                                 key={item.id}
                                 className="text-sm text-gray-600"
                               >
-                                {item.name} - Price Modifier:{" "}
-                                {item.pricemodifier}
+                                {item.name} - $ {" "}
+                                {item.priceModifier}
                               </li>
                             ))}
                           </ul>
@@ -277,32 +262,7 @@ const MenuPage = () => {
                 )}
               </div>
             ))}
-          <div className="flex justify-between mt-4">
-            <button
-              className={`px-4 py-2 rounded-md text-white ${
-                currentPage === 0
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-green-800"
-              }`}
-              onClick={handlePreviousPage}
-              disabled={currentPage === 0}
-            >
-              Previous
-            </button>
-            <button
-              className={`px-4 py-2 rounded-md text-white ${
-                (currentPage + 1) * productsPerPage >= filteredProducts.length
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-green-800"
-              }`}
-              onClick={handleNextPage}
-              disabled={
-                (currentPage + 1) * productsPerPage >= filteredProducts.length
-              }
-            >
-              Next
-            </button>
-          </div>
+          
         </div>
       </div>
     </div>

@@ -4,11 +4,12 @@ import { createOption } from "@/app/services/options";
 const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,
   onClose,
+  
 }) => {
   const [optionName, setOptionName] = useState(""); // เก็บชื่อ option
   const [isRequired, setIsRequired] = useState(false); // ระบุว่าจำเป็นต้องเลือกหรือไม่
   const [optionItems, setOptionItems] = useState<
-    { name: string; pricemodifier: number }[]
+    { name: string; priceModifier: number }[]
   >([]); // เก็บรายการช้อยส์
   const [newItemName, setNewItemName] = useState(""); // ชื่อของช้อยส์ใหม่
   const [newItemPriceModifier, setNewItemPriceModifier] = useState<number>(0); // ราคาเพิ่มลดของช้อยส์ใหม่
@@ -21,7 +22,7 @@ const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
 
     setOptionItems((prev) => [
       ...prev,
-      { name: newItemName, pricemodifier: newItemPriceModifier },
+      { name: newItemName, priceModifier: newItemPriceModifier },
     ]);
     setNewItemName(""); // ล้าง input หลังเพิ่ม
     setNewItemPriceModifier(0); // รีเซ็ตตัวปรับราคา
@@ -102,7 +103,7 @@ const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             {optionItems.map((item, index) => (
               <li key={index} className="flex items-center mb-2">
                 <span className="flex-grow">
-                  {item.name} (ราคา: {item.pricemodifier})
+                  {item.name} (ราคา: {item.priceModifier})
                 </span>
                 <button
                   onClick={() => handleRemoveItem(index)}

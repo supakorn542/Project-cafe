@@ -34,6 +34,7 @@ interface CartStateItem extends CartInterface {
   product_id: Product[];
   optionItems_id: OptionItem[];
   totalPrice: number;
+  description: string;
 }
 
 const Cart = () => {
@@ -108,6 +109,7 @@ const Cart = () => {
               quantity: data.quantity,
               optionitem_ids: data.optionitem_id || [], // array ของ optionitem_id
               cart_id: data.cart_id,
+              description: data.description,
             };
           });
           console.log("dd", cartItems);
@@ -237,7 +239,7 @@ const Cart = () => {
               status: true,
               totalPrice: totalProductPrice + totalOptionPrice,
               quantity: item.quantity,
-
+              description: item.description,
               user_id:
                 cartSnapshot.docs.find((doc) => doc.id === item.cart_id)?.data()
                   .user_id || "Unknown",
@@ -282,14 +284,15 @@ const Cart = () => {
 
   return (
     <div className="bg-beige min-h-screen pt-16">
-      <Navbar textColor="text-black" color="white"/>
-      <div className="container mx-auto px-4 py-8 ">
-        <div className="flex gap-8 flex-wrap">
-          {/* Left Section: Cart Items */}
-          <div className="grow md:flex-0 lg:flex-2 ">
-            <header className=" text-greenthemewep p-4 ">
+      <Navbar textColor="text-black" color="white" />
+      <div className="container mx-auto px-4 py-6 ">
+      <header className=" text-greenthemewep p-4 ">
               <h1 className="text-3xl font-bold">Your Cart</h1>
             </header>
+        <div className="flex gap-8 flex-wrap ">
+          {/* Left Section: Cart Items */}
+          <div className="grow md:flex-0 lg:flex-2 max-h-[500px] overflow-auto">
+            
 
             {cartItems.map((item) => (
               <div
@@ -299,7 +302,7 @@ const Cart = () => {
                 <div className="flex flex-col md:flex-row md:items-center">
                   {" "}
                   {/* ปรับ layout ให้เป็น column บน mobile และ row บน tablet/desktop */}
-                  <div className="md:w-1/2">
+                  <div className="md:w-1/2 ">
                     {" "}
                     {/* กำหนดความกว้างของ column บน tablet/desktop */}
                     {item.product_id.map((product: Product) => (
@@ -313,20 +316,28 @@ const Cart = () => {
                             className="w-20 h-20 rounded-md object-cover mr-4" // เพิ่ม object-cover เพื่อจัดการรูปภาพให้พอดีกับ frame
                           />
                         )}
-                        
+
                         <div>
                           <h3 className="font-medium text-gray-800">
                             {product.name}
                           </h3>{" "}
                           {/* เพิ่ม h3 และ class font-medium */}
-                          {item.optionItems_id.map((option: OptionItem) => (
-                            <p
-                              key={option.id}
-                              className="text-gray-600 text-sm"
-                            >
-                              {option.name}
+                          {item.optionItems_id.map(
+                            (option: OptionItem, index) => (
+                              <span
+                                key={option.id}
+                                className="text-gray-600 text-sm"
+                              >
+                                {option.name}
+                                {index < item.optionItems_id.length - 1 && ", "}
+                              </span>
+                            )
+                          )}
+                          {item.description && (
+                            <p className="text-gray-600 text-sm">
+                              คำอธิบายเพิ่มเติม: {item.description}
                             </p>
-                          ))}
+                          )}
                         </div>
                       </div>
                     ))}
@@ -337,11 +348,10 @@ const Cart = () => {
                     <div className="flex items-center justify-between md:justify-end">
                       {" "}
                       {/* จัดตำแหน่งปุ่มต่างๆ */}
-                     
                     </div>
-                      <p className="absolute top-4 right-4 text-lg font-bold text-gray-800">
-                        ${item.totalPrice}
-                      </p>
+                    <p className="absolute top-4 right-4 text-lg font-bold text-gray-800">
+                      ${item.totalPrice}
+                    </p>
                     <div className="flex mt-2 lg:justify-end">
                       <button
                         className="text-red-500 hover:text-red-700 mr-2"
@@ -371,7 +381,7 @@ const Cart = () => {
           </div>
 
           {/* Right Section: Total Price */}
-          <div className="w-full sm:w-1/3   bg-greenthemewep p-4 rounded-lg shadow-lg">
+          <div className="w-full sm:w-1/3   bg-greenthemewep p-4 rounded-lg shadow-lg  max-h-[400px]">
             <h2 className="text-xl font-bold text-white mb-4">Total</h2>
             {cartItems.map((item) => (
               <div key={item.id} className=" text-sm  py-2 text-white">
@@ -395,7 +405,7 @@ const Cart = () => {
             </button>
             {isPopupPaymentOpen && (
               <Payment
-               totalPrice={totalPrice}
+                totalPrice={totalPrice}
                 cartId={cartId}
                 onClose={handleClosePopup}
                 data-aos="fade-up"

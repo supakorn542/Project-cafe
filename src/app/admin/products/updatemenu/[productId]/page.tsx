@@ -66,7 +66,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
           setDescription(productData.description);
           setSelectedStatus(productData.status_id.id);
           setSelectProductType(productData.productType_id.id);
-          setUploadedImage(productData.imageProduct)
+          
 
           const selectedOptionsData = options
             .filter((option) => selectedOptionIds.includes(option.id))
@@ -121,7 +121,9 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
         );
 
         if (isUpdated) {
+
           alert("Product updated successfully");
+          window.location.reload()
         }
       }
     } catch (error) {
@@ -183,7 +185,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
                 <label htmlFor="price" className="font-medium">ราคา ($)</label>
                 <input
                   type="number"
-                  value={price}
+                  value={price || ""}
                   className="border border-black rounded-md p-2 w-full"
                   onChange={(e) => setPrice(Number(e.target.value))}
                   placeholder="Price"
@@ -194,7 +196,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
                 <label htmlFor="calorie" className="font-medium">แคลลอรี่</label>
                 <input
                   type="number"
-                  value={calorie}
+                  value={calorie || ""}
                   className="border border-black rounded-md p-2 w-full"
                   onChange={(e) => setCalorie(Number(e.target.value))}
                   placeholder="Calorie"
@@ -229,7 +231,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
                   <ul>
                     {items.map((item) => (
                       <li key={item.id} className="text-sm text-gray-500">
-                        {item.name} - $ {item.pricemodifier}
+                        {item.name} - $ {item.priceModifier}
                       </li>
                     ))}
                   </ul>
