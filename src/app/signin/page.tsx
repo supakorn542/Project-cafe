@@ -3,24 +3,20 @@
 import { FormEvent, useState, useEffect } from "react";
 import {
   signInWithEmailAndPassword,
-  signInWithCustomToken,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/authContext";
 import nookies from "nookies";
 import Image from "next/image";
-import { db } from "../lib/firebase";
-import { getDoc,doc } from "firebase/firestore";
+
 
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const router = useRouter();
-  const { user, loading, signInWithGoogle } = useAuth();
-
-
+  const { signInWithGoogle } = useAuth();
 
   const handleSignIn = async (e: FormEvent) => {
     e.preventDefault();
@@ -35,13 +31,9 @@ const SignIn = () => {
 
         const tokenResult = await userCredential.user.getIdTokenResult();
         const token = tokenResult.token;
-        const role = tokenResult.claims?.role; 
+        const role = tokenResult.claims?.role;
 
-        console.log("User role:", role)
- 
-
-  
-
+        console.log("User role:", role);
 
         nookies.set(null, "token", token, {
           maxAge: 60 * 60 * 24,
@@ -55,7 +47,6 @@ const SignIn = () => {
         } else {
           router.push("/user/profile"); // ถ้าไม่ใช่ admin ให้ไปหน้าโปรไฟล์
         }
-
       } else {
         throw new Error("No user returned");
       }
@@ -82,38 +73,43 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen flex items-center  bg-[#013927]">
-      <div className="flex w-full h-[695px] max-w-[1440px] ">
+      <div className="flex w-full  max-w-[1440px] flex-col md:flex-row h-auto md:h-[695px]">
         <div className="flex-1  flex flex-col">
-          <div className="relative w-5/6 h-full ">
+          <div className="relative w-full md:w-5/6 h-64 md:h-full ">
             <Image
               src="/assets/signin-image.jpg"
               alt="Forest Tales Coffee"
               fill
               className="object-cover "
             />
+            <h2
+              className="absolute md:hidden top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl font-playfair font-bold text-center text-white  backdrop-blur-sm  rounded-xl  "   
+            >
+              Welcome To Forest Tales
+            </h2>
           </div>
         </div>
         <div className="flex-1 p-8 flex flex-col items-center ">
-          <h2 className="text-6xl font-playfair font-bold mb-10 text-center text-white">
+          <h2 className="hidden md:block text-6xl font-playfair font-bold mb-10 text-center text-white">
             Welcome To Forest Tales
           </h2>
 
           {error && <p className="">{error}</p>}
 
-          <form onSubmit={handleSignIn} className="mt-3 w-5/6">
+          <form onSubmit={handleSignIn} className="mt-3 w-full md:w-5/6">
             <div className="relative">
               <input
                 type="email"
-                id="floating_outlined"
+                id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder=" "
-                className="block px-2.5 pb-2.5 pt-3 w-full text-lg text-white bg-transparent rounded-3xl border-2 border-white  peer"
+                className="block px-2.5 pb-2 md:pb-2.5 pt-2.5 md:pt-3 w-full text-md md:text-lg text-white bg-transparent rounded-3xl border-2 border-white  peer"
               />
               <label
-                htmlFor="floating_outlined"
-                className="absolute font-serif font-bold text-xl text-white  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#013927] px-2 peer-focus:px-2 peer-focus:text-white  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
+                htmlFor="email"
+                className="absolute font-serif font-bold text-lg md:text-xl  text-white  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#013927] px-2 peer-focus:px-2 peer-focus:text-white  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
               >
                 Email
               </label>
@@ -122,16 +118,16 @@ const SignIn = () => {
             <div className="relative mt-7">
               <input
                 type="password"
-                id="floating_outlined"
+                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder=" "
-                className="block px-2.5 pb-2.5 pt-3 w-full text-lg text-white bg-transparent rounded-3xl border-2 border-white peer"
+                className="block px-2.5 pb-2 md:pb-2.5 pt-2.5 md:pt-3 w-full text-md md:text-lg text-white bg-transparent rounded-3xl border-2 border-white peer"
               />
               <label
-                htmlFor="floating_outlined"
-                className="absolute font-serif4 font-bold text-xl text-white  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#013927] px-2 peer-focus:px-2 peer-focus:text-white  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
+                htmlFor="password"
+                className="absolute font-serif4 font-bold text-lg md:text-xl text-white  duration-300 transform -translate-y-5 scale-75 top-2 z-10 origin-[0] bg-[#013927] px-2 peer-focus:px-2 peer-focus:text-white  peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-5 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-3"
               >
                 Password
               </label>
@@ -147,14 +143,14 @@ const SignIn = () => {
 
             <button
               type="submit"
-              className="w-full bg-white font-serif4 text-2xl font-bold text-[#013927] py-3 rounded-full hover:bg-slate-200 transition duration-300 mt-7"
+              className="w-full bg-white font-serif4 text-xl md:text-2xl font-bold text-[#013927] py-2 md:py-3 rounded-full hover:bg-slate-200 transition duration-300 mt-7"
             >
               Log in
             </button>
           </form>
           <div className="flex items-center my-4 w-full">
             <div className="flex-grow h-0.5 bg-white"></div>
-            <span className="px-4 text-xl font-serif4 font-bold text-white">
+            <span className="px-4 text-md md:text-xl font-serif4 font-bold text-white">
               OR
             </span>
             <div className="flex-grow h-0.5 bg-white"></div>
@@ -164,10 +160,10 @@ const SignIn = () => {
             <button
               type="button"
               onClick={handleGoogleSignIn}
-              className="w-[45%] border font-serif4 font-bold text-2xl border-white text-white py-3 rounded-full flex items-center justify-center hover:bg-[#174839] transition duration-300"
+              className="w-full md:w-[80%] lg:w-[55%] border font-serif4 font-bold text-xl md:text-2xl border-white text-white py-2 md:py-3 rounded-full flex items-center justify-center hover:bg-[#174839] transition duration-300"
             >
               <svg
-                className="w-10 h-7 mr-5"
+                className="w-6 h-7 mr-2 md:w-10 md:mr-5  lg:mr-5 "
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -186,10 +182,10 @@ const SignIn = () => {
             <button
               type="button"
               onClick={handleLineSignIn}
-              className="w-[45%] border font-serif4 font-bold text-2xl border-white text-white py-3 rounded-full flex items-center justify-center hover:bg-[#174839] transition duration-300"
+              className="w-full  md:w-[80%] lg:w-[55%] border font-serif4 font-bold text-xl md:text-2xl border-white text-white py-2 md:py-3 rounded-full flex items-center justify-center hover:bg-[#174839] transition duration-300"
             >
               <svg
-                className="h-8 w-7 mr-5"
+                className="h-8 w-7 mr-2 md:mr-5 "
                 fill="#ffffff"
                 viewBox="0 0 236.271 236.271"
                 xmlns="http://www.w3.org/2000/svg"
@@ -204,7 +200,7 @@ const SignIn = () => {
             </button>
           </div>
 
-          <p className="text-center font-serif4 text-lg text-white mt-2">
+          <p className="text-center font-serif4 text-sm md:text-lg text-white">
             Don't have an account?{" "}
             <a
               href="/signup"
