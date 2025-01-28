@@ -13,7 +13,7 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
     const [stockData, setStockData] = useState<any>(null); // เก็บข้อมูลส่วนผสม
     const [selectedDetails, setSelectedDetails] = useState<any[]>([]);
     const [userName, setUserName] = useState("");
-    const [withdrawDate, setwithdrawDate] = useState("");
+    const [withdrawalDate, setwithdrawalDate] = useState("");
     const [description, setDescription] = useState("");
 
 
@@ -53,16 +53,20 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
     };
 
     const handleSave = async () => {
-        if (!userName || !withdrawDate || selectedDetails.length === 0) {
+        if (!userName || !withdrawalDate || selectedDetails.length === 0) {
             alert("กรุณากรอกข้อมูลให้ครบถ้วนและเลือกวัตถุดิบ");
             return;
         }
 
         const data = {
+            stockId,
             userName,
-            withdrawDate,
+            withdrawalDate,
             description,
+            name:stockData.data.name,
             quantity: selectedDetails.length,
+            stockType: stockData.data.stockType,
+            details: selectedDetails.map((detail) => detail.idStock), // เพิ่ม details
         };
 
         const detailData = selectedDetails.map((detail) => ({
@@ -109,8 +113,8 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
                         <div className="text-black pb-1">วันที่เบิกสินค้า</div>
                         <input
                             type="date"
-                            value={withdrawDate}
-                            onChange={(e) => setwithdrawDate(e.target.value)}
+                            value={withdrawalDate}
+                            onChange={(e) => setwithdrawalDate(e.target.value)}
                             className="w-[210px] h-[35px] border-2 border-black rounded-md pl-3"
                         />
                     </div>
