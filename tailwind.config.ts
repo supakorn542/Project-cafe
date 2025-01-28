@@ -18,6 +18,7 @@ const config: Config = {
        
       },
       fontFamily: {
+        notoSansThai: ['"Noto Sans Thai"', 'sans-serif'],
         playfair: ['"Playfair Display"', "serif"],
         serif4: ['"Source Serif 4"', "serif"],
         gloock: ['Gloock', 'serif'],

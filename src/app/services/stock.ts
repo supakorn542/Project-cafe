@@ -3,6 +3,7 @@ import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from '../lib/firebase';
 import { Stock } from '../interfaces/stock';
 import { assert } from "console";
+import { Withdrawal } from "../interfaces/withdrawal";
 
 export const createStocks = async (stockData: Stock, details: Array<{ idStock: string, manufactureDate: String, expiryDate: String }>) => {
   try {
@@ -108,7 +109,8 @@ export const createWithdrawal = async (
   stockId: string,
   selectedDetails: Array<any>,
   newData: Array<any>,
-  data: { userName: string, withdrawDate: string, description: string, quantity: number }
+  data: Withdrawal
+  // data: { userName: string, withdrawDate: string, description: string, quantity: number, stockType: string}
 ) => {
   try {
     if (newData.length === 0) {
@@ -118,10 +120,17 @@ export const createWithdrawal = async (
     // สร้างเอกสารใหม่ใน `Withdrawal` 
     const withdrawalData = {
       stockId, // เก็บ stockId
-      data,
+      userName: data.userName, // เก็บชื่อ��ู้ที่ทำการเบิก
+      name: data.name, // 
+      withdrawalDate: data.withdrawalDate,
+      description: data.description,
+      quantity: data.quantity, // เก็บจำนวนที่ทำการเบิก
+      stockType: data.stockType, // เก็บประเ��ทของ stock
       details: newData, // เก็บข้อมูล selectedDetails เป็น array
       createdAt: new Date(), // เพิ่มเวลาในการสร้าง
     };
+
+    console.log(withdrawalData)
 
     // สร้างเอกสารในคอลเลกชัน Withdrawal
     const withdrawalCollectionRef = collection(db, "withdrawals");
@@ -165,6 +174,47 @@ export const createWithdrawal = async (
     return { success: false, message: "Failed to complete creation in Withdrawal and withdrawal", error };
   }
 };
+
+
+export const getWithdrawals = async (): Promise<Withdrawal[]> => {
+  try {
+      // ระบุ collection ที่ต้องการดึงข้อมูล
+      const withdrawalCollection = collection(db, "withdrawals");
+
+      // ดึงเอกสารทั้งหมดใน collection
+      const withdrawalSnapshot = await getDocs(query(withdrawalCollection));
+
+      if (withdrawalSnapshot.empty) {
+          console.warn("No withdrawals found in the collection.");
+          return []; // หากไม่มีข้อมูลใน collection ให้คืนค่า array เปล่า
+      }
+
+      // แปลงข้อมูลเป็น array ของ Withdrawal
+      const withdrawals: Withdrawal[] = withdrawalSnapshot.docs.map((docSnapshot) => {
+          const data = docSnapshot.data();
+
+          return {
+              id: docSnapshot.id, // ใช้ id ของเอกสารเป็น ID
+              stockId: data.stockId || "", // ระบุค่าเริ่มต้นหากไม่มีค่า
+              userName: data.userName || "",
+              name: data.name || "",
+              quantity: data.quantity || 0,
+              stockType: data.stockType || "",
+              description: data.description || "",
+              withdrawalDate: data.withdrawalDate, // แปลงวันที่
+              details: data.details || [],
+          } as Withdrawal;
+      });
+
+      console.log("Withdrawals:", withdrawals);
+      return withdrawals;
+
+  } catch (error) {
+      console.error("Error fetching withdrawal data:", error);
+      throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
+  }
+};
+
 
 
 // ฟังก์ชันสำหรับอัปเดตข้อมูล Stock และเพิ่มรายละเอียดใหม่
