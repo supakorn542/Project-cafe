@@ -3,7 +3,7 @@ import { FaFacebook, FaLine } from "react-icons/fa";
 
 function FooterUser() {
   return (
-    <footer className="bg-green-800 text-white p-4 text-center mt-8 sticky top-[100vh]">
+    <footer className="bg-transparent text-white mt-7 p-4 text-center  sticky top-[100vh]">
       <div className="flex  container mx-auto justify-between text-sm">
         <label>Forest Tales</label>
         <div>

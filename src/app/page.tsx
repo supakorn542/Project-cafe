@@ -128,9 +128,9 @@ export default function Home() {
     AOS.init();
   });
   return (
-    <div>
+    <div className="">
       <Navbar textColor="text-white" color="white" />
-      <section className="h-screen w-full">
+      <section className="h-screen w-full font-playfair ">
         <Image
           className="-z-10"
           src={"/assets/bgweb.png"}
@@ -171,7 +171,7 @@ export default function Home() {
           </button>
         </div>
       </section>
-      <section className="mr-24 flex justify-between">
+      <section className="mr-24 flex justify-between font-playfair ">
         <div
         className="w-[50%]"
           data-aos="fade-right"
@@ -217,7 +217,7 @@ export default function Home() {
           </button>
         </div>
       </section>
-      <section className=" flex justify-between mt-60 ">
+      <section className=" flex justify-between mt-60 font-playfair ">
         <div
           className="flex flex-col justify-center items-center space-y-2 gap-6"
           data-aos="fade-left"
@@ -295,12 +295,13 @@ export default function Home() {
           className="owl-theme"
         >
           {sdata.map((item, index) => (
-            <div key={index} className="shadow-xl rounded-full border p-3">
+            <div key={index} className=" bg-[url('/assets/borderVertical.png')] bg-cover bg-center ">
               <Image
+                  className={`object-none  transform  scale-x-[1.6] scale-y-[1.8] -translate-y-4 -translate-x-1`}
                 src={item.imageproduct}
                 alt={""}
                 width={300}
-                height={700}
+                height={500}
               ></Image>
             </div>
           ))}
@@ -310,24 +311,29 @@ export default function Home() {
           Order now
         </button>
       </section>
-      <section className="mt-20">
-        <Image
-          src={"/assets/greenscreen.png"}
-          alt="bg"
-          width={0}
-          height={0}
-          sizes="100vw"
-          className="-z-20 absolute"
-          style={{ width: "100%", height: "auto" }}
-        />
-        <div className="container mx-auto text-white">
-          <div className="flex flex-col text-[70px] bg-[url(/img/mountains.jpg) bg-scroll]">
+      <section className="mt-20  bg-[url('/assets/greenscreen.png')] bg-cover bg-center pb-[100px] font-playfair">
+        <div className="container mx-auto text-white w-full">
+          <div className="flex flex-col text-[96px] w-full">
             <div className="flex flex-col justify-center gap-2">
-              <div className="flex items-center">
+              <div className="flex items-center justify-evenly">
 
               <label className="text-white">POURING</label>
               <Image
                       src={"/assets/Cafe Project (2)/Remove-bg.ai_1728712670851 3.png"}
+                      alt={"a"}
+                      layout="fit"
+                      width={300}
+                      height={150}
+                      objectFit="cover"
+                      className="rounded-full mr-2"
+                    />
+              <label className="text-white">MOMENTS</label>
+              </div>
+              <div className="flex items-center justify-evenly">
+
+              <label className="text-white">OF BLISS INTO </label>
+              <Image
+                      src={"/assets/Cafe Project (2)/image.png"}
                       alt={"a"}
                       layout="fit"
                       width={200}
@@ -335,23 +341,9 @@ export default function Home() {
                       objectFit="cover"
                       className="rounded-full mr-2"
                     />
-              <label className="text-white">MOMENTS</label>
-              </div>
-              <div className="flex items-center">
-
-              <label className="text-white">OF BLISS INTO </label>
-              <Image
-                      src={"/assets/Cafe Project (2)/image.png"}
-                      alt={"a"}
-                      layout="fit"
-                      width={150}
-                      height={100}
-                      objectFit="cover"
-                      className="rounded-full mr-2"
-                    />
               <label className="text-white">YOUR</label>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center justify-evenly">
 
               <label className="text-white">CUP OF</label>
               <Image
@@ -368,20 +360,20 @@ export default function Home() {
                       src={"/assets/Cafe Project (2)/image-1.png"}
                       alt={"a"}
                       layout="fit"
-                      width={150}
+                      width={250}
                       height={100}
                       objectFit="cover"
                       className="rounded-full mr-2"
                     />
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center justify-evenly">
 
               <label className="text-white">AT</label>
               <Image
                       src={"/assets/Cafe Project (2)/image-2.png"}
                       alt={"a"}
                       layout="fit"
-                      width={150}
+                      width={300}
                       height={100}
                       objectFit="cover"
                       className="rounded-full mr-2"
@@ -395,7 +387,7 @@ export default function Home() {
             <h2 className=" font-bold mb-4 self-center flex text-4xl">
               Impression
             </h2>
-            <div className="space-y-6 overflow-auto max-h-[400px]">
+            <div className="space-y-6 overflow-auto scrollbar-hidden max-h-[400px]">
               {reviewData.map((review, index) => (
                 <div
                   key={index}
@@ -442,8 +434,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
       <FooterUser />
+      </section>
     </div>
   );
 }
