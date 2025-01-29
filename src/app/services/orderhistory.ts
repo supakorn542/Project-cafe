@@ -42,6 +42,7 @@ export const getCartsByUserId = async (userId: string): Promise<CartInterface[]>
 
 export const getOrdersByCartId = async (cartIds: string[], statusOrder: string) => {
   try {
+    console.log(cartIds , statusOrder);
     const cartsRef = collection(db, "carts");
     // Query orders ที่ cart_id อยู่ใน cartIds
     const ordersRef = collection(db, "orders");
@@ -51,14 +52,16 @@ export const getOrdersByCartId = async (cartIds: string[], statusOrder: string) 
       ordersSnapshot = await getDocs(ordersQuery);
     }
     else{
-      const ordersQuery = query(ordersRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))), where("statusOrder", "!=","Completed"));
+      const ordersQuery = query(ordersRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))), where("statusOrder", "==", "Processing") || where("statusOrder", "==", "Pending"));
       ordersSnapshot = await getDocs(ordersQuery);
     }
-    
+    console.log(ordersSnapshot);
+
     
     // แปลงผลลัพธ์จาก ordersSnapshot ให้เป็นอาร์เรย์ของ Order
     const orders= Promise.all(ordersSnapshot.docs.map(async (doc) => {
       const data = doc.data();
+      console.log(data);
     
       const cartRef = data.cart_id;
       const cartSnap = await getDoc(cartRef);
@@ -249,7 +252,7 @@ export const getOrdersByUserId = async (userId: string) => {
 
     console.log("cartsId:", cartIds)
 
-    const orders = await getOrdersByCartId(cartIds, "");
+    const orders = await getOrdersByCartId(cartIds, "Not Completed");
     // const cartItems = await getCartItemByCartId(cartIds);
     // Query เพื่อดึง orders ที่ตรงกับ cart_id
     // ใช้ `in` เพื่อดึงข้อมูลหลาย `cart_id`

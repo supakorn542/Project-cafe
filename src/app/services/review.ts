@@ -92,7 +92,7 @@ export const updateReview = async (reviewId: string, updatedReview: Review): Pro
 
         // ถ้ามีเอกสาร ให้ทำการอัพเดทข้อมูล
         await updateDoc(reviewRef, {
-            rating:5,
+            rating: updatedReview.rating,
             comment: updatedReview.comment,
             updatedAt: new Date(), // อัพเดทวันที่
         });
