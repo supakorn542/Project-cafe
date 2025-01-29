@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from "./context/authContext"
-import { Playfair_Display, Source_Serif_4, Gloock } from "next/font/google";
+import { Playfair_Display, Source_Serif_4, Gloock, Noto_Sans_Thai } from "next/font/google";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,6 +30,11 @@ const gloock = Gloock({
   weight: ["400"],
 });
 
+const notoSansThai = Noto_Sans_Thai({
+  subsets: ["latin"],
+  weight: ["100","200","300","400","500","600", "800"], 
+});
+
 export const metadata: Metadata = {
   title: "Forest Tales",
   description: "Cafe Management system",
@@ -43,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.className} ${sourceSerif4.className}  antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.className} ${sourceSerif4.className} ${notoSansThai.className}  antialiased`}
       >
         <AuthProvider>{children}</AuthProvider>
         

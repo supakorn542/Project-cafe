@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/app/components/Navbar";
 import { Stock } from "@/app/interfaces/stock";
+import { Withdrawal as  withdrawals} from "@/app/interfaces/withdrawal";
 import Withdrawal from "../withdraw/page";
 import CreateIngredient from "../createingredient/page";
 import CreatePackaging from "../createpackaging/page";
 import AddIngredient from "../addingredient/page";
 import AddPackaging from "../addpackaging/page";
-import { deletedStock, getStockIngredients, getStockPackags } from "@/app/services/stock";
+import { deletedStock, getStockIngredients, getStockPackags, getWithdrawals } from "@/app/services/stock";
 import UpdateIngredient from "../updateingredient/page";
 import UpdatePackaging from "../updatepackaging/page";
 
@@ -16,6 +17,7 @@ import UpdatePackaging from "../updatepackaging/page";
 const ShowStock = () => {
     const [ingredients, setIngredients] = useState<Stock[]>([]); // State สำหรับเก็บข้อมูล stocks
     const [packages, setPackages] = useState<Stock[]>([]);
+    const [withdrawals, setWithdrawals] = useState<withdrawals[]>([]);
     const [activeTab, setActiveTab] = useState<"ingredients" | "packaging" | "withdrawal">("ingredients");
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [withdrawalPopupOpen, setWithdrawalPopupOpen] = useState(false);
@@ -99,6 +101,16 @@ const ShowStock = () => {
         }
     };
 
+    const fetchWithdrawals = async () => {
+        try {
+            const withdrawalData = await getWithdrawals();
+            setWithdrawals(withdrawalData); // เก็บข้อมูลใน state
+            console.log(withdrawalData);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
     const handleDelete = (id: string) => {
         console.log(id)
         if (window.confirm("Are you sure you want to delete this item?")) {
@@ -111,6 +123,7 @@ const ShowStock = () => {
     useEffect(() => {
         fetchStockIngredients(); // เรียก API เมื่อ component ถูก mount
         fetchStockPackages();
+        fetchWithdrawals();
     }, []);
 
 
@@ -122,7 +135,7 @@ const ShowStock = () => {
                         <div className="flex flex-col  items-center  w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-auto max-h-[500px]">
                             {ingredients.map((ingredient) =>
                                 <div className="flex flex-row justify-between w-[90%] min-h-[25%] border-b-[2px] border-black ">
-                                    <div className="w-[15%] h-full   text-2xl font-semibold text-center flex items-center justify-center" >
+                                    <div className="w-[15%] h-full font-prompt  text-2xl font-semibold text-center flex items-center justify-center" >
                                         <span> {ingredient.name} </span>
                                     </div>
                                     <div className="w-[17%] h-full font-semibold flex flex-col justify-center" >
@@ -214,7 +227,7 @@ const ShowStock = () => {
                         <div className="flex flex-col items-center  w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-auto max-h-[500px]">
                             {packages.map((packaging) =>
                                 <div className="flex flex-row justify-between w-[90%] min-h-[25%] border-b-[2px] border-black ">
-                                    <div className="w-[15%] h-full   text-2xl font-semibold text-center flex items-center justify-center" >
+                                    <div className="w-[15%] h-full  font-prompt text-2xl  text-center flex items-center justify-center" >
                                         <span> {packaging.name} </span>
                                     </div>
                                     <div className="w-[17%] h-full font-semibold flex flex-col justify-center" >
@@ -301,25 +314,28 @@ const ShowStock = () => {
             case "withdrawal":
                 return (
                     <div className="pt-2 flex justify-center ">
-                        <div className="flex justify-center  w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] ">
-                            <div className="flex flex-row justify-between w-[90%] h-[23%] border-b-[2px] border-black ">
-                                <div className="w-[15%] h-full   text-2xl font-semibold text-center flex items-center justify-center" >
-                                    <span> แก้วพลาสติก </span>
+                        <div className="flex flex-col items-center  w-[90%] h-[30rem] border-[3px] border-black rounded-[2rem] overflow-y-auto max-h-[500px]">
+                        {withdrawals.map((withdrawal) =>
+                            <div className="flex flex-row justify-between pt-5 w-[90%] min-h-[23%] border-b-[2px] border-black ">
+                                <div className="w-[15%] h-full   text-2xl font-semibold text-center " >
+                                    <span> {withdrawal.name} </span>
                                 </div>
-                                <div className="w-[20%] h-full font-semibold flex flex-col justify-center" >
-                                    <span> จำนวนที่เบิก : 2 แพ็ค</span>
-                                    <span> id : 001</span>
-                                    <span> id : 002</span>
+                                <div className="w-[20%] h-full font-semibold flex flex-col " >
+                                    <span> จำนวนที่เบิก : {withdrawal.quantity}  แพ็ค</span>
+                                    {withdrawal.details.map((detail: any) => (
+                                        <span> id : {detail.idStock}</span>
+                                    ))}
+                                    
+                                </div> 
+                                <div className="w-[20%] h-full  font-semibold  flex flex-col " >
+                                    <span> วันที่เบิก : {formatDate(String(withdrawal.withdrawalDate))} </span>
+                                    <span> พนักงานที่เบิก : {withdrawal.userName} </span>
                                 </div>
-                                <div className="w-[20%] h-full  font-semibold pt-4" >
-                                    <span> วันที่เบิก : 10/11/2567 </span>
-                                    <span> พนักงานที่เบิก : Momo rara </span>
-                                </div>
-                                <div className="w-[30%] h-full  font-semibold pt-4 " >
-                                    <span> หมายเหตุ : เบิกมา 2 แพ็ค กรุณาใช้อย่างระมัดระวัง</span>
+                                <div className="w-[30%] h-full  font-semibold  flex flex-col " >
+                                    <span> หมายเหตุ : {withdrawal.description}</span>
                                 </div>
 
-                            </div>
+                            </div>)}
                         </div>
                     </div>
                 );
