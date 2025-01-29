@@ -150,8 +150,7 @@ const TrackOrder = () => {
             try {
                 await deleteReview(reviewId);
                 alert("Review deleted successfully.");
-                setIsViewReviewPopupOpen(false); // ปิด popup
-                // โหลดข้อมูลใหม่จาก Firebase แทนที่จะ filter เฉย ๆ
+                setIsViewReviewPopupOpen(false);
                 fetchReviews();
             } catch (error) {
                 alert("An error occurred while deleting the review.");
