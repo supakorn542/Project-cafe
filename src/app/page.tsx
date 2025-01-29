@@ -130,7 +130,7 @@ export default function Home() {
   return (
     <div className="">
       <Navbar textColor="text-white" color="white" />
-      <section className="h-screen w-full font-playfair ">
+      <section className="min-h-screen w-auto lg:w-full font-playfair ">
         <Image
           className="-z-10"
           src={"/assets/bgweb.png"}
@@ -146,13 +146,13 @@ export default function Home() {
           data-aos-easing="ease-in-out"
         >
           <div className="flex flex-col">
-            <label className="text-9xl uppercase font-semibold">
+            <label className="text-5xl md:text-7xl lg:text-9xl uppercase font-semibold">
               c o f f e e
             </label>
-            <span className="relative text-9xl font-semibold">
+            <span className="relative text-5xl md:text-7xl lg:text-9xl font-semibold">
               F A B L E S
               <Image
-                className="absolute top-0 left-80"
+                className="absolute top-0 left-16 lg:left-80 w-[100px] md:w-[150px] lg:w-[200px]"
                 src={"/assets/star.png"}
                 alt="star"
                 width={200}
@@ -161,7 +161,7 @@ export default function Home() {
             </span>
           </div>
 
-          <p className="text-lg w-[50%] mt-16">
+          <p className=" lg:text-lg w-[50%] mt-16">
             With a wide range of coffee flavors, brewing methods, and add-ons,
             you can personalize your coffee experience to suit your preferences
             and indulge in different taste profiles.
@@ -183,14 +183,14 @@ export default function Home() {
             {" "}
             {/* Key change: Added width and height */}
             <img
-              className="absolute top-[-72px] left-0 rounded-r-full w-[94%] h-[224%]"
+              className="absolute top-[-72px] left-0 rounded-r-full w-[94%] h-[224%] hidden md:block"
               src={"/assets/esyen.jpg"}
               alt="esyen"
               
                // Important for image scaling
             />
             <img
-              className="absolute -top-[140px] left-0 h-[304%] w-[100%]"
+              className="absolute -top-[140px] left-0 h-[304%] w-[100%] hidden md:block"
               src={"/assets/border.png"}
               alt="border"
               
@@ -243,7 +243,7 @@ export default function Home() {
           </button>
         </div>
         <div
-        className="w-[50%]"
+        className="w-[50%]  hidden md:block"
           data-aos="fade-right"
           data-aos-delay="50"
           data-aos-duration="1000"
@@ -291,8 +291,8 @@ export default function Home() {
               items: 3,
             },
           }}
-          margin={100}
-          className="owl-theme"
+          
+          className=""
         >
           {sdata.map((item, index) => (
             <div key={index} className=" bg-[url('/assets/borderVertical.png')] bg-cover bg-center ">
@@ -313,7 +313,7 @@ export default function Home() {
       </section>
       <section className="mt-20  bg-[url('/assets/greenscreen.png')] bg-cover bg-center pb-[100px] font-playfair">
         <div className="container mx-auto text-white w-full">
-          <div className="flex flex-col text-[96px] w-full">
+          <div className="flex flex-col text-[24px] md:text-[50px] lg:text-[96px] w-full">
             <div className="flex flex-col justify-center gap-2">
               <div className="flex items-center justify-evenly">
 
@@ -325,7 +325,7 @@ export default function Home() {
                       width={300}
                       height={150}
                       objectFit="cover"
-                      className="rounded-full mr-2"
+                      className="rounded-full mr-2 w-[100px] md:w-[200px]"
                     />
               <label className="text-white">MOMENTS</label>
               </div>
@@ -339,7 +339,7 @@ export default function Home() {
                       width={200}
                       height={100}
                       objectFit="cover"
-                      className="rounded-full mr-2"
+                      className="rounded-full mr-2  w-[100px] md:w-[150px]"
                     />
               <label className="text-white">YOUR</label>
               </div>
@@ -353,7 +353,7 @@ export default function Home() {
                       width={150}
                       height={100}
                       objectFit="cover"
-                      className="rounded-full mr-2"
+                      className="rounded-full mr-2  w-[100px] md:w-[100px]"
                     />
               <label className="text-white">COFFEE</label>
               <Image
@@ -363,7 +363,7 @@ export default function Home() {
                       width={250}
                       height={100}
                       objectFit="cover"
-                      className="rounded-full mr-2"
+                      className="rounded-full mr-2  w-[100px] md:w-[150px]"
                     />
               </div>
               <div className="flex items-center justify-evenly">
@@ -376,7 +376,7 @@ export default function Home() {
                       width={300}
                       height={100}
                       objectFit="cover"
-                      className="rounded-full mr-2"
+                      className="rounded-full mr-2  w-[100px] md:w-[200px]"
                     />
               <label className="text-white">FOREST TALES</label>
               
