@@ -284,7 +284,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
               ))}
             </select>
             <div>
-      <button onClick={() => setShowPopup(true)}>Create Product Type</button>
+      <button type="button" onClick={() => setShowPopup(true)}>Create Product Type</button>
       {showPopup && (
         <CreateProductTypePopup onClose={() => setShowPopup(false)} />
       )}
@@ -292,7 +292,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
           </div>
   
           <div>
-            <label htmlFor="status">Select Status:</label>
+            <label htmlFor="status">สถานะสินค้า</label>
             <select
               id="status"
               value={selectedStatus}
@@ -330,7 +330,7 @@ const UpdateProductForm = ({ productId,onClose }: { productId: string ,onClose: 
               type="submit"
                className="bg-black text-white border border-black rounded-md px-4 py-2 hover:bg-white hover:text-black"
             >
-              Update Product
+              บันทึก
             </button>
           </div>
         </form>

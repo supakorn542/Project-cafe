@@ -283,7 +283,7 @@ const Cart = () => {
   }
 
   return (
-    <div className="bg-beige min-h-screen pt-16">
+    <div className="bg-[#FBF6F0] min-h-screen pt-16 ">
       <Navbar textColor="text-black" color="white" />
       <div className="container mx-auto px-4 py-6 ">
       <header className=" text-greenthemewep p-4 ">
@@ -297,7 +297,7 @@ const Cart = () => {
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-lg shadow-md mb-4 p-4 relative"
+                className="bg-transparent border-b-2 border-black mb-4 p-4 relative"
               >
                 <div className="flex flex-col md:flex-row md:items-center">
                   {" "}
@@ -318,7 +318,7 @@ const Cart = () => {
                         )}
 
                         <div>
-                          <h3 className="font-medium text-gray-800">
+                          <h3 className="font-medium text-gray-800 text-2xl ">
                             {product.name}
                           </h3>{" "}
                           {/* เพิ่ม h3 และ class font-medium */}
@@ -338,6 +338,11 @@ const Cart = () => {
                               คำอธิบายเพิ่มเติม: {item.description}
                             </p>
                           )}
+                         
+                            <p className="text-gray-600 text-sm">
+                              จำนวนสินค้า {item.quantity}
+                            </p>
+                          
                         </div>
                       </div>
                     ))}
@@ -354,14 +359,14 @@ const Cart = () => {
                     </p>
                     <div className="flex mt-2 lg:justify-end">
                       <button
-                        className="text-red-500 hover:text-red-700 mr-2"
+                        className="text-black border border-black rounded-full p-1 hover:text-red-700 mr-2"
                         onClick={() => handleDeleteCartItem(item.id)}
                       >
                         <MdDeleteOutline className="w-5 h-5" />{" "}
                         {/* กำหนดขนาด icon */}
                       </button>
                       <button
-                        className="text-blue-500 hover:text-blue-700"
+                        className="text-black border border-black rounded-full p-1 hover:text-blue-700"
                         onClick={() => handleOpenPopup(item.id)}
                       >
                         <CiEdit className="w-5 h-5" />

@@ -101,7 +101,7 @@ function EditCartPopup({
                 const cartItem: cartstateinterface = {
                   id: cartItemSnapshot.id,
                   cart_id: cartData.id,
-                  product_id: productData.id,
+                  product_id: productData.id?? "",
                   description: cartItemData.description,
                   option: optionData[0], // Assuming you want the first option
                   quantity: cartItemData.quantity,
@@ -202,7 +202,7 @@ function EditCartPopup({
             ? descriptionElement.value
             : "";
         // 1. อัปเดต cartItem ใน Firestore
-        await updateDoc(doc(db, "cartItems", cartItem.id), {
+        await updateDoc(doc(db, "cartItems", cartItem.id!),  {
           optionitem_id: checkedOptionItemIds.map((id) =>
             doc(db, "optionItems", id)
           ),
@@ -213,7 +213,7 @@ function EditCartPopup({
 
         // 2. อ่านข้อมูล cartItem ที่อัปเดตแล้ว
         const updatedCartItemSnapshot = await getDoc(
-          doc(db, "cartItems", cartItem.id)
+          doc(db, "cartItems", cartItem.id!)
         );
         const updatedCartItemData = updatedCartItemSnapshot.data();
 
@@ -289,7 +289,7 @@ function EditCartPopup({
                           htmlFor={`checkbox-${item.id}`}
                           className="flex-grow"
                         >
-                          ${item.pricemodifier}
+                          ${item.priceModifier}
                         </label>
                       </li>
                     ))}

@@ -63,17 +63,24 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
         <div key={option.id}>
           <div className="flex justify-between items-center">
             <div className="flex space-x-2 items-center">
-            <input
-            className="w-4 h-4"
-              type="checkbox"
-              checked={selectedOptions.some(
-                (selected) => selected.option.id === option.id
-              )}
-              onChange={() => onOptionChange(option)}
+              <input
+                className="w-4 h-4"
+                type="checkbox"
+                checked={selectedOptions.some(
+                  (selected) => selected.option.id === option.id
+                )}
+                onChange={() => onOptionChange(option)}
               />
-            <label>{option.name}</label>
-              </div>
-            <button type="button" onClick={() => handleUpdateOption(option)}>อัปเดท</button>
+              <label>{option.name}</label>
+            </div>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => handleUpdateOption(option)}>
+                ลบ
+              </button>
+              <button type="button" onClick={() => handleUpdateOption(option)}>
+                แก้ไข
+              </button>
+            </div>
           </div>
           <svg
             className="w-full my-4"
@@ -100,9 +107,9 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
         }}
       >
         <button
-        type="button"
+          type="button"
           onClick={onClose}
-           className="text-black border border-black rounded-md px-4 py-2 hover:bg-black hover:text-white"
+          className="text-black border border-black rounded-md px-4 py-2 hover:bg-black hover:text-white"
         >
           ปิด
         </button>
@@ -118,9 +125,9 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
         )}
 
         <button
-        type="button"
+          type="button"
           onClick={handleOpenCreateOptionPopup}
-          className="bg-black text-white border border-black rounded-md px-4 py-2 hover:bg-white hover:text-black"          
+          className="bg-black text-white border border-black rounded-md px-4 py-2 hover:bg-white hover:text-black"
         >
           สร้างตัวเลือกใหม่
         </button>

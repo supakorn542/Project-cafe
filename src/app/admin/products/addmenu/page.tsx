@@ -87,7 +87,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
     try {
       await createProductWithOptions(productData, uploadedImage);
       
-      alert("Product created successfully!");
+      alert("บันถึกข้อมูลสินค้าเสร็จสิ้น");
       window.location.reload();
     } catch (error) {
       console.error("Error creating product:", error);
@@ -271,7 +271,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
               )}
             </div>
 
-            <label htmlFor="status">Select Status:</label>
+            <label htmlFor="status">สถานะสินค้า</label>
             <select
               className="border border-black rounded-md p-2 w-full"
               id="status"

@@ -1,4 +1,4 @@
-import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { doc, DocumentData, DocumentReference, FieldValue, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import axios from "axios";
 import { Product } from "../interfaces/product";
@@ -14,7 +14,7 @@ export const updateProduct = async (
   selectedOptions: { option: { id: string } }[],
   imageFile?: File | null
 ) => {
-  let imageUrl = null;
+  let imageUrl: string | null = null;
   // 1. อัปโหลดรูปภาพไปยัง Cloudinary ก่อน (ถ้ามี)
   if (imageFile) {
     const reader = new FileReader();
@@ -52,20 +52,30 @@ export const updateProduct = async (
   const statusRef = doc(db, "status", selectedStatus);
 
   try {
-    const updatedData: Partial<Product> = {  // ใช้ Partial<Product> เพื่อระบุว่าเป็นข้อมูลบางส่วนของ Product
+    const updatedData = {
       name: productName,
       description: description,
       price: price,
       calorie: calorie,
       productType_id: productTypeRef,
-      status_id: statusRef ,
-      updateAt: serverTimestamp() 
-    };
+      status_id: statusRef,
+      updateAt: serverTimestamp(),
+    } as {
+      name: string;
+      description: string;
+      price: number;
+      calorie: number;
+      productType_id: DocumentReference<DocumentData, DocumentData>;
+      status_id: DocumentReference<DocumentData, DocumentData>;
+      updateAt: FieldValue;
+      imageProduct?: string; // Make imageProduct optional
+    }; // Type assertion
 
-    // เพิ่ม imageUrl ใน updatedData เฉพาะเมื่อมีการอัปโหลดรูปใหม่
     if (imageUrl) {
-      updatedData.imageProduct = imageUrl; 
+      updatedData.imageProduct = imageUrl;
     }
+
+
     await updateDoc(productRef, updatedData);
     return true;
   } catch (error) {
