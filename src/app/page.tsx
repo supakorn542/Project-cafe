@@ -173,18 +173,30 @@ export default function Home() {
       </section>
       <section className="mr-24 flex justify-between">
         <div
+        className="w-[50%]"
           data-aos="fade-right"
           data-aos-delay="50"
           data-aos-duration="1000"
           data-aos-easing="ease-in-out"
         >
-          <Image
-            className="rounded-r-full border border-black p-4"
-            src={"/assets/esyen.jpg"}
-            alt="iamge"
-            width={700}
-            height={200}
-          />
+          <div className="relative w-[100%] h-[200px]">
+            {" "}
+            {/* Key change: Added width and height */}
+            <img
+              className="absolute top-[-72px] left-0 rounded-r-full w-[94%] h-[224%]"
+              src={"/assets/esyen.jpg"}
+              alt="esyen"
+              
+               // Important for image scaling
+            />
+            <img
+              className="absolute -top-[140px] left-0 h-[304%] w-[100%]"
+              src={"/assets/border.png"}
+              alt="border"
+              
+               
+            />
+          </div>
         </div>
         <div
           className="flex flex-col justify-center items-center space-y-2 gap-6"
@@ -205,7 +217,7 @@ export default function Home() {
           </button>
         </div>
       </section>
-      <section className=" flex justify-between mt-20">
+      <section className=" flex justify-between mt-60 ">
         <div
           className="flex flex-col justify-center items-center space-y-2 gap-6"
           data-aos="fade-left"
@@ -231,18 +243,30 @@ export default function Home() {
           </button>
         </div>
         <div
+        className="w-[50%]"
           data-aos="fade-right"
           data-aos-delay="50"
           data-aos-duration="1000"
           data-aos-easing="ease-in-out"
         >
-          <Image
-            className="rounded-l-full border border-black p-4"
-            src={"/assets/esyen.jpg"}
-            alt="iamge"
-            width={700}
-            height={200}
-          />
+        <div className="relative w-[100%] h-[200px]">
+            {" "}
+            {/* Key change: Added width and height */}
+            <img
+              className="absolute top-[-55px] right-0 rounded-l-full w-[94%] h-[224%] "
+              src={"/assets/esyen.jpg"}
+              alt="esyen"
+              
+               // Important for image scaling
+            />
+            <img
+              className="absolute -top-[140px] right-0-0 h-[304%] w-[100%] -scale-100 "
+              src={"/assets/border.png"}
+              alt="border"
+              
+               
+            />
+          </div>
         </div>
       </section>
       <section
@@ -298,10 +322,79 @@ export default function Home() {
         />
         <div className="container mx-auto text-white">
           <div className="flex flex-col text-[70px] bg-[url(/img/mountains.jpg) bg-scroll]">
-            <div className="flex justify-center gap-2"></div>
+            <div className="flex flex-col justify-center gap-2">
+              <div className="flex items-center">
+
+              <label className="text-white">POURING</label>
+              <Image
+                      src={"/assets/Cafe Project (2)/Remove-bg.ai_1728712670851 3.png"}
+                      alt={"a"}
+                      layout="fit"
+                      width={200}
+                      height={100}
+                      objectFit="cover"
+                      className="rounded-full mr-2"
+                    />
+              <label className="text-white">MOMENTS</label>
+              </div>
+              <div className="flex items-center">
+
+              <label className="text-white">OF BLISS INTO </label>
+              <Image
+                      src={"/assets/Cafe Project (2)/image.png"}
+                      alt={"a"}
+                      layout="fit"
+                      width={150}
+                      height={100}
+                      objectFit="cover"
+                      className="rounded-full mr-2"
+                    />
+              <label className="text-white">YOUR</label>
+              </div>
+              <div className="flex items-center">
+
+              <label className="text-white">CUP OF</label>
+              <Image
+                      src={"/assets/Cafe Project (2)/สีเขียวและสีครีม เรียบง่าย ภาพประกอบ เมนูกาแฟ Instagram Post (1).png"}
+                      alt={"a"}
+                      layout="fit"
+                      width={150}
+                      height={100}
+                      objectFit="cover"
+                      className="rounded-full mr-2"
+                    />
+              <label className="text-white">COFFEE</label>
+              <Image
+                      src={"/assets/Cafe Project (2)/image-1.png"}
+                      alt={"a"}
+                      layout="fit"
+                      width={150}
+                      height={100}
+                      objectFit="cover"
+                      className="rounded-full mr-2"
+                    />
+              </div>
+              <div className="flex items-center">
+
+              <label className="text-white">AT</label>
+              <Image
+                      src={"/assets/Cafe Project (2)/image-2.png"}
+                      alt={"a"}
+                      layout="fit"
+                      width={150}
+                      height={100}
+                      objectFit="cover"
+                      className="rounded-full mr-2"
+                    />
+              <label className="text-white">FOREST TALES</label>
+              
+              </div>
+            </div>
           </div>
           <div className="container mx-auto text-white p-8 bg-white bg-opacity-20 backdrop-blur-lg mt-10 rounded-3xl flex flex-col">
-            <h2 className=" font-bold mb-4 self-center flex text-4xl">Impression</h2>
+            <h2 className=" font-bold mb-4 self-center flex text-4xl">
+              Impression
+            </h2>
             <div className="space-y-6 overflow-auto max-h-[400px]">
               {reviewData.map((review, index) => (
                 <div
