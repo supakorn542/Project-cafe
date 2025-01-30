@@ -68,9 +68,9 @@ export async function GET(request: NextRequest) {
     await setDoc(
       userRef,
       {
-        firstName: profile.displayName,
+        username: profile.displayName,
         email: profile.email,
-        photoURL: profile.photoURL,
+        profileImage: profile.photoURL,
       },
       { merge: true }
     );

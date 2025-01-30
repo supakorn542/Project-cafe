@@ -69,9 +69,33 @@ export async function addCartItem(cartItem: CartItemsInterface) {
     product_id: productRef,
     quantity: cartItem.quantity,
     optionitem_id: optionItemRefs,
-    pickupdate: cartItem.pickupdate,
     description: cartItem.description,
   };
 
   await addDoc(cartItemsRef, newCartItem);
+}
+
+export async function checkExistingCartItem(
+  cartId: string,
+  productId: string,
+  selectedOptions: Record<string, string>
+): Promise<{ id: string; cartItem: CartItemsInterface } | null> {
+  const cartItemsRef = collection(db, "cartItems");
+
+  const q = query(
+    cartItemsRef,
+    where("cart_id", "==", doc(db, "carts", cartId)),
+    where("product_id", "==", doc(db, "products", productId)),
+    where("optionitem_id", "array-contains", doc(db, "optionItems", Object.values(selectedOptions)[0]))
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    const existingCartItemDoc = querySnapshot.docs[0];
+    const existingCartItem = existingCartItemDoc.data() as CartItemsInterface;
+    return { id: existingCartItemDoc.id, cartItem: existingCartItem };
+  } else {
+    return null;
+  }
 }

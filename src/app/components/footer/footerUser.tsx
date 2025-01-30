@@ -1,9 +1,13 @@
 import React from "react";
 import { FaFacebook, FaLine } from "react-icons/fa";
 
-function FooterUser() {
+interface FooterProp {
+  color?: string;
+}
+
+function FooterUser({color = "white"}: FooterProp) {
   return (
-    <footer className="bg-transparent text-white mt-7 p-4 text-center  sticky top-[100vh]">
+    <footer className={`bg-transparent text-${color} mt-7 p-4 text-center  sticky top-[100vh]`}>
       <div className="flex  container mx-auto justify-between text-sm">
         <label>Forest Tales</label>
         <div>
