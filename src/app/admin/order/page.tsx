@@ -6,6 +6,7 @@ import { getCartItemByCartIdFromAom, getFinishOrders, getOrders, getProcessOrder
 import { Order } from "@/app/interfaces/order";
 import { DiVim } from "react-icons/di";
 import { stringify } from "querystring";
+import NavbarAdmin from "@/app/components/navbarAdmin/page";
 
 
 const ShowOrder = () => {
@@ -495,7 +496,7 @@ const ShowOrder = () => {
 
     return (
         <div >
-            <Navbar />
+           <NavbarAdmin />
             <div className="bg-[#FBF6F0] min-h-screen">
                 <div className="flex justify-center pt-20 pb-5 ml-6">
                     <div className="flex justify-center w-[20%]">

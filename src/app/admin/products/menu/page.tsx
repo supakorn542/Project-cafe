@@ -18,6 +18,7 @@ import { getOptions } from "@/app/services/options";
 import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
+import NavbarAdmin from "@/app/components/navbarAdmin/page";
 
 const MenuPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -141,7 +142,7 @@ const MenuPage = () => {
 
   return (
     <div className="bg-[#FBF6F0] min-h-screen pt-20">
-      <Navbar />
+      <NavbarAdmin />
       {/* Main Container */}
       <div className="container mx-auto border-2 rounded-3xl border-black p-6  bg-background shadow-md">
         {/* Header Section */}

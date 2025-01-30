@@ -12,6 +12,7 @@ import AddPackaging from "../addpackaging/page";
 import { deletedStock, getStockIngredients, getStockPackags, getWithdrawals } from "@/app/services/stock";
 import UpdateIngredient from "../updateingredient/page";
 import UpdatePackaging from "../updatepackaging/page";
+import NavbarAdmin from "@/app/components/navbarAdmin/page";
 
 
 const ShowStock = () => {
@@ -346,7 +347,7 @@ const ShowStock = () => {
 
     return (
         <>
-            <Navbar />
+            <NavbarAdmin />
             <div className="bg-[#FBF6F0] h-screen ">
                 <div className="flex justify-center pt-20">
                     <div className="flex flex-row items-center justify-center w-[90%] h-20  gap-10">
