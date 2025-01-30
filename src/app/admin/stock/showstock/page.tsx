@@ -227,7 +227,7 @@ const ShowStock = () => {
                         <div className="flex flex-col items-center  w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-auto max-h-[500px]">
                             {packages.map((packaging) =>
                                 <div className="flex flex-row justify-between w-[90%] min-h-[25%] border-b-[2px] border-black ">
-                                    <div className="w-[15%] h-full  font-prompt text-2xl  text-center flex items-center justify-center" >
+                                    <div className="w-[15%] h-full font-semibold text-2xl  text-center flex items-center justify-center" >
                                         <span> {packaging.name} </span>
                                     </div>
                                     <div className="w-[17%] h-full font-semibold flex flex-col justify-center" >
@@ -347,7 +347,7 @@ const ShowStock = () => {
     return (
         <>
             <Navbar />
-            <div className="bg-[#FBF6F0] h-screen">
+            <div className="bg-[#FBF6F0] h-screen ">
                 <div className="flex justify-center pt-20">
                     <div className="flex flex-row items-center justify-center w-[90%] h-20  gap-10">
                         <div className="pl-[3.5rem]">
@@ -370,7 +370,7 @@ const ShowStock = () => {
                                 />
                             </div>
                         </div>
-                        <div className="flex justify-between w-full">
+                        <div className="flex justify-between w-full font-playfair">
                             <div className="flex flex-row justify-between items-center  w-[85%]  border-black">
                                 <div className="">
                                     <button
