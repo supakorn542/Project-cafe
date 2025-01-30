@@ -22,8 +22,8 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
     const [expiryDate, setExpiryDate] = useState("");
     const [description, setDescription] = useState("");
     const [stockType, setStockType] = useState("");
-    const [details,     setDetails] = useState<
-        Array<{id:string; idStock: string; manufactureDate: Date; expiryDate: Date }>
+    const [details, setDetails] = useState<
+        Array<{ id: string; idStock: string; manufactureDate: Date; expiryDate: Date }>
     >([]);
     const [currentPopup, setCurrentPopup] = useState(1); // State สำหรับติดตาม popup
     const [ingredientData, setIngredientData] = useState<any>(null); // เก็บข้อมูลส่วนผสม
@@ -51,7 +51,7 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
     //     return date || ''; // หากไม่มีค่า ให้ส่งคืนค่าว่าง
     // };
 
-    
+
     const handleDetailChange = (index: any, field: any, value: any) => {
         console.log('LLL', value)
         const updatedDetails = [...details]; // คัดลอกอาร์เรย์เก่า
@@ -76,7 +76,7 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
                 setUnit(ingredient.data.unit || ""); // ตั้งค่า unit
                 setPrice(ingredient.data.price || 0); // ตั้งค่า price
                 setClassifier(ingredient.data.classifier || ""); // ตั้งค่า classifier
-                setTotalPrice(ingredient.data.totalPrice || details.length*price); // ตั้งค่า totalPrice
+                setTotalPrice(ingredient.data.totalPrice || details.length * price); // ตั้งค่า totalPrice
                 setQuantity(ingredient.data.quantity || 0); // ตั้งค่า quantity
                 setDescription(ingredient.data.description || "");
                 const formattedDetails = ingredient.details.map((detail: any) => ({
@@ -84,13 +84,13 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
                     idStock: detail.idStock,
                     manufactureDate: detail.manufactureDate,
                     expiryDate: detail.expiryDate
-                     
+
                 }));
                 setDetails(formattedDetails); // ตั้งค่ารายละเอียด
                 // console.log(String(formattedDetails[0].expiryDate))
                 // setDetails(ingredient.details || []);
                 setAddedDate(ingredient.data.addedDate); // ตั้งค่า addedDate
-                
+
             }
         } catch (error) {
 
@@ -100,7 +100,7 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
 
     // const handleSubmit = async (e: React.FormEvent) => {
     //     e.preventDefault();
-      
+
     //     // ข้อมูลที่อัปเดตจากแบบฟอร์ม
     //     const updatedStockData = {
     //       name,
@@ -114,7 +114,7 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
     //       description,
     //     //   stockType: "ingredient",
     //     };
-      
+
     //     // รายละเอียดที่อัปเดต
     //     const newDetails = details.map((detail) => ({
     //         id:detail.id,
@@ -123,7 +123,7 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
     //       expiryDate: detail.expiryDate,
     //     }));
 
-      
+
     //     // เรียกใช้ฟังก์ชัน updateIngredientByID
     //     try {
     //       const response = await updateIngredientByID(stockId, updatedStockData, newDetails);
@@ -138,48 +138,51 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
     //       alert("Failed to update Stock");
     //     }
     //   };
-      
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-      
-        // ข้อมูลที่อัปเดตจากแบบฟอร์ม
-        const updatedStockData = {
-          name,
-        //   netQuantity,
-        //   unit,
-          price,
-          classifier,
-          totalPrice,
-          quantity,
-          addedDate,
-          description,
-        //   stockType: "ingredient",
-        };
-      
-        // รายละเอียดที่อัปเดต
-        const newDetails = details.map((detail) => ({
-            id:detail.id,
-            idStock: detail.idStock,
-        //   manufactureDate: detail.manufactureDate,
-        //   expiryDate: detail.expiryDate,
-        }));
+        if (currentPopup === 1) {
+            goToNextPopup()
+        } else {
+            // ข้อมูลที่อัปเดตจากแบบฟอร์ม
+            const updatedStockData = {
+                name,
+                //   netQuantity,
+                //   unit,
+                price,
+                classifier,
+                totalPrice,
+                quantity,
+                addedDate,
+                description,
+                //   stockType: "ingredient",
+            };
 
-      
-        // เรียกใช้ฟังก์ชัน updateIngredientByID
-        try {
-          const response = await updatePackagingByID(stockId, updatedStockData, newDetails);
-          if (response.success) {
-            alert("Stock updated successfully!");
-            updatePackagingPopup(); // ปิด Popup
-          } else {
-            alert("Failed to update Stock");
-          }
-        } catch (error) {
-          console.error("Error updating stock:", error);
-          alert("Failed to update Stock");
+            // รายละเอียดที่อัปเดต
+            const newDetails = details.map((detail) => ({
+                id: detail.id,
+                idStock: detail.idStock,
+                //   manufactureDate: detail.manufactureDate,
+                //   expiryDate: detail.expiryDate,
+            }));
+
+
+            // เรียกใช้ฟังก์ชัน updateIngredientByID
+            try {
+                const response = await updatePackagingByID(stockId, updatedStockData, newDetails);
+                if (response.success) {
+                    alert("Stock updated successfully!");
+                    updatePackagingPopup(); // ปิด Popup
+                } else {
+                    alert("Failed to update Stock");
+                }
+            } catch (error) {
+                console.error("Error updating stock:", error);
+                alert("Failed to update Stock");
+            }
         }
-      };
-      
+    };
+
 
 
     useEffect(() => {
@@ -192,149 +195,132 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
     return (
 
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            {currentPopup === 1 && (
-                <div className="bg-white rounded-[2rem] shadow-lg p-16 pt-8 w-[90%] max-w-[520px]  h-[90%] max-h-[591px] ">
-                    <h2 className="text-md text-center font-bold ">{ingredientData?.data.name}</h2>
-                    <div className="">
-                        <div className="text-black mb-1">ชื่อ</div>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
-                        />
-                    </div>
-                    {/* <div className="pt-2">
-                        <div className="text-black ">ปริมาณสุทธิ</div>
-                        <div className="flex justify-between items-center">
+            <form onSubmit={handleSubmit} className="flex items-center justify-center w-[100%]">
+
+                {currentPopup === 1 && (
+                    <div className="bg-white rounded-[2rem] shadow-lg p-16 pt-8 w-[90%] max-w-[520px]  h-[90%] max-h-[591px] ">
+                        <h2 className="text-md text-center font-bold ">{ingredientData?.data.name}</h2>
+                        <div className="">
+                            <div className="text-black mb-1">ชื่อ</div>
                             <input
                                 type="text"
-                                value={netQuantity}
-                                onChange={(e) => setNetQuantity(Number(e.target.value))}
-                                className="w-[55%] h-[35px] border-2 border-black rounded-md pl-3"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
+                                required
                             />
-                            <p className=" text-[34px]">/</p>
-                            <select
-                                id="volume"
-                                value={unit}
-                                className="w-[35%] h-[35px] border-2 border-black rounded-md pl-3"
-                                onChange={(e) => setUnit(e.target.value)}
-                            >
-                                <option value="" disabled selected>กรุณาเลือก</option>
-                                <option value="ml">ml</option>
-                                <option value="g">g</option>
-                                <option value="oz">oz</option>
-                                <option value="Kg">Kg</option>
-                            </select>
                         </div>
-                    </div> */}
-                    <div className="">
-                        <div className="text-black ">ราคา</div>
-                        <div className="flex justify-between items-center">
+                        <div className="">
+                            <div className="text-black ">ราคา</div>
+                            <div className="flex justify-between items-center">
+                                <input
+                                    type="number"
+                                    value={price || ""}
+                                    onChange={(e) => { setPrice(Number(e.target.value)); setTotalPrice(Number(e.target.value) * details.length) }}
+                                    className="w-[55%] h-[35px] border-2 border-black rounded-md pl-3"
+                                    required
+                                />
+                                <p className=" text-[34px]">/</p>
+                                <select
+                                    id="classifier"
+                                    value={classifier}
+                                    className="w-[35%] h-[35px] border-2 border-black rounded-md pl-3"
+                                    onChange={(e) => setClassifier(e.target.value)}
+                                    required
+                                >
+                                    <option value="" disabled selected >กรุณาเลือก</option>
+                                    <option value="ถุง">ถุง</option>
+                                    <option value="ชิ้น">ชิ้น</option>
+                                    <option value="กล่อง">กล่อง</option>
+                                    <option value="อัน">อัน</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="">
+                            <div className="text-black mb-1">ราคารวม</div>
                             <input
                                 type="text"
-                                value={price}
-                                onChange={(e) => {setPrice(Number(e.target.value)); setTotalPrice(Number(e.target.value)*details.length)}}
-                                className="w-[55%] h-[35px] border-2 border-black rounded-md pl-3"
+                                disabled
+                                value={totalPrice}
+                                onChange={(e) => setTotalPrice(Number(e.target.value))}
+                                className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
                             />
-                            <p className=" text-[34px]">/</p>
-                            <select
-                                id="classifier"
-                                value={classifier}
-                                className="w-[35%] h-[35px] border-2 border-black rounded-md pl-3"
-                                onChange={(e) => setClassifier(e.target.value)}
-                            >
-                                <option value="" disabled selected >กรุณาเลือก</option>
-                                <option value="ถุง">ถุง</option>
-                                <option value="ชิ้น">ชิ้น</option>
-                                <option value="กล่อง">กล่อง</option>
-                                <option value="อัน">อัน</option>
-                            </select>
                         </div>
-                    </div>
-                    <div className="">
-                        <div className="text-black mb-1">ราคารวม</div>
-                        <input
-                            type="text"
-                            disabled
-                            value={totalPrice}
-                            onChange={(e) => setTotalPrice(Number(e.target.value))}
-                            className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
-                        />
-                    </div>
-                    <div className="pt-[7px]">
-                        <div className="text-black mb-1">จำนวน</div>
-                        {/* <input
+                        <div className="pt-[7px]">
+                            <div className="text-black mb-1">จำนวน</div>
+                            {/* <input
                             type="text"
                             value={quantity}
                             onChange={(e) => setQuantity(Number(e.target.value))}
                             className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
                         /> */}
-                        <div className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3 pt-1">
-                            {details.length}
+                            <div className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3 pt-1">
+                                {details.length}
+                            </div>
                         </div>
-                    </div>
-                    <div className="pt-[7px]">
-                        <div className="text-black mb-1">วันที่เพิ่มสินค้า</div>
-                        <input
-                            type="date"
-                            value={addedDate}
-                            onChange={(e) => setAddedDate(e.target.value)}
-                            className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
-                        />
-                    </div>
-                    <div className="pt-[7px]">
-                        <div className="text-black mb-1">หมายเหตุ</div>
-                        <textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            className="w-[100%] h-[35px] border-2 border-black rounded-md min-h-14 resize-none pl-3"
-                        />
-                    </div>
+                        <div className="pt-[7px]">
+                            <div className="text-black mb-1">วันที่เพิ่มสินค้า</div>
+                            <input
+                                type="date"
+                                value={addedDate}
+                                onChange={(e) => setAddedDate(e.target.value)}
+                                className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
+                                required
+                            />
+                        </div>
+                        <div className="pt-[7px]">
+                            <div className="text-black mb-1">หมายเหตุ</div>
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className="w-[100%] h-[35px] border-2 border-black rounded-md min-h-14 resize-none pl-3"
+                            />
+                        </div>
 
-                    <div className="flex justify-between pt-6">
-                        <button
-                            onClick={updatePackagingPopup}
-                            className="w-[73px] h-[26px] border-2 border-black text-black  rounded-md hover:bg-red-600 hover:text-white hover:border-red-600"
-                        >
-                            ยกเลิก
-                        </button>
-                        <button
-                            onClick={goToNextPopup}
-                            className="w-[73px] h-[26px] bg-black text-white  rounded-md hover:bg-green-600 "
-                        >
-                            ถัดไป
-                        </button>
-                    </div>
-                </div>)}
+                        <div className="flex justify-between pt-6">
+                            <button
+                                onClick={updatePackagingPopup}
+                                className="w-[73px] h-[26px] border-2 border-black text-black  rounded-md hover:bg-red-600 hover:text-white hover:border-red-600"
+                            >
+                                ยกเลิก
+                            </button>
+                            <button
+                                type="submit"
+                                className="w-[73px] h-[26px] bg-black text-white  rounded-md hover:bg-green-600 "
+                            >
+                                ถัดไป
+                            </button>
+                        </div>
+                    </div>)}
 
-            {/* ----nextpopup--- */}
-            {currentPopup === 2 && (
-                <div className="bg-white rounded-[2rem] shadow-lg py-8 px-14 w-[100%] max-w-[525px] max-h-[390px] ">
-                    <h2 className="text-xl text-center font-bold pb-2">{ingredientData?.data.name}</h2>
-                    <div className=" overflow-auto max-h-[220px]">
-                        {ingredientData?.details?.length > 0 && Array.from({ length: ingredientData?.details?.length}).map((_, index) => (
-                            <div className="flex flex-row justify-between pt-4">
-                                <div className="flex flex-row">
-                                    <div className=" text-black flex items-center text-xl ">
-                                        แพ็คที่ :
+                {/* ----nextpopup--- */}
+                {currentPopup === 2 && (
+                    <div className="bg-white rounded-[2rem] shadow-lg py-8 px-14 w-[100%] max-w-[525px] max-h-[390px] ">
+                        <h2 className="text-xl text-center font-bold pb-2">{ingredientData?.data.name}</h2>
+                        <div className=" overflow-auto max-h-[220px]">
+                            {ingredientData?.details?.length > 0 && Array.from({ length: ingredientData?.details?.length }).map((_, index) => (
+                                <div className="flex flex-row justify-between pt-4">
+                                    <div className="flex flex-row">
+                                        <div className=" text-black flex items-center text-xl ">
+                                            แพ็คที่ :
+                                        </div>
+                                        <div className="w-[44px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3">
+                                            {String(index + 1).padStart(2, "0")}
+                                        </div>
                                     </div>
-                                    <div className="w-[44px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3">
-                                        {String(index + 1).padStart(2, "0")}
+                                    <div className="flex flex-row">
+                                        <div className="text-black flex items-center text-xl">
+                                            หมายเลขไอดี
+                                        </div>
+                                        <input
+                                            type="text"
+                                            value={details[index]?.idStock || ""}
+                                            onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
+                                            className="w-[113px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3"
+                                            required
+                                        />
                                     </div>
-                                </div>
-                                <div className="flex flex-row">
-                                    <div className="text-black flex items-center text-xl">
-                                        หมายเลขไอดี
-                                    </div>
-                                    <input
-                                        type="text"
-                                        value={details[index]?.idStock || ""}
-                                        onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
-                                        className="w-[113px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3"
-                                    />
-                                </div>
-                                {/* <div className="">
+                                    {/* <div className="">
                                     <div className="text-black">วันที่ผลิต</div>
                                     <input
                                         type="date"
@@ -352,25 +338,26 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
                                         className="w-[210px] h-[35px] border-2 border-black rounded-md pl-3"
                                     />
                                 </div> */}
-                            </div>
-                        ))}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-between pt-6">
+                            <button
+                                onClick={() => setCurrentPopup(1)} // กลับไป popup แรก
+                                className="w-[73px] h-[26px] border-2 border-black text-black  rounded-md hover:bg-red-600 hover:text-white hover:border-red-600"
+                            >
+                                กลับ
+                            </button>
+                            <button
+                                type="submit"
+                                className="w-[73px] h-[26px] bg-black text-white  rounded-md hover:bg-green-600 "
+                            >
+                                บันทึก
+                            </button>
+                        </div>
                     </div>
-                    <div className="flex justify-between pt-6">
-                        <button
-                            onClick={() => setCurrentPopup(1)} // กลับไป popup แรก
-                            className="w-[73px] h-[26px] border-2 border-black text-black  rounded-md hover:bg-red-600 hover:text-white hover:border-red-600"
-                        >
-                            กลับ
-                        </button>
-                        <button
-                            onClick={handleSubmit}
-                            className="w-[73px] h-[26px] bg-black text-white  rounded-md hover:bg-green-600 "
-                        >
-                            บันทึก
-                        </button>
-                    </div>
-                </div>
-            )}
+                )}
+            </form>
         </div>
     );
 };
