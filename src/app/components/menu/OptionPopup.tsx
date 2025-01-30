@@ -14,9 +14,12 @@ import {
   fetchCartByUserId,
   createCart,
   addCartItem,
+  checkExistingCartItem,
 } from "@/app/services/userCart";
 import { useAuth } from "@/app/context/authContext";
 import { useRouter } from "next/navigation";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/app/lib/firebase";
 
 interface OptionPopupProps {
   onClose: () => void;
@@ -36,7 +39,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
     Record<string, string>
   >({});
   const [description, setDescription] = useState<string>("");
-  const [pickupDate, setPickupDate] = useState<string>("");
+
 
   const router = useRouter()
 
@@ -61,7 +64,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
     }
     const action = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
 
-    const pickupDateAsDate = new Date(pickupDate);
+
 
     const cart = await fetchCartByUserId(user.id);
 
@@ -80,26 +83,39 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
       product_id: product.id!,
       quantity,
       optionitem_ids: Object.values(selectedOptions),
-      pickupdate: pickupDateAsDate,
+
       description,
     };
+
+    const existingCartItem = await checkExistingCartItem(
+      cartId,
+      product.id!,
+      selectedOptions
+
+
+    );
+
+    console.log("existingCartItem :",existingCartItem?.cartItem.quantity)
+
+    if (existingCartItem) {
+      // ถ้ามี cartItem อยู่แล้ว ให้เพิ่ม quantity
+      const updatedQuantity = existingCartItem.cartItem.quantity + quantity;
+      const cartItemRef = doc(db, "cartItems", existingCartItem.id); // ใช้ id ของ cartItem ที่มีอยู่แล้ว
+      await updateDoc(cartItemRef, { quantity: updatedQuantity });
+  
+      alert("Cart item updated successfully!");
+    } else {
+      // ถ้าไม่มี cartItem อยู่แล้ว ให้เพิ่ม cartItem ใหม่
+      await addCartItem(cartItem);
+      alert("Added to cart successfully!");
+    }
     if (action.value === "add_to_cart") {
-      console.log("Adding to cart...");
-      await addCartItem(cartItem);
-      alert("Added to cart successfully!");
       onClose();
-
     } else if (action.value === "buy_now") {
-
-      console.log("Buying now...");
-      await addCartItem(cartItem);
-      alert("Added to cart successfully!");
-      router.push("cart")
-
+      router.push("/cart");
     }
 
    
- 
   };
 
   useEffect(() => {
@@ -140,14 +156,14 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
           </div>
 
           <div className="flex flex-col gap-y-2">
-            <div>
+            <div className="text-center text-xl font-bold">
               <h1>{product?.name}</h1>
             </div>
-            <form onSubmit={handleAddToCart}>
+            <form onSubmit={handleAddToCart} >
               <div>
-                {options.map((option) => (
+                {options.map((option : any) => (
                   <div key={option.id}>
-                    <h3>{option.name}</h3>
+                    <h3 className="font-bold">{option.name}</h3>
                     <ul>
                       {groupedOptionItems[option.id]?.map((item) => (
                         <li key={item.id}>
@@ -170,7 +186,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                 ))}
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col mt-4">
                 <label htmlFor="">รายละเอียดเพิ่มเติม</label>
                 <input
                   type="text"
@@ -179,16 +195,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="">วันและเวลาที่ต้องการรับสินค้า</label>
-                <input
-                  type="datetime-local"
-                  className="border border-2 border-black rounded-lg p-1"
-                  value={pickupDate}
-                  onChange={(e) => setPickupDate(e.target.value)}
-                />
-              </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between mt-4">
                 <div className="flex  px-3 border border-1 border-black rounded-2xl gap-x-2 items-center">
                   <FaMinus
                     className="cursor-pointer"
@@ -203,7 +210,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                 </div>
               </div>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between mt-4">
                 <div>
                   <button
                     type="submit"

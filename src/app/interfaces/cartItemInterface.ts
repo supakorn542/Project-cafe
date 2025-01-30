@@ -10,7 +10,6 @@ export interface CartItemsInterface {
     product_id : string;
     quantity: number;
     optionitem_ids: string[];
-    pickupdate : Date
     description: string
     
 }

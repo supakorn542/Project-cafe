@@ -10,7 +10,7 @@ import { BiSolidEdit } from "react-icons/bi";
 import Image from "next/image";
 import axios from "axios";
 import Link from "next/link";
-import { DiVim } from "react-icons/di";
+
 
 function Profile() {
   const { user } = useAuth();
@@ -150,6 +150,7 @@ function Profile() {
                 alt="Profile"
                 width={250}
                 height={250}
+                style={{ aspectRatio: '1 / 1' }}
                 className="rounded-full border-2 border-white w-32 sm:w-40 md:w-48 lg:w-64 h-auto"
               />
             </div>

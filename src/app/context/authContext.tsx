@@ -42,11 +42,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           lastName: "",
           telNumber: "",
           dob: null,
-          username:"",
+          username: "",
           email: firebaseUser.email || "No Email",
+          profileImage: "", 
           createdAt: new Date(),
-   
-          
         };
         setUser(newUser);
       } else {
@@ -65,21 +64,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const result = await signInWithPopup(auth, provider);
       const newUser: User = {
         id: result.user.uid,
-        firstName: result.user.displayName || "Unknown",
+        firstName: "",
         lastName: "",
         telNumber: "",
         dob: null,
         email: result.user.email || "No Email",
-        username: "",
+        profileImage: result.user.photoURL || "", 
+        username: result.user.displayName || "Unknown",
         createdAt: new Date(),
-    
       };
       const tokenResult = await result.user.getIdTokenResult();
       const token = tokenResult.token;
-      const role = tokenResult.claims?.role; 
-   
+      const role = tokenResult.claims?.role;
+
       nookies.set(null, "token", token, {
-        maxAge: 60 * 60 * 24, 
+        maxAge: 60 * 60 * 24,
         path: "/",
       });
       await saveUserData(newUser);
@@ -97,10 +96,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await setDoc(
       userRef,
       {
-        name: user.firstName,
+        username: user.username,
         email: user.email,
+        profileImage: user.profileImage,
         createdAt: user.createdAt,
-
       },
       { merge: true }
     );
@@ -112,8 +111,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log("Signing out...");
       await signOut(auth);
       console.log("Firebase sign out successful.");
-      
-      nookies.destroy(null, "token"); 
+
+      nookies.destroy(null, "token", { path: "/" });
+
       console.log("Token cookie destroyed.");
       router.push("/");
     } catch (error) {

@@ -1,4 +1,5 @@
 import { NextResponse,  NextRequest } from "next/server";
+import {jwtDecode} from "jwt-decode";
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
@@ -11,19 +12,11 @@ export async function middleware(request: NextRequest) {
   }
   try {
   
-    const verifyTokenResponse = await fetch(new URL("/api/auth", request.url), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    });
 
 
+    const decodedToken: { role: string } = jwtDecode(token);
 
-    if (!verifyTokenResponse.ok) {
-      throw new Error("Invalid or expired token");
-    }
-
-    const { role } = await verifyTokenResponse.json();
+    const { role } = decodedToken; // ดึงค่า role จาก token
     const pathname = request.nextUrl.pathname;
 
     // ตรวจสอบสิทธิ์การเข้าถึงหน้า
