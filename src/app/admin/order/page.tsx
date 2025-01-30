@@ -11,18 +11,18 @@ import { stringify } from "querystring";
 const ShowOrder = () => {
     const [activeTab, setActiveTab] = useState<"orderToDays" | "processedOrders" | "finishOrder">("orderToDays");
     const [orders, setOrders] = useState<any[]>([]);
-   
+
     const [cartIds, setcartIds] = useState<any[]>([]);
     const [cartItems, setCartItems] = useState<any[]>([]);
-    
+
     const [processOrders, setProcessOrders] = useState<any[]>([]);
     const [cartIdProcess, setcartIdProcess] = useState<any[]>([]);
     const [cartItemProcess, setCartItemProcess] = useState<any[]>([]);
-    
+
     const [finishOrders, setFinishOrders] = useState<any[]>([]);
     const [cartIdFinish, setcartIdFinish] = useState<any[]>([]);
     const [cartItemFinish, setCartItemFinish] = useState<any[]>([]);
-   
+
     const [statusOrder, setStatusOrder] = useState<{ [key: string]: string }>({});
     const [button, setButton] = useState<{ [key: string]: boolean }>({});
 
@@ -94,7 +94,7 @@ const ShowOrder = () => {
             ...prev,
             [orderId]: value, // เปลี่ยนเฉพาะ orderId ที่ระบุ
         }));
-    
+
         // แสดงหรือซ่อนปุ่มตามการเลือกใน select
         if (value) {
             setButton((prev) => ({
@@ -136,17 +136,17 @@ const ShowOrder = () => {
     const fetchProcessOrders = async () => {
         const processOrders = await getProcessOrders();
         setProcessOrders(processOrders);
-    
+
         // ตั้งค่า statusOrder ให้ตรงกับสถานะที่ดึงมา
         const initialStatus = processOrders.reduce((acc, order) => {
             acc[order.id] = order.statusOrder; // สมมติ statusOrder เป็นชื่อฟิลด์ของสถานะใน order
             return acc;
         }, {});
         setStatusOrder(initialStatus);
-    
+
         const cartIds = processOrders.map((order) => order!.cart_id.id);
         setcartIdProcess(cartIds);
-    
+
         const cartItems = await getCartItemByCartIdFromAom(cartIds);
         setCartItemProcess(cartItems);
     };
@@ -185,8 +185,9 @@ const ShowOrder = () => {
                                 <div className=" border-[3px] border-[#013927]  rounded-[2rem] ">
                                     {orders.filter(item => item.cart_id.id == i).map(x => (
                                         <div className="flex justify-between p-6 px-16">
-                                            <div className=" text-lg font-semibold w-[40%]">
-                                                Username : {x.cart_id.user_id.firstName} {x.cart_id.user_id.lastName}
+                                            <div className=" text-lg font-semibold w-[40%] ">
+                                                <span className="font-playfair">Username : </span>
+                                                <span>{x.cart_id.user_id.firstName} {x.cart_id.user_id.lastName}</span>
                                             </div>
                                             {/* <div className=" flex flex-row justify-between items-center w-[20%]">
                                                 <div className=" text-xl font-semibold ">
@@ -211,7 +212,7 @@ const ShowOrder = () => {
                                             {cartItems.filter(item => item.cart_id.id == i).map(x => (
                                                 <div className="flex flex-col ">
                                                     <div className="flex justify-between">
-                                                        <span>
+                                                        <span className="font-playfair">
                                                             Menu: {x.product_id.name}
                                                         </span>
                                                         <span>
@@ -254,6 +255,14 @@ const ShowOrder = () => {
                                                 </div>
                                                 <div>
                                                     ตรวจสอบการชำระ :
+                                                    <img src="/assets/bill.jpg" alt="" className="w-24 "     />
+                                                    {/* <Image
+                                                        // alt="Profile"
+                                                        className="rounded-3xl object-cover"
+                                                        // src={product.imageProduct || ""}
+                                                        width={80}
+                                                        height={80}
+                                                    /> */}
                                                 </div>
                                             </div>
                                         ))}
@@ -281,7 +290,7 @@ const ShowOrder = () => {
                                 <div className=" border-[3px] border-black  rounded-[2rem] ">
                                     {processOrders.filter(item => item.cart_id.id == i).map(x => (
                                         <div className="flex justify-between p-6 px-16">
-                                            <div className=" text-lg font-semibold w-[40%]">
+                                            <div className=" text-lg font-semibold w-[40%] ">
                                                 Username : {x.cart_id.user_id.firstName} {x.cart_id.user_id.lastName}
                                             </div>
                                             <div className=" flex flex-row justify-between items-center w-[20%]">
@@ -291,11 +300,11 @@ const ShowOrder = () => {
                                                 <div>
                                                     <select
                                                         id="statusOrder"
-                                                        value={statusOrder[x.id] ||  x.statusOrder}
+                                                        value={statusOrder[x.id] || x.statusOrder}
                                                         onChange={(e) => setStatusAndButton(e.target.value, x.id)}
                                                         className="w-[171px] h-[35px] border-2 border-[#013927]  rounded-2xl pl-3 bg-[#FBF6F0]"
                                                     >
-                                                        {x.statusOrder == "Pending" ? (<option value="Pending" disabled>ยังไม่ทำออเดอร์</option>):(<option value="Pending" >ยังไม่ทำออเดอร์</option>)}
+                                                        {x.statusOrder == "Pending" ? (<option value="Pending" disabled>ยังไม่ทำออเดอร์</option>) : (<option value="Pending" >ยังไม่ทำออเดอร์</option>)}
                                                         <option value="Processing">กำลังทำออเดอร์</option>
                                                         <option value="Completed">ออเดอร์เสร็จสิ้น</option>
                                                     </select>
@@ -351,6 +360,8 @@ const ShowOrder = () => {
                                                 </div>
                                                 <div>
                                                     ตรวจสอบการชำระ :
+                                                    <img src="/assets/bill.jpg" alt="" className="w-24 "     />
+
                                                 </div>
                                             </div>
                                         ))}
@@ -362,7 +373,7 @@ const ShowOrder = () => {
                                                 </div>)}
                                             </div>
                                         ))}
-            
+
                                     </div>
                                 </div>
                             </div>)
@@ -380,7 +391,7 @@ const ShowOrder = () => {
                                 <div className=" border-[3px] border-black  rounded-[2rem] ">
                                     {finishOrders.filter(item => item.cart_id.id == i).map(x => (
                                         <div className="flex justify-between p-6 px-16">
-                                            <div className=" text-lg font-semibold w-[40%]">
+                                            <div className=" text-lg font-semibold w-[40%] ">
                                                 Username : {x.cart_id.user_id.firstName} {x.cart_id.user_id.lastName}
                                             </div>
                                             <div className=" flex flex-row justify-between items-center w-[20%]">
@@ -393,8 +404,8 @@ const ShowOrder = () => {
                                                         value={statusOrder[x.id] || x.statusOrder}
                                                         onChange={(e) => setStatusAndButton(e.target.value, x.id)}
                                                         className="w-[171px] h-[35px] border-2 border-[#013927]  rounded-2xl pl-3 bg-[#FBF6F0]"
-                                                    >   
-                                                        {x.statusOrder !== "Received" ? (<option value="Completed">รอลูกค้ามารับ</option>):(<option value="Completed" disabled>รอลูกค้ามารับ</option>)}
+                                                    >
+                                                        {x.statusOrder !== "Received" ? (<option value="Completed">รอลูกค้ามารับ</option>) : (<option value="Completed" disabled>รอลูกค้ามารับ</option>)}
                                                         <option value="Received">ลูกค้ารับแล้ว</option>
                                                     </select>
                                                 </div>
@@ -449,6 +460,8 @@ const ShowOrder = () => {
                                                 </div>
                                                 <div>
                                                     ตรวจสอบการชำระ :
+                                                    <img src="/assets/bill.jpg" alt="" className="w-24 "     />
+
                                                 </div>
                                             </div>
                                         ))}
@@ -460,7 +473,7 @@ const ShowOrder = () => {
                                                 </div>)}
                                             </div>
                                         ))}
-            
+
                                     </div>
                                 </div>
                             </div>)
@@ -474,7 +487,7 @@ const ShowOrder = () => {
 
     return (
         <div >
-        <Navbar />
+            <Navbar />
             <div className="bg-[#FBF6F0] min-h-screen">
                 <div className="flex justify-center pt-20 pb-5 ml-6">
                     <div className="flex justify-center w-[20%]">
