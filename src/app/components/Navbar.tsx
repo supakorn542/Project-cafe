@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { MdAccountCircle } from "react-icons/md";
 import { FaShoppingBasket } from "react-icons/fa";
-
+import "./navbar.css";
 interface NavnarProp {
   textColor?: string;
   color?: string;
@@ -71,20 +71,27 @@ const Navbar = ({
   return (
     <nav
       className={`fixed flex justify-between top-0 left-0 right-0 transition-all duration-300 z-50 p-3 
-                 ${scrolled? 'bg-white/40 text-black shadow-md saturate-[130%] backdrop-blur-md': 'bg-transparent text-black'} 
-                 ${menuOpen? 'bg-white': ''}`} 
+                
+                 ${
+                   menuOpen
+                     ? "bg-white"
+                     : scrolled
+                     ? "bg-white/40 text-black shadow-md saturate-[130%] backdrop-blur-md"
+                     : "bg-transparent text-black"
+                 }`}
     >
-      <div className={` ${menuOpen? `text-black`: scrolled? textWhenScroll: textColor}`}>
-        <Link
-          href="/"
-          className={`font-gloock font-bold text-2xl }`}
-        >
+      <div
+        className={` ${
+          menuOpen ? `text-black` : scrolled ? textWhenScroll : textColor
+        }`}
+      >
+        <Link href="/" className={`font-gloock font-bold text-2xl }`}>
           Forest Tale
         </Link>
       </div>
 
       <div className="hidden md:block">
-        <ul className="flex md:flex-row flex-col md:gap-[4vw] md:items-center gap-8 text-lg">
+        <ul className="flex md:flex-row flex-col md:gap-[4vw] md:items-center gap-8 md:text-lg">
           <li>
             <Link
               href="/"
@@ -117,8 +124,6 @@ const Navbar = ({
           </li>
         </ul>
       </div>
-
-
 
       {/* เมื่อล็อคอินแล้วว */}
 
@@ -163,10 +168,9 @@ const Navbar = ({
               )}
             </div>
           </>
-        ) : 
-        // เทื่อไม่ได้ล็อคอิน
-        (
-          <>
+        ) : (
+          // เทื่อไม่ได้ล็อคอิน
+          <div className="text-sm">
             <Link href="/signin">
               <button
                 className={`bg-transparent px-2 py-1 rounded-3xl border border-${color} hover:bg-slate-400 ${
@@ -185,19 +189,23 @@ const Navbar = ({
                 Sign up
               </button>
             </Link>
-          </>
+          </div>
         )}
 
         {menuOpen ? (
           <AiOutlineClose
             onClick={toggleMenu}
-            className={`text-2xl cursor-pointer md:hidden ${textColor}`}
+            className={`text-2xl cursor-pointer md:hidden ${
+              menuOpen ? textWhenScroll : textColor
+            }`}
             aria-label="Close menu"
           />
         ) : (
           <AiOutlineMenu
             onClick={toggleMenu}
-            className={`text-2xl cursor-pointer md:hidden ${textColor}`}
+            className={`text-2xl cursor-pointer md:hidden ${
+              menuOpen ? textWhenScroll : textColor
+            } `}
             aria-label="Open menu"
           />
         )}
@@ -219,8 +227,8 @@ const Navbar = ({
             <li>
               <Link
                 href="/user/menu"
-                className={`hover:border-b-2 transition-all ease-in-out fade-in-stagger" `}
-                style={{ animationDelay: "0.5s" }}
+                className="hover:border-b-2 transition-all ease-in-out fade-in-stagger"
+                style={{ animationDelay: "0.15s" }}
               >
                 Menu
               </Link>
@@ -228,8 +236,8 @@ const Navbar = ({
             <li>
               <Link
                 href="/user/aboutus"
-                className={`hover:border-b-2 transition-all ease-in-out fade-in-stagger"`}
-                style={{ animationDelay: "1s" }}
+                className={`hover:border-b-2 transition-all ease-in-out fade-in-stagger`}
+                style={{ animationDelay: "0.3s" }}
               >
                 About us
               </Link>

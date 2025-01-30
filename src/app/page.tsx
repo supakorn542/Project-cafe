@@ -130,7 +130,7 @@ export default function Home() {
   return (
     <div className="">
       <Navbar textColor="text-white" color="white" />
-      <section className="min-h-screen w-auto lg:w-full font-playfair ">
+      <section className="min-h-screen w-auto lg:w-full font-playfair container mx-auto">
         <Image
           className="-z-10"
           src={"/assets/bgweb.png"}
@@ -161,7 +161,7 @@ export default function Home() {
             </span>
           </div>
 
-          <p className=" lg:text-lg w-[50%] mt-16">
+          <p className=" text-sm lg:text-lg w-full md:w-[50%] mt-16">
             With a wide range of coffee flavors, brewing methods, and add-ons,
             you can personalize your coffee experience to suit your preferences
             and indulge in different taste profiles.
@@ -220,7 +220,7 @@ export default function Home() {
       <section className=" flex justify-between mt-60 font-playfair ">
         <div
           className="flex flex-col justify-center items-center space-y-2 gap-6"
-          data-aos="fade-left"
+          data-aos="fade-rigth"
           data-aos-delay="50"
           data-aos-duration="1000"
           data-aos-easing="ease-in-out"
@@ -243,7 +243,7 @@ export default function Home() {
           </button>
         </div>
         <div
-        className="w-[50%]  hidden md:block"
+        className="w-[50%] hidden md:block"
           data-aos="fade-right"
           data-aos-delay="50"
           data-aos-duration="1000"
@@ -271,7 +271,7 @@ export default function Home() {
       </section>
       <section
         className=" container mx-auto mt-20  flex flex-col gap-14"
-        data-aos="zoom-out-up"
+        data-aos="fade-up"
         data-aos-delay="50"
         data-aos-duration="1000"
         data-aos-easing="ease-in-out"
@@ -291,7 +291,7 @@ export default function Home() {
               items: 3,
             },
           }}
-          
+         
           className=""
         >
           {sdata.map((item, index) => (
