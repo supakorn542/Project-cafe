@@ -230,15 +230,18 @@ const ShowOrder = () => {
                                         <div className="border-l-[2.5px] border-[#013927]  "></div>
                                         <div className="flex flex-col w-[27%] gap-1">
                                             {orders.filter(item => item.cart_id.id == i).map(x => (
-                                                <div className="">
-                                                    <span className=" font-semibold ">วันที่สั่งซื้อ : </span>
-                                                    <span>{formatDate(String(x.orderDate))}</span>
+                                                <div>
+                                                    <div className="">
+                                                        <span className=" font-semibold ">วันที่สั่งซื้อ : </span>
+                                                        <span>{formatDate(String(x.orderDate))}</span>
+                                                    </div>
+
+                                                    <div>
+                                                        <span className=" font-semibold">วันที่รับสินค้า : </span>
+                                                        <span>{formatDate(String(x.payment_id.pickuporderDate))}</span>
+                                                    </div>
                                                 </div>
                                             ))}
-                                            <div>
-                                                <span className=" font-semibold">วันที่รับสินค้า : </span>
-                                                <span>20-04-2024 , 12:00 pm</span>
-                                            </div>
                                             {orders.filter(item => item.cart_id.id == i).map(x => (
                                                 <div>
                                                     <span className=" font-semibold">เบอร์โทรศัพท์ : </span>
@@ -255,7 +258,7 @@ const ShowOrder = () => {
                                                 </div>
                                                 <div>
                                                     ตรวจสอบการชำระ :
-                                                    <img src="/assets/bill.jpg" alt="" className="w-24 "     />
+                                                    <img src={x.payment_id.receipt} alt="" className="w-24 " />
                                                     {/* <Image
                                                         // alt="Profile"
                                                         className="rounded-3xl object-cover"
@@ -335,21 +338,23 @@ const ShowOrder = () => {
                                         <div className="border-l-[2.5px] border-black "></div>
                                         <div className="flex flex-col w-[27%] gap-1">
                                             {processOrders.filter(item => item.cart_id.id == i).map(x => (
-                                                <div className="">
-                                                    <span className=" font-semibold ">วันที่สั่งซื้อ : </span>
-                                                    <span>{formatDate(String(x.orderDate))}</span>
-                                                </div>
-                                            ))}
-                                            <div>
-                                                <span className=" font-semibold">วันที่รับสินค้า : </span>
-                                                <span>20-04-2024 , 12:00 pm</span>
-                                            </div>
-                                            {processOrders.filter(item => item.cart_id.id == i).map(x => (
                                                 <div>
-                                                    <span className=" font-semibold">เบอร์โทรศัพท์ : </span>
-                                                    <span> {x.cart_id.user_id.telNumber}</span>
+                                                    <div className="">
+                                                        <span className=" font-semibold ">วันที่สั่งซื้อ : </span>
+                                                        <span>{formatDate(String(x.orderDate))}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className=" font-semibold">วันที่รับสินค้า : </span>
+                                                        <span>{formatDate(String(x.payment_id.pickuporderDate))}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className=" font-semibold">เบอร์โทรศัพท์ : </span>
+                                                        <span> {x.cart_id.user_id.telNumber}</span>
+                                                    </div>
                                                 </div>
+
                                             ))}
+
 
                                         </div>
                                         <div className="border-l-[2.5px] border-black "></div>
@@ -360,14 +365,14 @@ const ShowOrder = () => {
                                                 </div>
                                                 <div>
                                                     ตรวจสอบการชำระ :
-                                                    <img src="/assets/bill.jpg" alt="" className="w-24 "     />
+                                                    <img src={x.payment_id.receipt} alt="" className="w-24 " />
 
                                                 </div>
                                             </div>
                                         ))}
                                         {processOrders.filter(item => item.cart_id.id == i).map(x => (
-                                            <div className=" flex justify-between items-end  w-[20%] ">
-                                                {button[x.id] && (<div>
+                                            <div className=" flex ">
+                                                {button[x.id] && (<div className="flex justify-between items-end gap-4">
                                                     <button className="w-[110px] h-[28px] font-semibold border-2 border-black text-white bg-black rounded-xl" onClick={() => { updatedStatusOrder(x.id, statusOrder[x.id]) }}> Done </button>
                                                     <button className="w-[110px] h-[28px] font-semibold border-2 border-black text-black rounded-xl" onClick={() => setStatusAndButton("", x.id)}> Cancel </button>
                                                 </div>)}
@@ -435,21 +440,24 @@ const ShowOrder = () => {
                                         <div className="border-l-[2.5px] border-black "></div>
                                         <div className="flex flex-col w-[27%] gap-1">
                                             {finishOrders.filter(item => item.cart_id.id == i).map(x => (
-                                                <div className="">
-                                                    <span className=" font-semibold ">วันที่สั่งซื้อ : </span>
-                                                    <span>{formatDate(String(x.orderDate))}</span>
-                                                </div>
-                                            ))}
-                                            <div>
-                                                <span className=" font-semibold">วันที่รับสินค้า : </span>
-                                                <span>20-04-2024 , 12:00 pm</span>
-                                            </div>
-                                            {finishOrders.filter(item => item.cart_id.id == i).map(x => (
                                                 <div>
-                                                    <span className=" font-semibold">เบอร์โทรศัพท์ : </span>
-                                                    <span> {x.cart_id.user_id.telNumber}</span>
+                                                    <div className="">
+                                                        <span className=" font-semibold ">วันที่สั่งซื้อ : </span>
+                                                        <span>{formatDate(String(x.orderDate))}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className=" font-semibold">วันที่รับสินค้า : </span>
+                                                        <span>{formatDate(String(x.payment_id.pickuporderDate))}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className=" font-semibold">เบอร์โทรศัพท์ : </span>
+                                                        <span> {x.cart_id.user_id.telNumber}</span>
+                                                    </div>
                                                 </div>
+
                                             ))}
+
+                                           
 
                                         </div>
                                         <div className="border-l-[2.5px] border-black "></div>
@@ -460,14 +468,14 @@ const ShowOrder = () => {
                                                 </div>
                                                 <div>
                                                     ตรวจสอบการชำระ :
-                                                    <img src="/assets/bill.jpg" alt="" className="w-24 "     />
+                                                    <img src={x.payment_id.receipt} alt="" className="w-24 " />
 
                                                 </div>
                                             </div>
                                         ))}
                                         {finishOrders.filter(item => item.cart_id.id == i).map(x => (
-                                            <div className=" flex justify-between items-end  w-[20%] ">
-                                                {button[x.id] && (<div>
+                                            <div className=" flex ">
+                                                {button[x.id] && (<div className="flex justify-between items-end gap-4">
                                                     <button className="w-[110px] h-[28px] font-semibold border-2 border-black text-white bg-black rounded-xl" onClick={() => { updatedStatusOrder(x.id, statusOrder[x.id]) }}> Done </button>
                                                     <button className="w-[110px] h-[28px] font-semibold border-2 border-black text-black rounded-xl" onClick={() => setStatusAndButton("", x.id)}> Cancel </button>
                                                 </div>)}

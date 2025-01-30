@@ -46,6 +46,7 @@ const Menu = () => {
       console.log("group inside fetch data", grouped);
 
       setGroupedProducts(grouped); // อัพเดต groupedProducts
+      console.log(grouped)
     } catch (error) {
       console.error("Failed to fetch data:", error);
     }

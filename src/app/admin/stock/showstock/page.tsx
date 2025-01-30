@@ -135,7 +135,7 @@ const ShowStock = () => {
                         <div className="flex flex-col  items-center  w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-auto max-h-[500px]">
                             {ingredients.map((ingredient) =>
                                 <div className="flex flex-row justify-between w-[90%] min-h-[25%] border-b-[2px] border-black ">
-                                    <div className="w-[15%] h-full font-prompt  text-2xl font-semibold text-center flex items-center justify-center" >
+                                    <div className="w-[15%] h-full text-2xl font-semibold text-center flex items-center justify-center" >
                                         <span> {ingredient.name} </span>
                                     </div>
                                     <div className="w-[17%] h-full font-semibold flex flex-col justify-center" >
