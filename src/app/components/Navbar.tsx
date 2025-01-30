@@ -90,7 +90,7 @@ const Navbar = ({
         </Link>
       </div>
 
-      <div className="hidden md:block">
+      <div className="hidden md:block font-playfair">
         <ul className="flex md:flex-row flex-col md:gap-[4vw] md:items-center gap-8 md:text-lg">
           <li>
             <Link
