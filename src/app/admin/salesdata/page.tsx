@@ -2,19 +2,22 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/app/components/Navbar";
 import '../../globals.css';
-import { createDailySales, getTodayOrders } from "@/app/services/salesdata";
+import { createDailySales, getTodayInStoreSales, getTodayOnlineSales, getTodayOrders } from "@/app/services/salesdata";
 import { getCartItemByCartIdFromAom } from "@/app/services/orderhistory";
+import { getAllReview } from "@/app/services/review";
+import { Timestamp } from "firebase/firestore";
 
 const Salesdata = () => {
-  const [isReviewPopupOpen, setIsSalessummaryPopupOpen] = useState(false);
-  const [reviewText, setSalessummary] = useState(''); // สำหรับข้อความรีวิว
+  const [isSalseDataPopupOpen, setIsSalseDataPopupOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState('ธันวาคม');
   const [cartItems, setCartItems] = useState<any[]>([]);
+  const [allReview, setAllReviews] = useState<any[]>([]);
   const [productQuantities, setProductQuantities] = useState<{ name: string, quantity: number }[]>([]);
-
   const [orders, setOrders] = useState<any[]>([]);
   const [saleDate, setSaleDate] = useState<any>('');
   const [saleAmount, setSaleAmount] = useState<any>(0);
+  const [onlineSales, setOnlineSales] = useState<number>(0); // State สำหรับเก็บยอดขายออนไลน์
+  const [inStoreSale, setInStoreSale] = useState<number>(0); // State สำหรับเก็บยอดขายออนไลน์
 
 
   useEffect(() => {
@@ -48,7 +51,21 @@ const Salesdata = () => {
         }, []);
 
         setProductQuantities(productQuantities); // เก็บข้อมูลใน state
-        console.log("productQuantities:", productQuantities); // ตรวจสอบ��ลลัพ��์ productQuantities
+        console.log("productQuantities:", productQuantities);
+
+        const review = await getAllReview();
+        setAllReviews(review.filter(item => !item.deletedAt));
+        console.log("reviews :", review)
+
+        // เรียกใช้ getTodayOnlineSales เพื่อดึงยอดขายออนไลน์วันนี้
+        const onlineSalesAmount = await getTodayOnlineSales();
+        setOnlineSales(onlineSalesAmount); // เก็บยอดขายออนไลน์ใน state
+
+        // เรียกใช้ getTodayInStoreSales เพื่อดึงยอดขายหน้าร้านวันนี้
+        const inStoreSaleAmount = await getTodayInStoreSales(); // เรียกฟังก์ชันดึงยอดขายหน้าร้าน
+        setInStoreSale(inStoreSaleAmount); // เก็บข้อมูลยอดขายหน้าร้านในสถานะ
+        console.log("In-store sale amount:", inStoreSaleAmount); // ตรวจสอบยอดขายหน้าร้าน
+
 
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -58,60 +75,74 @@ const Salesdata = () => {
     fetchOrders();
   }, []);
 
+  const totalSales = onlineSales + inStoreSale; // คำนวณยอดขายรวม
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault(); // ป้องกันการทำงานตามปกติของฟอร์ม
+  const calculateReviewSummary = () => {
+    if (allReview.length === 0) return { avgRating: 0, starCounts: [0, 0, 0, 0, 0] };
 
-  //   if (!saleDate || saleAmount <= 0) {
-  //     // เพิ่มการตรวจสอบข้อมูล ถ้าข้อมูลไม่ครบหรือยอดขายน้อยกว่า 0
-  //     alert("กรุณากรอกข้อมูลทั้งหมด!");
-  //     return;
-  //   }
+    const starCounts = [0, 0, 0, 0, 0];
+    let totalRating = 0;
 
-  //   try {
-  //     const newSale = {
-  //       salesDate: saleDate,
-  //       totalSales: saleAmount,
-  //     };
+    allReview.forEach(({ rating }) => {
+      if (rating >= 1 && rating <= 5) {
+        starCounts[5 - rating] += 1; // ปรับ index ให้ตรงกับตำแหน่งของดาว
+        totalRating += rating;
+      }
+    });
 
-  //     // เรียกใช้ฟังก์ชัน createDailySales จาก service เพื่อบันทึกข้อมูล
-  //     await createDailySales(newSale);
+    return {
+      avgRating: (totalRating / allReview.length).toFixed(1),
+      starCounts,
+    };
+  };
 
-  //     // รีเซ็ตข้อมูลในฟอร์มและปิด popup
-  //     setSaleDate('');
-  //     setSaleAmount(0);
-  //     closeSalessummaryPopup();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  //     alert("บันทึกยอดขายสำเร็จ!");
-  //   } catch (error) {
-  //     console.error("เกิดข้อผิดพลาดในการบันทึกยอดขาย:", error);
-  //     alert("ไม่สามารถบันทึกข้อมูลยอดขายได้");
-  //   }
-  // };
+    // แปลง saleDate จาก string เป็น Timestamp
+    const timestamp = Timestamp.fromDate(new Date(saleDate)); // แปลงเป็น Timestamp
 
+    if (saleDate && saleAmount) {
+      const dailySales = {
+        salesDate: timestamp, // ส่งเป็น Timestamp
+        totalSales: saleAmount,
+      };
 
+      try {
+        await createDailySales(dailySales);
+        alert("ยอดขายถูกบันทึกเรียบร้อยแล้ว!");
+        closeSalseDataPopup();
+        // เรียกข้อมูลยอดขายใหม่หลังจากบันทึกข้อมูล
+        const updatedOnlineSales = await getTodayOnlineSales();
+        const updatedInStoreSales = await getTodayInStoreSales();  
+        setOnlineSales(updatedOnlineSales);
+        setInStoreSale(updatedInStoreSales);
+        setSaleDate('');
+        setSaleAmount(0); 
 
+      } catch (error) {
+        console.error("Error saving sales data:", error);
+        alert("เกิดข้อผิดพลาดในการบันทึกยอดขาย");
+      }
+    } else {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+    }
+  };
 
-
-
-
+  const { avgRating, starCounts } = calculateReviewSummary();
 
   const handleChangeMonth = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMonth(e.target.value);
   };
 
-  const openSalessummaryPopup = () => {
-    setIsSalessummaryPopupOpen(true);
+  const openSalseDataPopupOpen = () => {
+    setIsSalseDataPopupOpen(true);
   };
 
-  const closeSalessummaryPopup = () => {
-    setIsSalessummaryPopupOpen(false);
-  };
-  // ข้อมูลยอดขาย
-  const salesSummary = {
-    online: 2000,
-    inStore: 6000,
-    total: 8000,
+  const closeSalseDataPopup = () => {
+    setIsSalseDataPopupOpen(false);
+    setSaleDate('');
+    setSaleAmount(0); 
   };
 
   return (
@@ -146,25 +177,25 @@ const Salesdata = () => {
                 <div className="w-full flex justify-between items-center">
                   <h2 className="text-lg font-bold text-black">สรุปยอดขายวันนี้</h2>
                   <button
-                    className="border-2 border-black rounded-xl py-1 px-2 text-lg text-black00"
-                    onClick={openSalessummaryPopup}
+                    className="border-2 bg-black border-black rounded-xl py-1 px-2 text-lg text-white"
+                    onClick={openSalseDataPopupOpen}
                   >
                     + ยอดขายหน้าร้าน
                   </button>
                 </div>
-                <div className="w-full mt-3 border-t-2 border-black"></div>
-                <ul className="mt-4 text-left w-full">
+                <ul className="mt-10 text-left w-full">
                   <li className="flex justify-between">
                     <span>ยอดขายออนไลน์</span>
-                    <span>{salesSummary.online} บาท</span>
+                    <span>{onlineSales} บาท</span>
                   </li>
-                  <li className="flex justify-between mt-2">
+                  <li className="flex justify-between mt-4 mb-4">
                     <span>ยอดขายหน้าร้าน</span>
-                    <span>{salesSummary.inStore} บาท</span>
+                    <span>{inStoreSale} บาท</span>
                   </li>
-                  <li className="flex justify-between mt-2 font-bold">
+                  <div className="w-full mt-8 border-t-2 border-black"></div>
+                  <li className="flex justify-between mt-10 font-bold">
                     <span>ยอดขายรวมทั้งหมด</span>
-                    <span>{orders.reduce((sum, order) => sum + order.total_price, 0)} บาท</span>
+                    <span>{totalSales} บาท</span>
                   </li>
                 </ul>
               </div>
@@ -172,16 +203,59 @@ const Salesdata = () => {
           </div>
           {/* กล่องเพิ่มเติม */}
           <div className="grid grid-cols-2 gap-4 min-h-[320px] w-[95%] mx-auto mt-4">
-            <div className="min-h-[320px] border-2 border-black text-center p-4 rounded-3xl">
+            <div className="min-h-[320px] px-8 py-4 pt-6 pb-6 border-2 border-black text-center rounded-3xl overflow-y-auto flex flex-col gap-4 custom-scroll max-h-[300px]">
+              {allReview.map((review, index) => (
+                <div key={index}>
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-bold">{review.user_id.username}</h3>
+                    <div className="flex space-x-0 tracking-tight">
+                      {[...Array(5)].map((_, index) => (
+                        <span
+                          key={index}
+                          className={`text-2xl ${index < review.rating ? "text-yellow-500" : "text-gray-300"}`}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-black ml-2 text-justify">{review.comment}</p>
+                </div>
+              ))}
             </div>
-            <div className="min-h-[320px] border-2 border-black text-center p-4 rounded-3xl"></div>
+            <div className="min-h-[320px] border-2 border-black text-center px-9 py-4 rounded-3xl">
+              <h2 className="text-xl font-bold mb-4">คะแนนการรีวิว</h2>
+              <div className="text-4xl font-bold">{avgRating}</div>
+              <div className="text-lg">{allReview.length} เรตติ้ง</div>
+              <div className="mt-4 space-y-1">
+                {[5, 4, 3, 2, 1].map((star, index) => (
+                  <div key={star} className="flex items-center">
+                    <span className="text-xl">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className={i < star ? "text-yellow-500" : "text-gray-300"}>
+                          ★
+                        </span>
+                      ))}
+                    </span>
+                    <div className="w-full bg-gray-200 h-2 mx-2 rounded">
+                      <div
+                        className="bg-yellow-500 h-2 rounded"
+                        style={{ width: `${(starCounts[5 - star] / allReview.length) * 100}%` }}
+                      ></div>
+                    </div>
+                    <span>{starCounts[5 - star]}</span>
+                  </div>
+                ))}
+
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {isReviewPopupOpen && (
+      {isSalseDataPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <form className="bg-white rounded-3xl w-[25%] h-[40%] p-6">
+          <form onSubmit={handleSubmit} className="bg-white rounded-3xl w-[25%] h-[40%] p-6">
             <h2 className="text-xl text-center font-bold mb-5">ยอดขายหน้าร้าน</h2>
             <input
               type="date"
@@ -191,15 +265,15 @@ const Salesdata = () => {
             />
             <input
               type="number"
+              value={saleAmount || ""}
               className="w-full h-12 px-2 border-2 border-black rounded-xl mb-14 focus:outline-none focus:ring focus:ring-gray-300 placeholder-left"
               placeholder="กรุณากรอกยอดขายที่หน้าร้าน"
-              value={saleAmount}
               onChange={(e) => setSaleAmount(Number(e.target.value))}
             />
             <div className="flex justify-between w-full">
               <button
                 className="px-4 py-1 border-2 border-black rounded-3xl text-sm hover:bg-black hover:text-white transition duration-200"
-                onClick={closeSalessummaryPopup}
+                onClick={closeSalseDataPopup}
               >
                 Cancel
               </button>

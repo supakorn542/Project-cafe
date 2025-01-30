@@ -48,6 +48,50 @@ export const getReviewByUserId = async (userId: string) => {
     }
 };
 
+export const getAllReview = async () => {
+    try {
+        const reviewRef = collection(db, "reviews");
+
+        const querySnapshot = await getDocs(reviewRef);
+
+        const reviews = await Promise.all(querySnapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            const orderRef = data.order_id;
+
+            const orderSnap = await getDoc(orderRef);
+            if (orderSnap.exists()) {
+                const orderData = orderSnap.data();
+                data.order_id = { id: orderRef.id, ...orderData || {} };
+            } else {
+                throw new Error("Order not found");
+            }
+
+            const userSnap = await getDoc(data.user_id);
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                data.user_id = { id: userSnap.id, ...userData || {} };
+            } else {
+                throw new Error("User not found");
+            }
+
+            return {
+                id: doc.id,
+                rating: data.rating || '',
+                comment: data.comment || '',
+                user_id: data.user_id || '',
+                order_id: data.order_id,
+                deletedAt: data.deletedAt || null,  // เช็ค deletedAt
+            };
+        }));
+
+        console.log(reviews);
+        return reviews;
+    } catch (error) {
+        console.error("Error fetching reviews:", error);
+        return [];
+    }
+};
+
 
 export const createReview = async (review: Review): Promise<void> => {
     try {

@@ -1,5 +1,7 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface DailySales {
-    id: string;
-    salesDate: Date;
+    id?: string;
+    salesDate: Timestamp;
     totalSales: number;
 }
