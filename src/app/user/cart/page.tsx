@@ -286,14 +286,12 @@ const Cart = () => {
     <div className="bg-[#FBF6F0] min-h-screen pt-16 ">
       <Navbar textColor="text-black" color="white" />
       <div className="container mx-auto px-4 py-6 ">
-      <header className=" text-greenthemewep p-4 ">
-              <h1 className="text-3xl font-bold">Your Cart</h1>
-            </header>
+        <header className=" text-greenthemewep p-4 ">
+          <h1 className="text-3xl font-bold">Your Cart</h1>
+        </header>
         <div className="flex gap-8 flex-wrap ">
           {/* Left Section: Cart Items */}
           <div className="grow md:flex-0 lg:flex-2 max-h-[500px] overflow-auto">
-            
-
             {cartItems.map((item) => (
               <div
                 key={item.id}
@@ -338,11 +336,9 @@ const Cart = () => {
                               คำอธิบายเพิ่มเติม: {item.description}
                             </p>
                           )}
-                         
-                            <p className="text-gray-600 text-sm">
-                              จำนวนสินค้า {item.quantity}
-                            </p>
-                          
+                          <p className="text-gray-600 text-sm">
+                            จำนวนสินค้า {item.quantity}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -357,7 +353,7 @@ const Cart = () => {
                     <p className="absolute top-4 right-4 text-lg font-bold text-gray-800">
                       ${item.totalPrice}
                     </p>
-                    <div className="flex mt-2 lg:justify-end">
+                    <div className="flex mt-10 lg:justify-end">
                       <button
                         className="text-black border border-black rounded-full p-1 hover:text-red-700 mr-2"
                         onClick={() => handleDeleteCartItem(item.id)}
@@ -386,25 +382,30 @@ const Cart = () => {
           </div>
 
           {/* Right Section: Total Price */}
-          <div className="w-full sm:w-1/3   bg-greenthemewep p-4 rounded-lg shadow-lg  max-h-[400px]">
-            <h2 className="text-xl font-bold text-white mb-4">Total</h2>
-            {cartItems.map((item) => (
-              <div key={item.id} className=" text-sm  py-2 text-white">
-                {item.product_id.map((product: Product) => (
-                  <div key={product.id} className="flex justify-between ">
-                    <span>{product.name}</span>
-                    <span>{item.totalPrice}</span>
-                  </div>
-                ))}
+          <div className="w-full sm:w-1/3 bg-greenthemewep p-5 rounded-[60px] shadow-lg min-h-[400px] flex flex-col ">
+            <div className="flex-grow">
+              {" "}
+              {/* This div will take up available space */}
+              <h2 className="text-xl font-bold text-white mb-4 flex justify-center">Total</h2>
+              {cartItems.map((item) => (
+                <div key={item.id} className="text-sm py-2 text-white">
+                  {item.product_id.map((product: Product) => (
+                    <div key={product.id} className="flex justify-between">
+                      <span>{product.name}</span>
+                      <span>{item.totalPrice}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>{" "}
+              <div className="flex justify-between text-white text-lg font-bold border-t py-2 mt-2">
+                <span className="flex justify-center">Total</span>
+                <span>${totalPrice}</span>
               </div>
-            ))}
-            <div className="flex justify-between text-white text-lg font-bold border-t py-2 mt-2">
-              <span>Total</span>
-              <span>${totalPrice}</span>
-            </div>
+            {/* End of flex-grow div */}
             <button
               onClick={() => setIsPopupPaymentOpen(true)}
-              className="mt-4 w-full bg-green-800 text-white py-2 rounded"
+              className="flex text-sm justify-center items-center mt-4 w-3/4 bg-transparent rounded-3xl text-white py-2 border border-white self-center"
             >
               Proceed to Checkout
             </button>
