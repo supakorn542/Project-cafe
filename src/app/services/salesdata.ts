@@ -15,19 +15,26 @@ export const getTodayOrders = async () => {
         const startOfDayTimestamp = Timestamp.fromDate(startOfDay);
         const endOfDayTimestamp = Timestamp.fromDate(endOfDay);
 
+        console.log("Fetching orders from Firestore...");
+        console.log("Start of Day Timestamp:", startOfDayTimestamp.toDate());
+        console.log("End of Day Timestamp:", endOfDayTimestamp.toDate());
+        
         const ordersQuery = query(
             ordersRef,
             where("orderDate", ">=", startOfDayTimestamp),
             where("orderDate", "<=", endOfDayTimestamp),
-            where("statusOrder", "==", "Completed")
         );
 
+    
         const querySnapshot = await getDocs(ordersQuery); // ดึงข้อมูลจาก Firestore
 
+        console.log("orderr", ordersQuery); // << เช็กว่ามาถึงตรงนี้ไหม
         if (querySnapshot.empty) {
             console.log("No orders found for today.");
             return [];
         }
+        
+        console.log("Number of orders found:", querySnapshot.size);
 
         const orderss = querySnapshot.docs.map(doc => ({
             id: doc.id,
@@ -36,11 +43,11 @@ export const getTodayOrders = async () => {
 
         console.log("Fetched orders:", orderss);
 
-
         const orders = await Promise.all(querySnapshot.docs.map(async (orderDoc) => {
             const orderData = orderDoc.data();
-
             const cartRef = orderData.cart_id;
+            if (!cartRef) return null; // ป้องกัน Error ถ้าไม่มี cart_id
+
             const cartSnap = await getDoc(cartRef);
             if (cartSnap.exists()) {
                 const cartData = cartSnap.data();
@@ -57,7 +64,7 @@ export const getTodayOrders = async () => {
             }
         }));
 
-        console.log("mami", orders)
+        console.log("mamima", orders)
         return orders.filter(order => order !== null);
     } catch (error) {
         console.error("Error fetching today's orders with products:", error);
@@ -65,7 +72,7 @@ export const getTodayOrders = async () => {
     }
 };
 
-export const getTodayOnlineSales = async () => {
+export const getTodayOnlineSales = async () => { 
     try {
         const ordersRef = collection(db, "orders");
 
@@ -76,7 +83,7 @@ export const getTodayOnlineSales = async () => {
         const startOfDayTimestamp = Timestamp.fromDate(startOfDay);
         const endOfDayTimestamp = Timestamp.fromDate(endOfDay);
 
-        // ดึงข้อมูล orders ที่อยู่ในวันเดียวกับวันนี้ และมีสถานะ "Completed"
+        // ดึง orders เฉพาะของวันนี้
         const ordersQuery = query(
             ordersRef,
             where("orderDate", ">=", startOfDayTimestamp),
@@ -90,20 +97,30 @@ export const getTodayOnlineSales = async () => {
             return 0; // คืนค่า 0 ถ้าไม่มีคำสั่งซื้อ
         }
 
-        // คำนวณยอดรวมจาก total_price ของทุกคำสั่งซื้อที่ดึงมา
-        const totalSales = querySnapshot.docs.reduce((sum, doc) => {
-            const orderData = doc.data();
-            return sum + (orderData.total_price || 0); // ใช้ค่า total_price หากมีค่า ไม่งั้นให้ใช้ 0
+        // กรองเฉพาะออเดอร์ที่มี statusOrder เป็น "Completed"
+        const completedOrders = querySnapshot.docs
+            .map(doc => doc.data())
+            .filter(order => order.statusOrder === "Completed");
+
+        if (completedOrders.length === 0) {
+            console.log("No completed orders found for today.");
+            return 0; // คืนค่า 0 ถ้าไม่มีคำสั่งซื้อที่เสร็จสมบูรณ์
+        }
+
+        // คำนวณยอดรวมจาก total_price ของทุกคำสั่งซื้อที่กรองมา
+        const totalSales = completedOrders.reduce((sum, order) => {
+            return sum + (order.total_price || 0);
         }, 0);
 
-        console.log("Total sales for today:", totalSales);
+        console.log("Total completed sales for today:", totalSales);
         return totalSales;
 
     } catch (error) {
-        console.error("Error fetching today's sales:", error);
+        console.error("Error fetching today's completed sales:", error);
         return 0; // คืนค่า 0 หากเกิดข้อผิดพลาด
     }
 };
+
 
 export const getTodayInStoreSales = async () => { 
     try {
