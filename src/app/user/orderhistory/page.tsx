@@ -43,7 +43,7 @@ const TrackOrder = () => {
                     console.log(review.filter(item => !item.deletedAt))
                     const fetchedOrders = await getOrdersByUserId(user.id);
                     setOrders(fetchedOrders);
-                    console.log("fetchedOrders: ", fetchedOrders)
+                    console.log("fetchedOrdersss: ", fetchedOrders)
 
                     const cartIds = fetchedOrders.map((order) => {
                         return order!.cart_id.id;
@@ -57,7 +57,7 @@ const TrackOrder = () => {
 
                     const fetchedCarts = await getCartItemByCartId(user.id);
                     setCarts(fetchedCarts);
-                    console.log("fetchedCarts :", fetchedCarts)
+                    console.log("fetchedCartsss :", fetchedCarts)
 
                 } catch (error) {
                     console.error("Error fetching orders:", error);
@@ -66,9 +66,10 @@ const TrackOrder = () => {
         };
 
         fetchOrders();
+        // console.log(carts)
     }, [user]);
 
-    // console.log("Carts :",carts)
+    console.log("Carts :",carts)
 
 
 

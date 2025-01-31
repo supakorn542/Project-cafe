@@ -6,6 +6,7 @@ import { createDailySales, getTodayInStoreSales, getTodayOnlineSales, getTodayOr
 import { getCartItemByCartIdFromAom } from "@/app/services/orderhistory";
 import { getAllReview } from "@/app/services/review";
 import { Timestamp } from "firebase/firestore";
+import NavbarAdmin from "@/app/components/navbarAdmin/page";
 
 const Salesdata = () => {
   const [isSalseDataPopupOpen, setIsSalseDataPopupOpen] = useState(false);
@@ -19,61 +20,70 @@ const Salesdata = () => {
   const [onlineSales, setOnlineSales] = useState<number>(0); // State สำหรับเก็บยอดขายออนไลน์
   const [inStoreSale, setInStoreSale] = useState<number>(0); // State สำหรับเก็บยอดขายออนไลน์
 
+  
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        // ดึงข้อมูลคำสั่งทั้งหมดจาก getTodayOrders
         const todayOrders = await getTodayOrders();
-        setOrders(todayOrders);
-        console.log("Today orders:", todayOrders);
+        console.log("Fetched Today Orders:", todayOrders); // ดีบักข้อมูลที่ดึงมาจาก getTodayOrders
 
-        const cartIdsFromTodayOrders = todayOrders.map(order => order!.cart_id.id)
-        const cartItemForSet = await getCartItemByCartIdFromAom(cartIdsFromTodayOrders)
-        setCartItems(cartItemForSet);
-        console.log("cartItems:", cartItemForSet); // ตรวจสอบข้อมูล cartItems ในวันนี้
-        console.log("cartIdsFromTodayOrders:", cartIdsFromTodayOrders); // ตรวจสอบข้อมูล cartIds ในวันนี้
+        // กรองคำสั่งที่มี statusOrder เป็น "Completed"
+        const completedOrders = todayOrders.filter(order => order?.statusOrder === "Completed");
+        console.log("Completed Orders:", completedOrders); // ดีบักคำสั่งที่ถูกกรอง
 
-        // const uniqueProductNames = Array.from(new Set(cartItemForSet.map(item => item.product_id.name)));
-        // console.log("Unique product names:", uniqueProductNames); // ตรวจสอบผลลัพธ์
-        // const uniqueProuctQuantity = Array.from(new Set(cartItemForSet.map(item => item.quantity)));
-        // console.log("Unique product names:", uniqueProductNames); // ตรวจสอบผลลัพธ์
+        setOrders(completedOrders);
 
-        const productQuantities = cartItemForSet.reduce((acc: { name: string, quantity: number }[], item) => {
-          const existingProduct = acc.find(product => product.name === item.product_id.name);
+        if (completedOrders && completedOrders.length > 0) {
+          const cartIdsFromCompletedOrders = completedOrders.map(order => order?.cart_id.id);
+          console.log("cartIdsFromCompletedOrders:", cartIdsFromCompletedOrders); // ดีบักข้อมูล cart_id
 
-          if (existingProduct) {
-            existingProduct.quantity += item.quantity; // ถ้ามีชื่อเดียวกันก็ให้บวก quantity
+          // ลองตรวจสอบว่า cartIdsFromCompletedOrders มีข้อมูลหรือไม่
+          if (cartIdsFromCompletedOrders.length > 0) {
+            const cartItemForSet = await getCartItemByCartIdFromAom(cartIdsFromCompletedOrders);
+            console.log("Fetched cart items:", cartItemForSet); // ดีบักข้อมูล cartItemForSet
+            setCartItems(cartItemForSet);
+
+            const productQuantities = cartItemForSet.reduce((acc: { name: string, quantity: number }[], item) => {
+              const existingProduct = acc.find(product => product.name === item.product_id.name);
+              if (existingProduct) {
+                existingProduct.quantity += item.quantity;
+              } else {
+                acc.push({ name: item.product_id.name, quantity: item.quantity });
+              }
+              return acc;
+            }, []);
+            console.log("Product quantities:", productQuantities); // ดีบักข้อมูล productQuantities
+            setProductQuantities(productQuantities);
           } else {
-            acc.push({ name: item.product_id.name, quantity: item.quantity }); // ถ้าไม่มีชื่อเดียวกันก็เพิ่มข้อมูลใหม่
+            console.log("No cart IDs found in today's orders.");
           }
-
-          return acc;
-        }, []);
-
-        setProductQuantities(productQuantities); // เก็บข้อมูลใน state
-        console.log("productQuantities:", productQuantities);
+        } else {
+          console.log("No completed orders found for today.");
+        }
 
         const review = await getAllReview();
         setAllReviews(review.filter(item => !item.deletedAt));
-        console.log("reviews :", review)
+        console.log("Fetched reviews:", review);
 
-        // เรียกใช้ getTodayOnlineSales เพื่อดึงยอดขายออนไลน์วันนี้
         const onlineSalesAmount = await getTodayOnlineSales();
-        setOnlineSales(onlineSalesAmount); // เก็บยอดขายออนไลน์ใน state
+        setOnlineSales(onlineSalesAmount);
+        console.log("Fetched online sales:", onlineSalesAmount);
 
-        // เรียกใช้ getTodayInStoreSales เพื่อดึงยอดขายหน้าร้านวันนี้
-        const inStoreSaleAmount = await getTodayInStoreSales(); // เรียกฟังก์ชันดึงยอดขายหน้าร้าน
-        setInStoreSale(inStoreSaleAmount); // เก็บข้อมูลยอดขายหน้าร้านในสถานะ
-        console.log("In-store sale amount:", inStoreSaleAmount); // ตรวจสอบยอดขายหน้าร้าน
-
-
+        const inStoreSaleAmount = await getTodayInStoreSales();
+        setInStoreSale(inStoreSaleAmount);
+        console.log("Fetched in-store sales:", inStoreSaleAmount);
+        
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
     };
 
     fetchOrders();
-  }, []);
+}, []);
+
+  
 
   const totalSales = onlineSales + inStoreSale; // คำนวณยอดขายรวม
 
@@ -147,11 +157,11 @@ const Salesdata = () => {
 
   return (
     <>
-      <Navbar />
+      <NavbarAdmin />
       <div className="bg-[#FBF6F0] min-h-screen">
         <div className="bg-cream flex flex-col items-center justify-start p-4 pt-20">
           {/* Grid หลัก */}
-          <div className="grid grid-cols-2 gap-4 w-[95%] min-h-[300px]">
+          <div className="grid grid-cols-2 gap-4 w-[95%] min-h-[300pปx]">
             {/* กล่องที่ 1 */}
             <div className="flex flex-col space-y-3 flex-1 min-h-[300px]">
               <div className="border-2 border-black text-center py-6 px-10 rounded-3xl h-full flex flex-col">

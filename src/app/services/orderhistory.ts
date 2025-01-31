@@ -43,23 +43,31 @@ export const getCartsByUserId = async (userId: string): Promise<CartInterface[]>
 export const getOrdersByCartId = async (cartIds: string[], statusOrder: string) => {
   try {
     console.log(cartIds , statusOrder);
-    const cartsRef = collection(db, "carts");
-    // Query orders ที่ cart_id อยู่ใน cartIds
     const ordersRef = collection(db, "orders");
     let ordersSnapshot;
-    if (statusOrder=="Completed"){
-      const ordersQuery = query(ordersRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))), where("statusOrder", "==","Completed"));
+    
+    // ใช้ query เฉพาะเมื่อ statusOrder เป็น "Completed"
+    if (statusOrder == "Completed") {
+      const ordersQuery = query(
+        ordersRef, 
+        where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))), 
+        where("statusOrder", "==", "Completed")
+      );
       ordersSnapshot = await getDocs(ordersQuery);
     }
-    else{
-      const ordersQuery = query(ordersRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))), where("statusOrder", "==", "Processing") || where("statusOrder", "==", "Pending"));
+    // สำหรับกรณีที่ statusOrder เป็น "Processing" หรือ "Pending"
+    else {
+      const ordersQuery = query(
+        ordersRef, 
+        where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))), 
+        where("statusOrder", "in", ["Processing", "Pending"])  // ใช้ 'in' แทน '||'
+      );
       ordersSnapshot = await getDocs(ordersQuery);
     }
     console.log(ordersSnapshot);
 
-    
     // แปลงผลลัพธ์จาก ordersSnapshot ให้เป็นอาร์เรย์ของ Order
-    const orders= Promise.all(ordersSnapshot.docs.map(async (doc) => {
+    const orders = await Promise.all(ordersSnapshot.docs.map(async (doc) => {
       const data = doc.data();
       console.log(data);
     
@@ -88,6 +96,7 @@ export const getOrdersByCartId = async (cartIds: string[], statusOrder: string) 
     return [];
   }
 };
+
 
 
 export const getCartItemByCartId = async (
