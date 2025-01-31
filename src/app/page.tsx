@@ -17,10 +17,7 @@ import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 
 const sdata = [
-  {
-    imageproduct:
-      "https://res.cloudinary.com/donlonxid/image/upload/v1737210054/product_pics/product_pics/som%20yu.png",
-  },
+ 
   {
     imageproduct:
       "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
@@ -297,7 +294,7 @@ export default function Home() {
           {sdata.map((item, index) => (
             <div key={index} className=" bg-[url('/assets/borderVertical.png')] bg-cover bg-center ">
               <Image
-                  className={`object-none  transform  scale-x-[1.6] scale-y-[1.8] -translate-y-4 -translate-x-1`}
+                  className={`object-none`}
                 src={item.imageproduct}
                 alt={""}
                 width={300}
