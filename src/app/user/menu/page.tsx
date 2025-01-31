@@ -195,7 +195,7 @@ const Menu = () => {
                 />
               </svg>
 
-              <h2 className="text-lg font-playfair text-center font-bold">
+              <h2 className="text-lg font-playfair text-center font-bold text-[#06412B]">
                 Flavors of the Day
               </h2>
 
@@ -277,6 +277,7 @@ const Menu = () => {
               width={500}
               height={300}
               className="object-cover w-full h-full rounded-r-full"
+              loading="lazy"
               alt="bg"
             />
             <svg
@@ -341,6 +342,7 @@ const Menu = () => {
               width={500}
               height={300}
               className="object-cover w-full h-full rounded-l-full"
+              loading="lazy"
               alt="bg"
             />
             <svg
