@@ -10,7 +10,7 @@ import { BiSolidEdit } from "react-icons/bi";
 import Image from "next/image";
 import axios from "axios";
 import Link from "next/link";
-
+import { Timestamp } from "firebase/firestore";
 
 function Profile() {
   const { user } = useAuth();
@@ -22,11 +22,27 @@ function Profile() {
   );
 
   const convertTimestampToDate = (timestamp: any) => {
-    return timestamp.toDate().toLocaleDateString("th-TH", {
-      day: "numeric",
-      month: "numeric",
-      year: "numeric",
-    });
+    if (timestamp instanceof Timestamp) {
+      return timestamp.toDate().toLocaleDateString("th-TH", {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+      });
+    } else if (timestamp instanceof Date) {
+      return timestamp.toLocaleDateString("th-TH", {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+      });
+    } else if (typeof timestamp === "string") {
+      return new Date(timestamp).toLocaleDateString("th-TH", {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+      });
+    } else {
+      return "N/A";
+    }
   };
 
   useEffect(() => {
@@ -78,6 +94,13 @@ function Profile() {
         updatedData.profileImage = uploadedImageUrl;
       }
 
+      // สมมติว่า editedData.dob เป็น Date หรือ null
+      if (editedData.dob && editedData.dob instanceof Date) {
+        // แปลง Date เป็น Timestamp ก่อนบันทึก
+        updatedData.dob = Timestamp.fromDate(editedData.dob); // แปลงเป็น Timestamp
+      } else {
+        updatedData.dob = null; // ถ้าไม่มีค่าให้เป็น null
+      }
       // อัปเดตใน Firestore
       await updateDoc(userRef, updatedData);
 
@@ -150,7 +173,8 @@ function Profile() {
                 alt="Profile"
                 width={250}
                 height={250}
-                style={{ aspectRatio: '1 / 1' }}
+                style={{ aspectRatio: "1 / 1" }}
+                priority={true}
                 className="rounded-full border-2 border-white w-32 sm:w-40 md:w-48 lg:w-64 h-auto"
               />
             </div>
@@ -261,11 +285,17 @@ function Profile() {
                     {isEditing ? (
                       <input
                         className="border border-white rounded-xl bg-white p-1.5 md:p-2 w-full"
-                        disabled
+                        type="date"
                         value={
-                          userData?.dob
-                            ? convertTimestampToDate(userData.dob)
+                          editedData?.dob
+                            ? convertTimestampToDate(editedData.dob)
                             : "N/A"
+                        }
+                        onChange={(e) =>
+                          setEditedData({
+                            ...editedData!,
+                            dob: new Date(e.target.value),
+                          })
                         }
                       />
                     ) : (

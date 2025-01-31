@@ -6,8 +6,12 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import DatePicker from "react-datepicker";
+import dynamic from "next/dynamic";
+
 import "react-datepicker/dist/react-datepicker.css";
+const DatePicker = dynamic(() => import("react-datepicker") as unknown as Promise<{ default: React.ComponentType<any> }>, { ssr: false });
+
+import signupImage from "../../../public/assets/signup-image.jpg"; 
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -61,7 +65,7 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-end bg-[#013927] overflow-auto">
-      <div className="flex flex-col lg:flex-row w-full max-w-[1440px] h-auto lg:h-[695px]   ">
+      <div className="flex flex-col lg:flex-row w-full max-w-[1440px] h-auto lg:h-[768px]   ">
         <div className="flex-1 p-6 sm:p-8 flex flex-col items-center  ">
           <h2 className="text-4xl lg:text-6xl font-playfair font-bold mb-6 lg:mb-10 text-center text-white">
             Welcome To Forest Tales
@@ -129,7 +133,7 @@ export default function Signup() {
                 <DatePicker
                   id="dob"
                   selected={dob}
-                  onChange={(dob) => setDOB(dob)}
+                  onChange={(dob :  Date | null) => setDOB(dob)}
                   onFocus={() => setIsFocused(true)} 
                   onBlur={() => setIsFocused(false)} 
                   dateFormat="yyyy/MM/dd"
@@ -230,10 +234,12 @@ export default function Signup() {
         <div className="hidden md:flex flex-1 flex-col items-end">
           <div className="relative w-5/6 h-full ">
             <Image
-              src="/assets/signup-image.jpg"
+              src={signupImage} 
               alt="Forest Tales Coffee"
               fill
               className="object-cover "
+
+
             />
           </div>
         </div>

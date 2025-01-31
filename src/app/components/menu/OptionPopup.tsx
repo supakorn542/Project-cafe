@@ -190,7 +190,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                 <label htmlFor="">รายละเอียดเพิ่มเติม</label>
                 <input
                   type="text"
-                  className="border border-2 border-black rounded-lg p-1"
+                  className=" border-2 border-black rounded-lg p-1"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />

@@ -41,6 +41,7 @@ const SignIn = () => {
         });
 
         console.log("Cookies set successfully");
+        alert("Sign in successfully")
 
         if (role === "admin") {
           router.push("/admin/products/menu"); // ถ้าเป็น admin ให้ไปหน้า admin
@@ -73,7 +74,7 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen flex items-center  bg-[#013927]">
-      <div className="flex w-full  max-w-[1440px] flex-col md:flex-row h-auto md:h-[695px]">
+      <div className="flex w-full  max-w-[1440px] flex-col md:flex-row h-auto md:h-[768px]">
         <div className="flex-1  flex flex-col">
           <div className="relative w-full md:w-5/6 h-64 md:h-full ">
             <Image
@@ -94,7 +95,7 @@ const SignIn = () => {
             Welcome To Forest Tales
           </h2>
 
-          {error && <p className="">{error}</p>}
+          {error && <p className="text-white">{error}</p>}
 
           <form onSubmit={handleSignIn} className="mt-3 w-full md:w-5/6">
             <div className="relative">
