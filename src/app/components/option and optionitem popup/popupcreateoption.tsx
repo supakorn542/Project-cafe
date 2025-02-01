@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { createOption } from "@/app/services/options";
+import { useRefresh } from "../RefreshContext/RefreshContext";
 
 const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,
   onClose,
   
 }) => {
+  const { refresh, setRefresh } = useRefresh();
   const [optionName, setOptionName] = useState(""); // เก็บชื่อ option
   const [isRequired, setIsRequired] = useState(false); // ระบุว่าจำเป็นต้องเลือกหรือไม่
   const [optionItems, setOptionItems] = useState<
@@ -46,7 +48,10 @@ const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
 
     try {
       const optionId = await createOption(optionData, optionItems); // ส่งข้อมูลไปยังฟังก์ชัน createOption
+      
       console.log("Created option with ID: ", optionId);
+      setRefresh(true);
+      console.log("setRefresh", setRefresh)
       onClose(); // ปิด popup หลังบันทึกสำเร็จ
     } catch (error) {
       console.error("Error while creating option: ", error);
