@@ -19,8 +19,10 @@ import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
 import NavbarAdmin from "@/app/components/navbarAdmin/page";
+import { RefreshProvider, useRefresh } from "@/app/components/RefreshContext/RefreshContext";
 
 const MenuPage = () => {
+  const { refresh } = useRefresh();
   const [products, setProducts] = useState<Product[]>([]);
   const [productType, setProductType] = useState<productTypeInterface[]>([]);
   const [createpopup, setCreatepopup] = useState(false);
@@ -85,7 +87,7 @@ const MenuPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [refresh]);
 
   console.log("product list:", filteredProducts);
   const handleDelete = async (id: string, productName: string) => {
@@ -141,6 +143,7 @@ const MenuPage = () => {
   };
 
   return (
+    <RefreshProvider>
     <div className="bg-[#FBF6F0] min-h-screen pt-20">
       <NavbarAdmin />
       {/* Main Container */}
@@ -267,6 +270,7 @@ const MenuPage = () => {
         </div>
       </div>
     </div>
+    </RefreshProvider>
   );
 };
 

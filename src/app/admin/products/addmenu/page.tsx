@@ -14,8 +14,10 @@ import SelectOptionsPopup from "@/app/components/option and optionitem popup/Sel
 import { FaPlus } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
 import CreateProductTypePopup from "@/app/components/option and optionitem popup/CreateproductTypepopup";
+import { useRefresh } from "@/app/components/RefreshContext/RefreshContext";
 
 const AddProductForm = ({ onClose }: { onClose: () => void }) => {
+  const { refresh } = useRefresh();
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState(0);
   const [calorie, setCalorie] = useState(0);
@@ -61,7 +63,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
     fetchStatus();
     fetchData();
     fetchCategories();
-  }, [showOptionsPopup, showPopup]);
+  }, [showOptionsPopup, showPopup,refresh]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     console.log("image :", uploadedImage);
