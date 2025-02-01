@@ -105,7 +105,7 @@ function EditCartPopup({
                   description: cartItemData.description,
                   option: optionData[0], // Assuming you want the first option
                   quantity: cartItemData.quantity,
-                  pickupdate: cartItemData.pickupdate,
+                  
                   optionitem_ids: cartItemData.optionitem_id.map(
                     (ref: { id: any }) => ref.id
                   ),
@@ -143,26 +143,7 @@ function EditCartPopup({
                 setCartItems(cartItem);
                 setQuantity(cartItem.quantity); // Set initial quantity from cartItem
                 setProduct(productData); // Set the product state
-                if (cartItem) {
-                  if (cartItem.pickupdate instanceof Timestamp) {
-                    const date = cartItem.pickupdate.toDate();
-                    const year = date.getFullYear();
-                    const month = (date.getMonth() + 1)
-                      .toString()
-                      .padStart(2, "0");
-                    const day = date.getDate().toString().padStart(2, "0");
-                    const hours = date.getHours().toString().padStart(2, "0");
-                    const minutes = date
-                      .getMinutes()
-                      .toString()
-                      .padStart(2, "0");
-                    setPickupdateTime(
-                      `${year}-${month}-${day}T${hours}:${minutes}`
-                    );
-                  } else if (typeof cartItem.pickupdate === "string") {
-                    setPickupdateTime(cartItem.pickupdate);
-                  }
-                }
+               
 
                 setCheckedOptionItemIds(cartItem.optionitem_ids);
                 // ... update other state variables
@@ -225,7 +206,7 @@ function EditCartPopup({
           description: updatedCartItemData?.description || "",
           option: cartItem.option,
           quantity: cartItem.quantity,
-          pickupdate: updatedCartItemData?.pickupdate || Timestamp.now(),
+          
           optionitem_ids:
             updatedCartItemData?.optionitem_id.map(
               (ref: { id: any }) => ref.id
@@ -307,23 +288,7 @@ function EditCartPopup({
               defaultValue={cartItem?.description} // ใช้ defaultValue แทน value
             />
           </div>
-          <div className="flex justify-start flex-col">
-            <label
-              htmlFor="time-input"
-              className="font-semibold text-sm text-gray-700 flex"
-            >
-              วันและเวลาที่ต้องการรับสินค้า
-            </label>
-            <input
-              type="datetime-local"
-              id="time-input"
-              name="time-input"
-              value={pickupdateTime}
-              onChange={(e) => setPickupdateTime(e.target.value)}
-              className="border-black border-2 rounded-xl"
-              required
-            />
-          </div>
+          
           <div>
             <div className="flex justify-between">
               <div className="flex border rounded-full px-2 border-black w-fit">
