@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getProductTypes } from "../../../../services/getproductType";
 import { OptionInterface } from "@/app/interfaces/optioninterface";
@@ -30,7 +30,7 @@ const UpdateProductForm = ({
   productId: string;
   onClose: () => void;
 }) => {
-  const { refresh, setRefresh } = useRefresh();
+  
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState(0);
   const [calorie, setCalorie] = useState(0);
@@ -53,55 +53,54 @@ const UpdateProductForm = ({
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(
     []
   );
+  const [Fetch ,setFetch] = useState(false)
   const [selectProductType, setSelectProductType] = useState("");
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (typeof productId === "string") {
-        try {
-          const productData = await getProductById(productId);
-          const selectedOptionIds = await getProductOptionsByProductId(
-            productId
-          );
-          const { options, optionItemsMap } = await getOptions();
+  const fetchData = useCallback(async () => {
+    if (!productId) return;
 
-          setOptions(options);
-          setOptionItemsMap(optionItemsMap);
-          setProductName(productData.name);
-          setPrice(productData.price);
-          setCalorie(productData.calorie);
-          setDescription(productData.description);
-          setSelectedStatus(productData.status_id.id);
-          setSelectProductType(productData.productType_id.id);
+    try {
+      const productData = await getProductById(productId);
+      const selectedOptionIds = await getProductOptionsByProductId(productId);
+      const { options, optionItemsMap } = await getOptions();
 
-          const selectedOptionsData = options
-            .filter((option) => selectedOptionIds.includes(option.id))
-            .map((option) => ({
-              option,
-              items: optionItemsMap[option.id!] || [],
-            }));
+      setOptions(options);
+      setOptionItemsMap(optionItemsMap);
+      setProductName(productData.name);
+      setPrice(productData.price);
+      setCalorie(productData.calorie);
+      setDescription(productData.description);
+      setSelectedStatus(productData.status_id.id);
+      setSelectProductType(productData.productType_id.id);
 
-          setSelectedOptions(selectedOptionsData);
-          console.log("option :", selectedOptionsData);
-          console.log("optionIds :", selectedOptionIds);
-        } catch (error) {
-          console.error("Failed to fetch product:", error);
-        }
-      }
+      const selectedOptionsData = options
+        .filter((option) => selectedOptionIds.includes(option.id))
+        .map((option) => ({ option, items: optionItemsMap[option.id!] || [] }));
 
+      setSelectedOptions(selectedOptionsData);
+    } catch (error) {
+      console.error("Failed to fetch product:", error);
+    }
+
+    try {
       const statusData = await getStatus();
       const categoriesData = await getProductTypes();
       setStatus(statusData);
       setCategories(categoriesData);
-      setLoading(false);
-    };
+    } catch (error) {
+      console.error("Failed to fetch categories or status:", error);
+    }
 
+    setLoading(false);
+  }, [productId]);
+
+  useEffect(() => {
     fetchData();
-    console.log("refresh and fetchNewData")
-  }, [refresh]);
+  }, [Fetch]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,6 +146,9 @@ const UpdateProductForm = ({
 
   const handleCreateOptionClick = () => {
     setShowOptionsPopup(false);
+  };
+  const handleOptionCreated = () => {
+    setFetch(!Fetch);  // Trigger fetch data ใหม่
   };
   // handleOptionCheckboxChange
   const handleOptionCheckboxChange = (option: OptionInterface) => {
@@ -270,6 +272,7 @@ const UpdateProductForm = ({
               </button>
               {showOptionsPopup && (
                 <SelectOptionsPopup
+                onOptionsUpdate={handleOptionCreated} 
                   options={options}
                   selectedOptions={selectedOptions}
                   optionItemsMap={optionItemsMap}

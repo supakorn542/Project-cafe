@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { OptionInterface } from "@/app/interfaces/optioninterface";
 import CreateOptionPopup from "./popupcreateoption";
 import OptionItemPopup from "./OptionItemPopup";
+import { deleteOptionWithReferences } from "@/app/services/deleteOption";
+import { useRefresh } from "../RefreshContext/RefreshContext";
 
 interface OptionItem {
   id: string;
@@ -16,6 +18,7 @@ interface SelectOptionsPopupProps {
   onOptionChange: (option: OptionInterface) => void;
   onCreateOption: () => void;
   onClose: () => void;
+  onOptionsUpdate: () => void;
 }
 
 const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
@@ -25,18 +28,26 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
   onOptionChange,
   onCreateOption,
   onClose,
+  onOptionsUpdate,
 }) => {
+    const { setRefresh } = useRefresh();
   const [isCreateOptionPopupOpen, setIsCreateOptionPopupOpen] = useState(false);
   const [selectedOptionForUpdate, setSelectedOptionForUpdate] =
     useState<OptionInterface | null>(null);
   const handleUpdateOption = (option: OptionInterface) => {
     setSelectedOptionForUpdate(option); // เปิด popup เพื่อแสดงรายการ option items
   };
+
+  const handleDeleteOption = async (optionId: string) => {
+    await deleteOptionWithReferences(optionId);
+    onOptionsUpdate();
+  };
   const handleCloseOptionItemPopup = () => {
     setSelectedOptionForUpdate(null); // ปิด popup
   };
   const handleOpenCreateOptionPopup = () => {
     setIsCreateOptionPopupOpen(true);
+    
   };
 
   const handleCloseCreateOptionPopup = () => {
@@ -74,7 +85,7 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
               <label>{option.name}</label>
             </div>
             <div className="flex gap-2">
-              <button type="button" onClick={() => handleUpdateOption(option)}>
+              <button type="button" onClick={() => handleDeleteOption(option.id)}>
                 ลบ
               </button>
               <button type="button" onClick={() => handleUpdateOption(option)}>
@@ -135,6 +146,7 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
 
       {/* Popup สำหรับสร้างตัวเลือกใหม่ */}
       <CreateOptionPopup
+      handleCreateOptionSuccess ={onOptionsUpdate}
         isOpen={isCreateOptionPopupOpen}
         onClose={handleCloseCreateOptionPopup}
       />
@@ -143,3 +155,5 @@ const SelectOptionsPopup: React.FC<SelectOptionsPopupProps> = ({
 };
 
 export default SelectOptionsPopup;
+
+
