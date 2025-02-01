@@ -229,6 +229,7 @@ const Salesdata = () => {
                       ))}
                     </div>
                   </div>
+                  <p className="text-black ml-2 text-justify">{}</p>
                   <p className="text-black ml-2 text-justify">{review.comment}</p>
                 </div>
               ))}

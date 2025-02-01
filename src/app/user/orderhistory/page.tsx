@@ -35,41 +35,46 @@ const TrackOrder = () => {
                 console.warn("User is not logged in or userId is missing.");
                 return;
             }
-            else {
-                try {
-                    const review = await getReviewByUserId(user.id);
-                    setReviews(review.filter(item => !item.deletedAt));
-                    console.log("reviews :", review)
-                    console.log(review.filter(item => !item.deletedAt))
-                    const fetchedOrders = await getOrdersByUserId(user.id);
-                    setOrders(fetchedOrders);
-                    console.log("fetchedOrdersss: ", fetchedOrders)
+            try {
+                const review = await getReviewByUserId(user.id);
+                setReviews(review.filter(item => !item.deletedAt));
+                console.log("reviews :", review);
 
-                    const cartIds = fetchedOrders.map((order) => {
-                        return order!.cart_id.id;
-                    });
-                    setCartsIds(cartIds)
-                    console.log(cartIds)
+                let fetchedOrders = await getOrdersByUserId(user.id);
+                let fetchedCompletedOrders = await getCompletedOrdersByUserId(user.id);
 
-                    const fetchedCompletedOrders = await getCompletedOrdersByUserId(user.id);
-                    setStatusComplete(fetchedCompletedOrders)
-                    console.log("JUKKRUUUU", fetchedCompletedOrders);
+                // ✅ เรียงลำดับจากออร์เดอร์ล่าสุดไปเก่าสุด โดยใช้ orderDate
+                fetchedOrders = fetchedOrders.sort((a, b) =>
+                    new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
+                );
 
-                    const fetchedCarts = await getCartItemByCartId(user.id);
-                    setCarts(fetchedCarts);
-                    console.log("fetchedCartsss :", fetchedCarts)
+                fetchedCompletedOrders = fetchedCompletedOrders.sort((a, b) =>
+                    new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
+                );
 
-                } catch (error) {
-                    console.error("Error fetching orders:", error);
-                }
+                setOrders(fetchedOrders);
+                setStatusComplete(fetchedCompletedOrders);
+
+                console.log("fetchedOrders (sorted) : ", fetchedOrders);
+                console.log("fetchedCompletedOrders (sorted) :", fetchedCompletedOrders);
+
+                const cartIds = fetchedOrders.map((order) => order!.cart_id.id);
+                setCartsIds(cartIds);
+                console.log(cartIds);
+
+                const fetchedCarts = await getCartItemByCartId(user.id);
+                setCarts(fetchedCarts);
+                console.log("fetchedCarts :", fetchedCarts);
+
+            } catch (error) {
+                console.error("Error fetching orders:", error);
             }
         };
 
         fetchOrders();
-        // console.log(carts)
     }, [user]);
 
-    console.log("Carts :",carts)
+
 
 
 
@@ -181,8 +186,8 @@ const TrackOrder = () => {
             return;
         }
 
-        if (selectedRating === 0 || !reviewText.trim()) {
-            alert("Please provide a rating and a review text.");
+        if (selectedRating === 0 && !reviewText.trim()) {
+            alert("Please provide at least a rating or a review text.");
             return;
         }
 
@@ -193,15 +198,28 @@ const TrackOrder = () => {
 
         const reviewData = {
             user_id: user.id,
-            rating: selectedRating,
-            comment: reviewText,
+            rating: selectedRating > 0 ? selectedRating : 0, // หากไม่มี rating ให้เป็น null
+            comment: reviewText.trim() ? reviewText.trim() : "", // หากไม่มี comment ให้เป็น null
             order_id: currentReviewId,
-
         };
 
         try {
+            // สร้างรีวิวใหม่
             await createReview(reviewData);
             alert("Review submitted successfully.");
+
+            // ดึงข้อมูลรีวิวใหม่
+            const updatedReviews = await getReviewByUserId(user.id);
+            const filteredReviews = updatedReviews.filter(item => !item.deletedAt);
+            setReviews(filteredReviews); // อัปเดตรีวิวใน state
+
+            // หารีวิวล่าสุดของ order นี้
+            const newReview = filteredReviews.find(review => review.order_id.id === currentReviewId);
+            if (newReview) {
+                setshowReview(newReview); // แสดงรีวิวที่เพิ่งสร้าง
+            }
+
+            // ปิด popup และรีเซ็ตค่า
             setIsReviewPopupOpen(false);
             setSelectedRating(0);
             setReviewText('');
@@ -211,35 +229,52 @@ const TrackOrder = () => {
         }
     };
 
+
     const submitUpdateReview = async (e: React.FormEvent) => {
-        e.preventDefault(); // ป้องกันการรีเฟรชหน้าหลังจาก submit form
-    
+        e.preventDefault();
+
         if (!user?.id) {
             console.warn("User is not logged in.");
             return;
         }
-    
-        if (selectedRating === 0 || !reviewText.trim()) {
-            alert("Please provide a rating and a review text.");
+
+        // เช็คว่าอย่างน้อยต้องกรอกช่องใดช่องหนึ่ง (rating หรือ comment)
+        if (selectedRating === 0 && !reviewText.trim()) {
+            alert("Please provide at least a rating or a review text.");
             return;
         }
-    
+
         if (!currentReviewId) {
             alert("Unable to identify the review context.");
             return;
         }
-    
+
         const reviewData: Review = {
             user_id: user.id,
-            rating: selectedRating,
-            comment: reviewText,
+            rating: selectedRating > 0 ? selectedRating : 0,  // หากไม่มีการเลือก rating ให้เป็น 0
+            comment: reviewText.trim() ? reviewText.trim() : "", // หากไม่มี comment ให้เป็น string ว่าง
             order_id: currentReviewId,
         };
-    
+
         try {
             // อัพเดทรีวิว
             await updateReview(currentReviewId, reviewData);
             alert("Review updated successfully.");
+
+            // ดึงข้อมูลรีวิวทั้งหมดของผู้ใช้ใหม่
+            const updatedReviews = await getReviewByUserId(user.id);
+
+            // ค้นหารีวิวที่เพิ่งอัปเดต
+            const updatedReview = updatedReviews.find(review => review.id === currentReviewId);
+
+            if (updatedReview) {
+                // อัปเดต state `reviews`
+                setReviews(updatedReviews.filter(item => !item.deletedAt));
+
+                // อัปเดต `showReview` เพื่อให้แสดงข้อมูลใหม่ทันที
+                setshowReview(updatedReview);
+            }
+
             setIsReviewPopupOpen(false);
             setUpdateReviewPopup(false);
             setSelectedRating(0);
@@ -249,7 +284,6 @@ const TrackOrder = () => {
             alert(error instanceof Error ? error.message : "An error occurred while updating your review.");
         }
     };
-
 
 
     return (
