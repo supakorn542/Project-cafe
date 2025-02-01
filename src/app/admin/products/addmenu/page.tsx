@@ -41,7 +41,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
   );
   const [SelectProductType, setSelectProductType] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
+const [Fetch ,setFetch] = useState(false)
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
 
@@ -63,7 +63,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
     fetchStatus();
     fetchData();
     fetchCategories();
-  }, [showOptionsPopup, showPopup,refresh]);
+  }, [showOptionsPopup, showPopup, refresh,Fetch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     console.log("image :", uploadedImage);
@@ -124,10 +124,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
     setShowCreateOptionPopup(true);
   };
 
-  const handleSaveNewOption = async (newOption: OptionInterface) => {
-    setShowCreateOptionPopup(false);
-  };
-
+ 
   const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedStatus(event.target.value);
   };
@@ -236,6 +233,7 @@ const AddProductForm = ({ onClose }: { onClose: () => void }) => {
             {showOptionsPopup && (
               <SelectOptionsPopup
                 options={options}
+                onOptionsUpdate={() => setFetch(true)} 
                 selectedOptions={selectedOptions}
                 optionItemsMap={optionItemsMap}
                 onOptionChange={handleOptionCheckboxChange}
