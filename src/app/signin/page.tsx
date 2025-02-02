@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState } from "react";
 import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
@@ -14,7 +14,6 @@ import Image from "next/image";
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
   const router = useRouter();
   const { signInWithGoogle } = useAuth();
 
@@ -53,7 +52,20 @@ const SignIn = () => {
       }
     } catch (error: any) {
       console.error("Error signing in:", error);
-      setError(error?.message || "An unexpected error occurred.");
+
+      // Map Firebase error codes to user-friendly messages
+      let errorMessage = "An unexpected error occurred.";
+      if (error.code === "auth/invalid-email") {
+        errorMessage = "The email address is not valid.";
+      } else if (error.code === "auth/user-not-found") {
+        errorMessage = "No user found with this email.";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = "The password is incorrect.";
+      } else if (error.code === "auth/too-many-requests") {
+        errorMessage = "Too many login attempts. Please try again later.";
+      }
+  
+      alert(errorMessage);
     }
   };
 
@@ -62,7 +74,15 @@ const SignIn = () => {
       await signInWithGoogle();
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
-      setError(error?.message || "An unexpected error occurred.");
+    
+      let errorMessage = "An unexpected error occurred.";
+      if (error.code === "auth/popup-closed-by-user") {
+        errorMessage = "You closed the sign-in popup before completing the process.";
+      } else if (error.code === "auth/account-exists-with-different-credential") {
+        errorMessage = "An account already exists with the same email address.";
+      }
+  
+      alert(errorMessage);
     }
   };
 
@@ -95,7 +115,7 @@ const SignIn = () => {
             Welcome To Forest Tales
           </h2>
 
-          {error && <p className="text-white">{error}</p>}
+        
 
           <form onSubmit={handleSignIn} className="mt-3 w-full md:w-5/6">
             <div className="relative">

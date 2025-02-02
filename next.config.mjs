@@ -15,7 +15,7 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ["res.cloudinary.com", "wallpapercave.com"],
+    domains: ["res.cloudinary.com", "wallpapercave.com","lh3.googleusercontent.com","profile.line-scdn.net"],
   },
 };
 

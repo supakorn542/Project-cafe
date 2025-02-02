@@ -73,14 +73,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         username: result.user.displayName || "Unknown",
         createdAt: new Date(),
       };
-      const tokenResult = await result.user.getIdTokenResult();
+
+      let tokenResult = await result.user.getIdTokenResult(true);
+      let role = tokenResult.claims?.role;
+  
+      if (!role) {
+        console.log("User has no role, setting role to 'user'");
+        await fetch("/api/role", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uid: result.user.uid, role: "user" }),
+        });
+  
+        // รีเฟรช token หลังจากตั้งค่า role ใหม่
+        tokenResult = await result.user.getIdTokenResult(true);
+        role = tokenResult.claims?.role;
+      } else {
+        console.log("User already has role:", role);
+      }
+  
       const token = tokenResult.token;
-      const role = tokenResult.claims?.role;
+
+
 
       nookies.set(null, "token", token, {
         maxAge: 60 * 60 * 24,
         path: "/",
       });
+
       await saveUserData(newUser);
       setUser(newUser);
       router.push("/user/profile");
