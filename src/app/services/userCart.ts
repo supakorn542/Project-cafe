@@ -19,21 +19,22 @@ export async function fetchCartByUserId(
   const cartsRef = collection(db, "carts");
   const userRef = doc(db, "users", userId);
 
-  const q = query(cartsRef, where("user_id", "==", userRef));
+  const q = query(
+    cartsRef,
+    where("user_id", "==", userRef),
+    where("status", "==", true) // ดึงเฉพาะ cart ที่ยังไม่ checkout
+  );
   const querySnapshot = await getDocs(q);
 
   if (!querySnapshot.empty) {
+    // ดึง cart แรกที่เจอ (ถ้ามีหลายอัน ถือว่าเป็นบัคที่ต้องจัดการ)
     const doc = querySnapshot.docs[0];
-    const cartData = doc.data() as CartInterface;
-
-    // ตรวจสอบว่า status เป็น true หรือ false
-    if (cartData.status === true) {
-      return { ...cartData, id: doc.id };
-    }
+    return { ...doc.data(), id: doc.id } as CartInterface;
   }
 
-  return null; // คืนค่า null ถ้าไม่มี carts หรือ status เป็น false
+  return null;
 }
+
 export async function createCart(userId: string): Promise<string> {
   const cartRef = collection(db, "carts");
   const userRef = doc(db, "users", userId);
@@ -60,7 +61,7 @@ export async function addCartItem(cartItem: CartItemsInterface) {
     cartItem.product_id
   );
 
-  const optionItemRefs = cartItem.optionitem_ids.map((optionId) =>
+  const optionItemRefs = cartItem.optionitem_ids?.map((optionId) =>
     doc(db, "optionItems", optionId)
   );
 
@@ -82,12 +83,17 @@ export async function checkExistingCartItem(
 ): Promise<{ id: string; cartItem: CartItemsInterface } | null> {
   const cartItemsRef = collection(db, "cartItems");
 
-  const q = query(
+  let q = query(
     cartItemsRef,
     where("cart_id", "==", doc(db, "carts", cartId)),
-    where("product_id", "==", doc(db, "products", productId)),
-    where("optionitem_id", "array-contains", doc(db, "optionItems", Object.values(selectedOptions)[0]))
+    where("product_id", "==", doc(db, "products", productId))
   );
+
+  const optionItemIds = Object.values(selectedOptions);
+  
+  if (optionItemIds.length > 0) {
+    q = query(q, where("optionitem_id", "array-contains", doc(db, "optionItems", optionItemIds[0])));
+  }
 
   const querySnapshot = await getDocs(q);
 

@@ -4,16 +4,12 @@ import {jwtDecode} from "jwt-decode";
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
-  
-
   if (!token) {
     
     return NextResponse.redirect(new URL("/signin", request.url));
   }
   try {
   
-
-
     const decodedToken: { role: string } = jwtDecode(token);
 
     const { role } = decodedToken; // ดึงค่า role จาก token

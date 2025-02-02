@@ -57,66 +57,52 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
 
   const handleAddToCart = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!user || !product) {
       alert("Please log in or select a product.");
       return;
     }
+  
     const action = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
-
-
-
-    const cart = await fetchCartByUserId(user.id);
-
-    console.log("Cart", cart);
-
-    let cartId: string;
-
-    if (cart) {
-      cartId = cart.id;
-    } else {
-      cartId = await createCart(user.id);
+  
+    let cart = await fetchCartByUserId(user.id); // ดึง cart ที่ status: true
+    
+    if (!cart) {
+      const cartId = await createCart(user.id);
+      cart = { id: cartId, user_id: user.id, status: true }; // mock ข้อมูล cart ใหม่
     }
-
+  
     const cartItem = {
-      cart_id: cartId,
+      cart_id: cart.id,
       product_id: product.id!,
       quantity,
       optionitem_ids: Object.values(selectedOptions),
-
       description,
     };
-
+  
     const existingCartItem = await checkExistingCartItem(
-      cartId,
+      cart.id,
       product.id!,
       selectedOptions
-
-
     );
-
-    console.log("existingCartItem :",existingCartItem?.cartItem.quantity)
-
-    if (existingCartItem) {
-      // ถ้ามี cartItem อยู่แล้ว ให้เพิ่ม quantity
-      const updatedQuantity = existingCartItem.cartItem.quantity + quantity;
-      const cartItemRef = doc(db, "cartItems", existingCartItem.id); // ใช้ id ของ cartItem ที่มีอยู่แล้ว
-      await updateDoc(cartItemRef, { quantity: updatedQuantity });
   
+    if (existingCartItem) {
+      const updatedQuantity = existingCartItem.cartItem.quantity + quantity;
+      const cartItemRef = doc(db, "cartItems", existingCartItem.id);
+      await updateDoc(cartItemRef, { quantity: updatedQuantity });
       alert("Cart item updated successfully!");
     } else {
-      // ถ้าไม่มี cartItem อยู่แล้ว ให้เพิ่ม cartItem ใหม่
       await addCartItem(cartItem);
       alert("Added to cart successfully!");
     }
+  
     if (action.value === "add_to_cart") {
       onClose();
     } else if (action.value === "buy_now") {
-      router.push("/cart");
+      router.push("user/cart");
     }
-
-   
   };
+  
 
   useEffect(() => {
     const fetchData = async () => {

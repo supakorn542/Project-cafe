@@ -9,7 +9,7 @@ export interface CartItemsInterface {
     cart_id : string;
     product_id : string;
     quantity: number;
-    optionitem_ids: string[];
+    optionitem_ids?: string[];
     description: string
     
 }
