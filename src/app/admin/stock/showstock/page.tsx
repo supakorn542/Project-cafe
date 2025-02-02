@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/app/components/Navbar";
 import { Stock } from "@/app/interfaces/stock";
-import { Withdrawal as  withdrawals} from "@/app/interfaces/withdrawal";
+import { Withdrawal as withdrawals } from "@/app/interfaces/withdrawal";
 import Withdrawal from "../withdraw/page";
 import CreateIngredient from "../createingredient/page";
 import CreatePackaging from "../createpackaging/page";
@@ -18,6 +18,7 @@ import NavbarAdmin from "@/app/components/navbarAdmin/page";
 const ShowStock = () => {
     const [ingredients, setIngredients] = useState<Stock[]>([]); // State สำหรับเก็บข้อมูล stocks
     const [packages, setPackages] = useState<Stock[]>([]);
+    const [pg, setPg] = useState<any[]>([]);
     const [withdrawals, setWithdrawals] = useState<withdrawals[]>([]);
     const [activeTab, setActiveTab] = useState<"ingredients" | "packaging" | "withdrawal">("ingredients");
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -28,6 +29,34 @@ const ShowStock = () => {
     const [updatePackagingPopupOpen, setUpdatePackagingPopupOpen] = useState(false);
     const [selectedStockId, setSelectedStockId] = useState(null);
     const [selectedIngredientId, setSelectedIngredientId] = useState(null);
+    const [searchItem, setSearchItem] = useState("");
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchItem(event.target.value);
+      };
+
+    const filteredIngredients = ingredients.filter((ingredient) => {
+        const search = searchItem.toLowerCase();
+        return (
+            ingredient.name.toLowerCase().includes(search) ||
+            ingredient.description.toLowerCase().includes(search)
+        );
+    });
+    const filteredPackages = packages.filter((packages) => {
+        const search = searchItem.toLowerCase();
+        return (
+            packages.name.toLowerCase().includes(search) ||
+            packages.description.toLowerCase().includes(search)
+        );
+    });
+    const filteredWithdrawals = withdrawals.filter((withdrawals) => {
+        const search = searchItem.toLowerCase();
+        return (
+            withdrawals.name.toLowerCase().includes(search) ||
+            withdrawals.userName.toLowerCase().includes(search) ||
+            withdrawals.description.toLowerCase().includes(search)
+        );
+    });
+    
 
     const togglePopup = () => {
         setIsPopupOpen(!isPopupOpen);
@@ -133,27 +162,85 @@ const ShowStock = () => {
             case "ingredients":
                 return (
                     <div className="pt-2 flex justify-center ">
-                        <div className="flex flex-col  items-center  w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-auto max-h-[500px]">
-                            {ingredients.map((ingredient) =>
-                                <div className="flex flex-row justify-between w-[90%] min-h-[25%] border-b-[2px] border-black ">
-                                    <div className="w-[15%] h-full text-2xl font-semibold text-center flex items-center justify-center" >
+                        <div className="flex flex-col items-center w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-auto max-h-[500px]">
+                            {filteredIngredients.map((ingredient) =>
+                                <div className="flex justify-between w-[92%] border-b-[2px] border-black pt-8 pb-10">
+                                    <div className="w-[15%] h-full text-2xl font-semibold text-center flex items-start justify-center" >
                                         <span> {ingredient.name} </span>
                                     </div>
-                                    <div className="w-[17%] h-full font-semibold flex flex-col justify-center" >
+                                    <div className="w-[17%] h-full font-semibold flex flex-col items-start justify-start" >
                                         <div className="flex flex-col">
                                             <span> ปริมาณ : {ingredient.netQuantity} {ingredient.unit} / {ingredient.classifier}  </span>
                                             <span> จำนวน : {ingredient.quantity} {ingredient.classifier}</span>
                                         </div>
                                     </div>
-                                    <div className="w-[17%] h-full  font-semibold flex flex-col justify-center" >
+                                    <div className="w-[17%] h-full  font-semibold flex flex-col items-start justify-start" >
                                         <span> ราคา : {ingredient.price} บาท / {ingredient.classifier} </span>
                                         <span> ราคารวม : {ingredient.totalPrice} บาท</span>
                                     </div>
                                     <div className="w-[17%] h-full  font-semibold flex flex-col justify-center" >
                                         <span> วันที่เพิ่ม : {formatDate(String(ingredient.addedDate))} </span>
-                                        <span> หมายเหตุ : {ingredient.description} </span>
+                                        <div> หมายเหตุ : <span className=" w-full h-full text-sm font-playfair  break-words">{ingredient.description} </span></div>
                                     </div>
-                                    <div className="w-[28%] h-full pt-9 flex flex-row justify-between " >
+                                    <div className="flex items-start w-[25%] h-full">
+                                        <div className=" flex flex-row justify-between gap-2" >
+                                            <button
+                                                onClick={() => withdrawalPopup(ingredient.id)}
+                                                className="w-[115px] h-8  rounded-3xl font-semibold text-white bg-black">
+                                                - เบิกของ
+                                            </button>
+
+                                            <button
+                                                onClick={() => addIngredientPopup(ingredient.id)}
+                                                className="w-[115px] h-8 border-2 border-black rounded-3xl font-semibold  ">
+                                                + เพิ่มของ
+                                            </button>
+
+
+                                            <div>
+                                                <button
+                                                    onClick={() => updateIngredientPopup(ingredient.id)}
+                                                    className="">
+                                                    <svg
+                                                        className="h-7 w-7  "
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round">
+                                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <div>
+                                                <button onClick={() => handleDelete(ingredient.id!)}>
+                                                    <svg
+                                                        className="h-7 w-7 text-black"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth="2"
+                                                        stroke="currentColor"
+                                                        fill="none"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round">
+                                                        <path stroke="none" d="M0 0h24v24H0z" />
+                                                        <line x1="4" y1="7" x2="20" y2="7" />
+                                                        <line x1="10" y1="11" x2="10" y2="17" />
+                                                        <line x1="14" y1="11" x2="14" y2="17" />
+                                                        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                        </div></div>
+                                    {/* <div className="w-[28%] h-full pt-9 flex flex-row justify-between " >
                                         <button
                                             onClick={() => withdrawalPopup(ingredient.id)}
                                             className="w-[120px] h-8   rounded-3xl font-semibold text-white bg-black">
@@ -179,7 +266,7 @@ const ShowStock = () => {
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     fill="none"
                                                     stroke="currentColor"
-                                                    stroke-width="2"
+                                                    strokeWidth="2"
                                                     stroke-linecap="round"
                                                     stroke-linejoin="round">
                                                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
@@ -194,7 +281,7 @@ const ShowStock = () => {
                                                     width="24"
                                                     height="24"
                                                     viewBox="0 0 24 24"
-                                                    stroke-width="2"
+                                                    strokeWidth="2"
                                                     stroke="currentColor"
                                                     fill="none"
                                                     stroke-linecap="round"
@@ -209,7 +296,7 @@ const ShowStock = () => {
                                             </button>
                                         </div>
 
-                                    </div>
+                                    </div> */}
                                 </div>)}
 
                         </div>
@@ -226,7 +313,7 @@ const ShowStock = () => {
                 return (
                     <div className="pt-2 flex justify-center ">
                         <div className="flex flex-col items-center  w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-auto max-h-[500px]">
-                            {packages.map((packaging) =>
+                            {filteredPackages.map((packaging) =>
                                 <div className="flex flex-row justify-between w-[90%] min-h-[25%] border-b-[2px] border-black ">
                                     <div className="w-[15%] h-full font-semibold text-2xl  text-center flex items-center justify-center" >
                                         <span> {packaging.name} </span>
@@ -271,7 +358,7 @@ const ShowStock = () => {
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     fill="none"
                                                     stroke="currentColor"
-                                                    stroke-width="2"
+                                                    strokeWidth="2"
                                                     stroke-linecap="round"
                                                     stroke-linejoin="round">
                                                     <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
@@ -286,7 +373,7 @@ const ShowStock = () => {
                                                     width="24"
                                                     height="24"
                                                     viewBox="0 0 24 24"
-                                                    stroke-width="2"
+                                                    strokeWidth="2"
                                                     stroke="currentColor"
                                                     fill="none"
                                                     stroke-linecap="round"
@@ -315,28 +402,28 @@ const ShowStock = () => {
             case "withdrawal":
                 return (
                     <div className="pt-2 flex justify-center ">
-                        <div className="flex flex-col items-center  w-[90%] h-[30rem] border-[3px] border-black rounded-[2rem] overflow-y-auto max-h-[500px]">
-                        {withdrawals.map((withdrawal) =>
-                            <div className="flex flex-row justify-between pt-5 w-[90%] min-h-[23%] border-b-[2px] border-black ">
-                                <div className="w-[15%] h-full   text-2xl font-semibold text-center " >
-                                    <span> {withdrawal.name} </span>
-                                </div>
-                                <div className="w-[20%] h-full font-semibold flex flex-col " >
-                                    <span> จำนวนที่เบิก : {withdrawal.quantity}  แพ็ค</span>
-                                    {withdrawal.details.map((detail: any) => (
-                                        <span> id : {detail.idStock}</span>
-                                    ))}
-                                    
-                                </div> 
-                                <div className="w-[20%] h-full  font-semibold  flex flex-col " >
-                                    <span> วันที่เบิก : {formatDate(String(withdrawal.withdrawalDate))} </span>
-                                    <span> พนักงานที่เบิก : {withdrawal.userName} </span>
-                                </div>
-                                <div className="w-[30%] h-full  font-semibold  flex flex-col " >
-                                    <span> หมายเหตุ : {withdrawal.description}</span>
-                                </div>
+                        <div className="flex flex-col items-center  w-[90%] h-[30rem] border-[3px] border-black rounded-[2rem] overflow-y-auto max-h-[500px] pt-4">
+                            {filteredWithdrawals.map((withdrawal) =>
+                                <div className="flex flex-row justify-between pt-5 w-[90%]  pb-8 border-b-[2px] border-black ">
+                                    <div className="w-[15%] h-full   text-2xl font-semibold text-center " >
+                                        <span> {withdrawal.name} </span>
+                                    </div>
+                                    <div className="w-[20%] h-full font-semibold flex flex-col " >
+                                        <span> จำนวนที่เบิก : {withdrawal.quantity}  แพ็ค</span>
+                                        {withdrawal.details.map((detail: any) => (
+                                            <span> id : {detail.idStock}</span>
+                                        ))}
 
-                            </div>)}
+                                    </div>
+                                    <div className="w-[20%] h-full  font-semibold  flex flex-col " >
+                                        <span> วันที่เบิก : {formatDate(String(withdrawal.withdrawalDate))} </span>
+                                        <span> พนักงานที่เบิก : {withdrawal.userName} </span>
+                                    </div>
+                                    <div className="w-[30%] h-full  font-semibold  flex flex-col " >
+                                        <span> หมายเหตุ : {withdrawal.description}</span>
+                                    </div>
+
+                                </div>)}
                         </div>
                     </div>
                 );
@@ -358,7 +445,7 @@ const ShowStock = () => {
                                     viewBox="0 0 24 24"
                                     fill="none"
                                     stroke="currentColor"
-                                    stroke-width="2"
+                                    strokeWidth="2"
                                     stroke-linecap="round"
                                     stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8" />
@@ -368,6 +455,8 @@ const ShowStock = () => {
                                     className="ml-2 flex-grow outline-none bg-[#FBF6F0]"
                                     type="text"
                                     placeholder="Search"
+                                    value={searchItem}
+                                    onChange={handleSearchChange}
                                 />
                             </div>
                         </div>
@@ -413,7 +502,7 @@ const ShowStock = () => {
                                         width="24"
                                         height="24"
                                         viewBox="0 0 24 24"
-                                        stroke-width="2"
+                                        strokeWidth="2"
                                         stroke="currentColor"
                                         fill="none"
                                         stroke-linecap="round"

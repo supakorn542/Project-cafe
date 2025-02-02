@@ -1,6 +1,6 @@
 export interface Stock {
     id?: string;             // ID 
-    idStock: string;         // ID Stock ที่ใช้ในการเบิก
+    // idStock: string;         // ID Stock ที่ใช้ในการเบิก
     name: string;            // ชื่อสินค้า
     netQuantity: number;      // ปริมาณสินค้า
     unit?: string;           // หน่วย เช่น ml, g, oz, Kg

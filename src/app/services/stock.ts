@@ -513,7 +513,7 @@ export const getStockPackags = async (): Promise<Stock[]> => {
       //-----------------------------------------------------------------
       return {
         id: docSnapshot.id,
-        idStock: data.idStock,         // ID Stock ที่ใช้ในการเบิก
+        // idStock: data.idStock,         // ID Stock ที่ใช้ในการเบิก
         name: data.name,            // ชื่อสินค้า
         netQuantity: data.netQuantity,      // ปริมาณสินค้า
         unit: data.unit,           // หน่วย เช่น ml, g, oz, Kg
@@ -597,7 +597,6 @@ export const deletedStock = async (id: string) => {
   }
 };
 
-
 //ลบได้หมด
 // export const deletedStock = async (id: string) => {
 //   try {
@@ -620,4 +619,34 @@ export const deletedStock = async (id: string) => {
 // };
 
 
+export const getAllIdStockFromPackages = async (): Promise<string[]> => {
+  try {
+    // ระบุ collection ที่ต้องการดึงข้อมูล
+    const stockCollection = collection(db, "stocks");
+    // ดึงเอกสารทั้งหมดใน collection ที่มี stockType = "packaging"
+    const stockSnapshot = await getDocs(query(stockCollection, where('stockType', '==', "packaging")));
 
+    if (stockSnapshot.empty) {
+      console.warn("No stocks found in the collection.");
+      return [] ; // คืนค่าเป็น object เดียวที่มี array เปล่า
+    }
+
+    const allDetails: string[] = [];
+
+    await Promise.all(stockSnapshot.docs.map(async (docSnapshot) => {
+      const detailsRef = collection(db, "stocks", docSnapshot.id, "details");
+      const detailsSnap = await getDocs(detailsRef);
+      
+      // รวมค่า details ทั้งหมดเข้าไปในอาร์เรย์เดียว
+      allDetails.push(...detailsSnap.docs.map((doc) => doc.data().idStock));
+    }));
+    
+    console.log("Merged Details:", allDetails);
+    
+    return allDetails ; // คืนค่าเป็น object เดียว
+
+  } catch (error) {
+    console.error("Error fetching stock data:", error);
+    throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
+  }
+};

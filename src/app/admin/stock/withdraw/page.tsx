@@ -52,42 +52,45 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
         }
     };
 
-    const handleSave = async () => {
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
         if (!userName || !withdrawalDate || selectedDetails.length === 0) {
             alert("กรุณากรอกข้อมูลให้ครบถ้วนและเลือกวัตถุดิบ");
             return;
         }
-
-        const data = {
-            stockId,
-            userName,
-            withdrawalDate,
-            description,
-            name: stockData.data.name,
-            quantity: selectedDetails.length,
-            stockType: stockData.data.stockType,
-            details: selectedDetails.map((detail) => detail.idStock), // เพิ่ม details
-        };
-
-        const detailData = selectedDetails.map((detail) => ({
-            idStock: detail.idStock,
-            manufactureDate: detail.manufactureDate || "",
-            expiryDate: detail.expiryDate || "",
-            addedDate: detail.addedDate || ""
-        }));
-
-        try {
-            const result = await createWithdrawal(stockId, selectedDetails, detailData, data);
-            if (result.success) {
-                alert("บันทึกการเบิกสำเร็จ");
-                withdrawalPopup(); // ปิด popup
-            } else {
-                alert(`เกิดข้อผิดพลาด: ${result.message}`);
+        else{
+            const data = {
+                stockId,
+                userName,
+                withdrawalDate,
+                description,
+                name: stockData.data.name,
+                quantity: selectedDetails.length,
+                stockType: stockData.data.stockType,
+                details: selectedDetails.map((detail) => detail.idStock), // เพิ่ม details
+            };
+    
+            const detailData = selectedDetails.map((detail) => ({
+                idStock: detail.idStock,
+                manufactureDate: detail.manufactureDate || "",
+                expiryDate: detail.expiryDate || "",
+                addedDate: detail.addedDate || ""
+            }));
+    
+            try {
+                const result = await createWithdrawal(stockId, selectedDetails, detailData, data);
+                if (result.success ) {
+                    alert("บันทึกการเบิกสำเร็จ");
+                    withdrawalPopup(); // ปิด popup
+                } else {
+                    alert(`เกิดข้อผิดพลาด: ${result.message}`);
+                }
+            } catch (error) {
+                console.error("Error during save:", error);
+                alert("ไม่สามารถบันทึกข้อมูลได้");
             }
-        } catch (error) {
-            console.error("Error during save:", error);
-            alert("ไม่สามารถบันทึกข้อมูลได้");
         }
+        
     };
 
 
@@ -139,22 +142,22 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
                                     <div className="w-full h-[216px] border-2 border-black rounded-md px-6 py-2 overflow-y-auto max-h-[500px]">
                                         {stockData?.details?.length ? (
                                             stockData.details.map((detail: any) => (
-                                                <div className="flex flex-row   text-lg">
-                                                    <div className="flex gap-4 w-24">
+                                                <div className="flex flex-row  text-lg">
+                                                    <div className="flex gap-4 w-[35%]">
                                                         <input
                                                             type="checkbox"
                                                             onChange={(e) => handleCheckboxChange(detail, e.target.checked)} 
                                                             className="w-[20px] h-[40px] border-2 border-black rounded-md "
                                                             
                                                         />
-                                                        <div className="flex items-center">
+                                                        <div className="flex items-center ">
                                                             <span>
                                                                 {detail.idStock}
                                                             </span>
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex  pl-5 items-center">
+                                                    <div className="flex  pl-3 items-center ">
                                                         <span>
                                                             วันที่เพิ่มสินค้า : {formatDate(String(detail.addedDate))}
                                                         </span>
@@ -167,24 +170,20 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
                                     </div></>) : (<><div className="w-full h-[216px] border-2 border-black rounded-md px-6 py-2 overflow-y-auto max-h-[500px]">
                                         {stockData?.details?.length ? (
                                             stockData.details.map((detail: any) => (
-                                                <div className="flex flex-row  justify-between text-lg">
-                                                    <div className="flex gap-4 w-16">
+                                                <div className="flex flex-row  justify-between text-lg font-playfair">
+                                                    <div className="flex gap-4 w-[25%]">
                                                         <input
                                                             type="checkbox"
                                                             onChange={(e) =>
                                                             handleCheckboxChange(detail, e.target.checked)} 
                                                             className="w-[20px] h-[40px] border-2 border-black rounded-md "
                                                         />
-                                                        <div className="flex items-center">
+                                                        <div className="flex items-center ">
                                                             <span>
                                                                 {detail.idStock}
                                                             </span>
                                                         </div>
                                                     </div>
-
-
-
-
                                                     <div className="flex items-center">
                                                         <span>
                                                             MFD : {formatDate(String(detail.manufactureDate))}
@@ -203,8 +202,6 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
                                         )}
                                     </div></>)
                         }
-
-
                     </div>
                     <div className="pt-4">
                         จำนวนที่เบิก : {selectedDetails.length} กล่อง

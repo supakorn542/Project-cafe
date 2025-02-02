@@ -1,7 +1,8 @@
 "use client";
 
-import { createPackages, createStocks } from "@/app/services/stock";
+import { createPackages, createStocks, getAllIdStockFromPackages } from "@/app/services/stock";
 import { useEffect, useState } from "react";
+import { GrPowerCycle } from "react-icons/gr";
 
 interface CreatePackagingProps {
     togglePopup: () => void;
@@ -28,6 +29,20 @@ const CreatePackaging: React.FC<CreatePackagingProps> = ({ togglePopup }) => {
 
     const goToNextPopup = () => {
         setCurrentPopup(2); // ไปยัง nextpopup
+    };
+
+    const generateIdPackage = async () => {
+        let newId = `PK-${Math.floor(10000 + Math.random() * 90000)}`; // สร้าง ID ใหม่
+    
+        // ตรวจสอบว่า ID นี้มีในฐานข้อมูลแล้วหรือไม่
+        const existingIds = await getAllIdStockFromPackages(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
+        console.log(existingIds)
+    
+        while (existingIds.includes(newId)){
+            console.log(newId, "XXX")
+            newId = `${Math.floor(10000 + Math.random() * 90000)}`;
+        }
+        return newId
     };
 
     const formatDate = (date: Date) => {
@@ -194,25 +209,34 @@ const CreatePackaging: React.FC<CreatePackagingProps> = ({ togglePopup }) => {
 
                                 <div className="flex flex-row justify-between pt-4">
                                     <div className="flex flex-row">
-                                        <div className=" text-black flex items-center text-xl ">
+                                        <div className=" text-black flex items-center text-lg ">
                                             แพ็คที่ :
                                         </div>
                                         <div className="w-[44px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3">
                                             {String(index + 1).padStart(2, "0")}
                                         </div>
                                     </div>
-                                    <div className="flex flex-row">
-                                        <div className=" text-black flex items-center text-xl ">
+                                    <div className="flex flex-row justify-between">
+                                        <div className=" text-black flex items-center text-lg ">
                                             หมายเลขไอดี :
                                         </div>
-                                        <div className="">
+                                        <div className="flex items-center">
                                             <input
                                                 type="text"
                                                 value={details[index]?.idStock || ""}
                                                 onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
-                                                className="w-[113px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3"
+                                                className="w-[113px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-2"
                                                 required
                                             />
+                                        </div>
+                                        <div className=" flex items-center pl-1 pt-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => generateIdPackage().then((id_stock)=> handleDetailChange(index, "idStock", id_stock))}
+                                                className="px-1 py-1 border-2 border-black rounded-md"
+                                            >
+                                                <GrPowerCycle size={18} text-black />
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

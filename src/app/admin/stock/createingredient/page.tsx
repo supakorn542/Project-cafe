@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createStocks } from "../../../services/stock";
-
+import { createStocks} from "../../../services/stock";
+import { GrPowerCycle } from "react-icons/gr";
 interface CreateIngredientProps {
     togglePopup: () => void;
 }
@@ -41,6 +41,24 @@ const CreateIngredient: React.FC<CreateIngredientProps> = ({ togglePopup }) => {
         return date; // คืนค่าค่าว่างหาก date ไม่มีรูปแบบที่คาดหวัง
     };
 
+    const generateIdIngredient = () => {
+        return `IG-${Math.floor(10000 + Math.random() * 90000)}`; // ตัวอย่าง ID: ST-123456
+    };
+
+    // const generateIdIngredient = async () => {
+    //     let newId = `IG-${Math.floor(10000 + Math.random() * 90000)}`; // สร้าง ID ใหม่
+    
+    //     // ตรวจสอบว่า ID นี้มีในฐานข้อมูลแล้วหรือไม่
+    //     const existingIds = await getDetailsByStockId(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
+    
+    //     // ตรวจสอบว่ามี ID นี้อยู่แล้วหรือไม่
+    //     while (existingIds.includes(newId)) {
+    //         newId = `IG-${Math.floor(10000 + Math.random() * 90000)}`; // ถ้าซ้ำให้สร้างใหม่
+    //     }
+    
+    //     return newId;
+    // };
+
     const formatDate = (date: Date) => {
         if (date instanceof Date) {
             return date.toISOString().split('T')[0]; // แปลง Date เป็น string ในรูปแบบ yyyy-mm-dd
@@ -57,7 +75,6 @@ const CreateIngredient: React.FC<CreateIngredientProps> = ({ togglePopup }) => {
             goToNextPopup()
         }
     }
-
 
     const handleDetailChange = (index: any, field: any, value: any) => {
         const updatedDetails = [...details]; // คัดลอกอาร์เรย์เก่า
@@ -251,15 +268,28 @@ const CreateIngredient: React.FC<CreateIngredientProps> = ({ togglePopup }) => {
                                     <div className="text-black flex items-center text-xl pt-[23px] ">
                                         {String(index + 1).padStart(2, "0")}
                                     </div>
-                                    <div className="">
-                                        <div className="text-black">หมายเลขไอดี</div>
-                                        <input
-                                            type="text"
-                                            value={details[index]?.idStock || ""}
-                                            onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
-                                            className="w-[146px] h-[35px] border-2 border-black rounded-md pl-3"
-                                            required
-                                        />
+                                    <div className=" flex flex-row justify-between ">
+                                        <div>
+                                            <div className="text-black">หมายเลขไอดี</div>
+                                            <input
+                                                type="text"
+                                                value={details[index]?.idStock || ""}
+                                                onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
+                                                className="w-[146px] h-[35px] border-2 border-black rounded-md pl-3"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className=" pt-7 pl-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDetailChange(index, "idStock", generateIdIngredient())}
+                                                className="px-1 py-1 border-2 border-black rounded-md"
+                                            >
+                                                <GrPowerCycle size={18} text-black />
+                                            </button>
+                                        </div>
+
                                     </div>
                                     <div className="">
                                         <div className="text-black">วันที่ผลิต</div>

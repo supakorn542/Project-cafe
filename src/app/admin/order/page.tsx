@@ -221,7 +221,7 @@ const ShowOrder = () => {
                                                         </span>
                                                     </div>
                                                     {/* <span>คั่วอ่อน (Ethiopia)</span> */}
-                                                    <span>{x.optionitem_id[0] ? x.optionitem_id[0].name : x.optionitem_id[1].name ? x.optionitem_id[1].name : ""}</span>
+                                                   {x.optionitem_id.map((i:any) => {return  <span>- {i.name} <br /></span>})} 
 
                                                     <div>หมายเหตุ: {x.description}</div>
                                                     <span>ราคา: {x.product_id.price} ฿</span>
@@ -329,7 +329,7 @@ const ShowOrder = () => {
                                                         </span>
                                                     </div>
                                                     {/* <span>คั่วอ่อน (Ethiopia)</span> */}
-                                                    <span>{x.optionitem_id[0] ? x.optionitem_id[0].name : x.optionitem_id[1].name ? x.optionitem_id[1].name : ""}</span>
+                                                    {x.optionitem_id.map((i:any) => {return  <span>- {i.name} <br /></span>})} 
 
                                                     <div>หมายเหตุ: {x.description}</div>
                                                     <span>ราคา: {x.product_id.price} ฿</span>
@@ -424,14 +424,14 @@ const ShowOrder = () => {
                                                 <div className="flex flex-col ">
                                                     <div className="flex justify-between font-notoSansThai">
                                                         <span>
-                                                            Menu: {x.product_id.name}
+                                                            Menu: {x.product_id?.name}
                                                         </span>
                                                         <span>
                                                             X{x.quantity}
                                                         </span>
                                                     </div>
                                                     {/* <span>คั่วอ่อน (Ethiopia)</span> */}
-                                                    <span>{x.optionitem_id[0] ? x.optionitem_id[0].name : x.optionitem_id[1].name ? x.optionitem_id[1].name : ""}</span>
+                                                    {x.optionitem_id.map((i:any) => {return  <span>- {i.name} <br /></span>})} 
 
                                                     <div>หมายเหตุ: {x.description}</div>
                                                     <span>ราคา: {x.product_id.price} ฿</span>
