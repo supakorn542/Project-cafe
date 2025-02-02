@@ -145,7 +145,7 @@ function EditCartPopup({
                 setProduct(productData); // Set the product state
                
 
-                setCheckedOptionItemIds(cartItem.optionitem_ids!);
+                setCheckedOptionItemIds(cartItem.optionitem_ids?);
                 // ... update other state variables
               } else {
                 console.error("Missing cart, option, or product document!");
