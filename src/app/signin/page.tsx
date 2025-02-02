@@ -41,12 +41,12 @@ const SignIn = () => {
         });
 
         console.log("Cookies set successfully");
-        alert("Sign in successfully")
+      
 
         if (role === "admin") {
-          router.push("/admin/products/menu"); // ถ้าเป็น admin ให้ไปหน้า admin
+          router.push("/admin/order"); 
         } else {
-          router.push("/user/profile"); // ถ้าไม่ใช่ admin ให้ไปหน้าโปรไฟล์
+          router.push("/user/profile"); 
         }
       } else {
         throw new Error("No user returned");

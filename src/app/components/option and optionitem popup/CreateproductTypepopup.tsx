@@ -17,7 +17,7 @@ function CreateProductTypePopup({ onClose }: { onClose: () => void }) {
       setLoading(true);
       // เพิ่มข้อมูลลง Firestore
       await addDoc(collection(db, "productTypes"), {
-        name: productTypeName,
+        name: productTypeName.toLowerCase(),
         description: description || "",
         createdAt: new Date(),
       });

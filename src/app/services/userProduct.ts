@@ -143,3 +143,38 @@ export const fetchOptionItemsByOptionIds = async (
     return {};
   }
 };
+
+
+export async function getProductsByType(productTypeName: string) {
+  try {
+    // 🔹 1. Query หา productType ID ตามชื่อ
+    const productTypeQuery = query(
+      collection(db, "productTypes"),
+      where("name", "==", productTypeName)
+    );
+    const productTypeQuerySnapshot = await getDocs(productTypeQuery);
+    console.log("productTypeQuerySnapshot",productTypeQuerySnapshot)
+
+    if (productTypeQuerySnapshot.empty) return [];
+
+    // 🔹 2. ดึง productType ID
+    const productTypeId = productTypeQuerySnapshot.docs[0].id;
+
+    // 🔹 3. Query หา products ที่อ้างอิง productTypeId
+    const productsQuery = query(
+      collection(db, "products"),
+      where("productType_id", "==", doc(db, `productTypes/${productTypeId}`)) // ใช้ Firestore Reference
+    );
+    const productsQuerySnapshot = await getDocs(productsQuery);
+    console.log("productsQuerySnapshot",productsQuerySnapshot)
+
+    // 🔹 4. Map ข้อมูล products ออกมา
+    return productsQuerySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("🔥 Error fetching products:", error);
+    return [];
+  }
+}

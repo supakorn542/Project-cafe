@@ -56,17 +56,31 @@ const Menu = () => {
       setProducts(fetchedProducts);
       setProductTypes(fetchedProductTypes);
 
-      // คำนวณ groupedProducts ทันทีหลังจากข้อมูลถูกโหลด
-      const grouped = fetchedProductTypes.map((type) => ({
-        type,
-        products: fetchedProducts.filter(
-          (product) => product.productType_id === type.id
+      const coffeeTypeIds = fetchedProductTypes
+      .filter((type) => type.name.toLowerCase().includes("coffee"))
+      .map((type) => type.id);
+
+      // กรองสินค้าที่ไม่ใช่ประเภท "coffee"
+      const grouped = fetchedProductTypes
+        .filter((type) => !type.name.toLowerCase().includes("coffee")) // กรองประเภทที่ไม่ใช่ coffee
+        .map((type) => ({
+          type,
+          products: fetchedProducts.filter(
+            (product) => product.productType_id === type.id
+          ),
+        }));
+
+      // รวมสินค้าจากประเภท "coffee" ที่ประกอบด้วยหลายประเภทไว้ในกลุ่มเดียว
+      grouped.unshift({
+        type: { id: "coffee", name: "coffee" }, // สร้างประเภทใหม่สำหรับ coffee
+        products: fetchedProducts.filter((product) =>
+          coffeeTypeIds.includes(product.productType_id)
         ),
-      }));
+      });
       console.log("group inside fetch data", grouped);
 
       setGroupedProducts(grouped); // อัพเดต groupedProducts
-      console.log(grouped)
+      console.log(grouped);
     } catch (error) {
       console.error("Failed to fetch data:", error);
     }
@@ -427,16 +441,25 @@ const Menu = () => {
             const typeId = group.type.id;
             const slideIndex = currentSlide[typeId] || 0;
             const maxSlide = Math.ceil(group.products.length / 3) - 1;
+            const typeNameSlug = group.type.name
+              .toLowerCase()
+              .replace(/\s+/g, "-");
 
             return (
-              <div key={typeId} className="mb-12 " id={group.type.name.toLowerCase().replace(/\s+/g, '-')}>
+              <div
+                key={typeId}
+                className="mb-12 "
+                id={group.type.name.toLowerCase().replace(/\s+/g, "-")}
+              >
                 <div className="flex justify-between items-center mb-6 ">
                   <h2 className="font-playfair font-bold text-3xl text-[#06412B]">
                     {group.type.name.toUpperCase()}
                   </h2>
-                  <button className="py-1 px-2 text-[#06412B] border-2 border-[#06412B] rounded-2xl font-semibold">
-                    See More
-                  </button>
+                  <Link href={`menu/${typeNameSlug}`}>
+                    <button className="py-1 px-2 text-[#06412B] border-2 border-[#06412B] rounded-2xl font-semibold">
+                      See More
+                    </button>
+                  </Link>
                 </div>
                 <div className="relative">
                   {/* ปุ่มซ้าย */}
@@ -462,10 +485,11 @@ const Menu = () => {
                             layout="responsive"
                             width={1}
                             height={1}
+                            style={{ aspectRatio: "1 / 1" }}
                             alt="product-image"
                           />
                           <h3 className="text-xl font-serif4 pt-2">
-                            {index + 1}
+                            {(slideIndex * 3 + index + 1).toString().padStart(2, "0")}
                           </h3>
                           <div className="flex justify-between pb-1">
                             <h2 className="text-xl font-serif4 font-semibold">
