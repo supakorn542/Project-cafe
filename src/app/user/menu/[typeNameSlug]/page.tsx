@@ -78,26 +78,29 @@ export default function ProductType() {
   return (
     <div className="min-h-screen bg-[#FBF6F0] overflow-y-auto">
       <Navbar />
-      <div>
-        {isOpen && (
-          <OptionPopup
-            onClose={() => togglePopup(undefined)}
-            productId={selectedProductId as string}
-          />
-        )}
-      </div>
-      <div className="container mx-auto px-4 pt-16">
+      
+      {/* Popup */}
+      {isOpen && (
+        <OptionPopup
+          onClose={() => togglePopup(undefined)}
+          productId={selectedProductId as string}
+        />
+      )}
+  
+      {/* เนื้อหาหลัก */}
+      <div className="container mx-auto px-6 md:px-10 lg:px-20 pt-16 max-w-[90%]">
         {typeNameSlug === "coffee" ? (
-          // กรณี typeNameSlug เป็น "coffee"
           productTypes.map((type) => (
             <div key={type.id}>
-              <div className="py-10 px-20">
-                <h1 className="font-playfair font-bold text-3xl text-[#06412B] ">
+              {/* หัวข้อประเภทสินค้า */}
+              <div className="py-6 md:py-10 text-center md:text-left">
+                <h1 className="font-playfair font-bold text-2xl md:text-3xl text-[#06412B]">
                   {type.name.toUpperCase()}
                 </h1>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center p-3">
+  
+              {/* Grid ของสินค้า */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center p-3">
                 {products
                   .filter((product) => product.productType_id === type.id)
                   .map((product, index) => (
@@ -113,12 +116,15 @@ export default function ProductType() {
           ))
         ) : (
           <div>
-            <div className="py-10 px-20">
-              <h1 className="font-playfair font-bold text-3xl text-[#06412B] ">
+            {/* หัวข้อหมวดหมู่ */}
+            <div className="py-6 md:py-10 text-center md:text-left">
+              <h1 className="font-playfair font-bold text-2xl md:text-3xl text-[#06412B]">
                 {typeNameSlug.toUpperCase().replace(/-/g, " ")}
               </h1>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center p-3">
+  
+            {/* Grid ของสินค้า */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center p-3">
               {products.length > 0 ? (
                 products.map((product, index) => (
                   <ProductCard
@@ -129,7 +135,7 @@ export default function ProductType() {
                   />
                 ))
               ) : (
-                <p className="text-center text-gray-600 text-xl">
+                <p className="text-center text-gray-600 text-lg md:text-xl">
                   No products found
                 </p>
               )}
@@ -137,8 +143,9 @@ export default function ProductType() {
           </div>
         )}
       </div>
-
+  
       <FooterUser color="black" />
     </div>
   );
+  
 }

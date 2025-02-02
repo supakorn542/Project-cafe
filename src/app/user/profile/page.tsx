@@ -21,6 +21,8 @@ function Profile() {
     undefined
   );
 
+  const [loading, setLoading] = useState(false);
+
   const convertTimestampToDate = (timestamp: any) => {
     if (timestamp instanceof Timestamp) {
       return timestamp.toDate().toLocaleDateString("th-TH", {
@@ -123,6 +125,7 @@ function Profile() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setLoading(true);
       const reader = new FileReader();
 
       reader.onloadend = async () => {
@@ -136,19 +139,23 @@ function Profile() {
           });
 
           if (response.data.url) {
-            setUploadedImageUrl(response.data.url); // เก็บ URL ใน State
+            setUploadedImageUrl(response.data.url);
             console.log("Image uploaded successfully:", response.data.url);
           } else {
             console.error("Failed to upload image");
           }
         } catch (error) {
           console.error("Error uploading image:", error);
+        } finally {
+          setLoading(false);
         }
       };
 
       reader.readAsDataURL(file);
     }
   };
+
+  console.log("uploadedImageUrl",uploadedImageUrl)
   return (
     <>
       <div
@@ -156,6 +163,13 @@ function Profile() {
         style={{ backgroundImage: "url('/assets/profile-background.jpg')" }}
       >
         <Navbar textColor="text-white" />
+        {loading && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg text-xl font-bold text-black">
+              Uploading...
+            </div>
+          </div>
+        )}
         <div className="min-h-screen flex items-center justify-center  p-4 ">
           <div className="grid grid-cols-1 md:grid-cols-[3fr,6fr,1fr] grid-rows-[auto,auto,auto] gap-3 md:gap-2  rounded-3xl  mt-10 lg:mt-1 px-5 pb-3 md:pb-10 pt-3 w-4/5 bg-white bg-opacity-20  backdrop-blur-xl">
             <div className="hidden md:grid md:col-span-3 place-items-end">
@@ -169,7 +183,7 @@ function Profile() {
 
             <div className="grid place-content-center">
               <Image
-                src={userData?.profileImage || "/assets/signin-image.jpg"}
+                src={uploadedImageUrl || userData?.profileImage || "/assets/default-user.jpg" }
                 alt="Profile"
                 width={250}
                 height={250}

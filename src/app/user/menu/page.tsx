@@ -25,6 +25,8 @@ const Menu = () => {
     {}
   );
 
+  const [itemsPerSlide, setItemsPerSlide] = useState(3);
+
   const togglePopup = (productId: string | undefined) => {
     setSelectedProductId(productId);
     setIsOpen((prev) => !prev);
@@ -57,8 +59,8 @@ const Menu = () => {
       setProductTypes(fetchedProductTypes);
 
       const coffeeTypeIds = fetchedProductTypes
-      .filter((type) => type.name.toLowerCase().includes("coffee"))
-      .map((type) => type.id);
+        .filter((type) => type.name.toLowerCase().includes("coffee"))
+        .map((type) => type.id);
 
       // กรองสินค้าที่ไม่ใช่ประเภท "coffee"
       const grouped = fetchedProductTypes
@@ -90,6 +92,22 @@ const Menu = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const updateItemsPerSlide = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerSlide(1); // หน้าจอเล็กสุด แสดงทีละ 1 ชิ้น
+      } else if (window.innerWidth < 1024) {
+        setItemsPerSlide(2); // หน้าจอกลาง แสดงทีละ 2 ชิ้น
+      } else {
+        setItemsPerSlide(3); // หน้าจอใหญ่ แสดงทีละ 3 ชิ้น
+      }
+    };
+
+    updateItemsPerSlide(); // เรียกใช้ครั้งแรกตอนโหลด
+    window.addEventListener("resize", updateItemsPerSlide);
+    return () => window.removeEventListener("resize", updateItemsPerSlide);
+  }, []);
+
   console.log("Products :", products);
   console.log("Product Types :", productTypes);
   console.log("Group Products :", groupedProducts);
@@ -99,7 +117,7 @@ const Menu = () => {
       <div className="min-h-screen bg-[#FBF6F0] overflow-y-auto scroll-smooth">
         <Navbar />
 
-        <div className="pt-32">
+        <div className="pt-16 lg:pt-32">
           {isOpen && (
             <OptionPopup
               onClose={() => togglePopup(undefined)}
@@ -107,10 +125,10 @@ const Menu = () => {
             />
           )}
         </div>
-        <div className="grid grid-cols-3 gap-6 place-items-center px-10 py-16">
-          <div className="relative w-[350px] h-[400px] overflow-visible ">
+        <div className="hidden xl:grid grid-cols-3 gap-6 place-items-center px-4 px-10 py-16">
+          <div className="relative w-full max-w-[350px] h-[400px] overflow-visible ">
             <Image
-              src="/assets/menu/menu-semi-circle-1-edit.jpg"
+              src="/assets/menu/menu-semi-circle-1.jpg"
               alt="Menu"
               width={350}
               height={400}
@@ -155,9 +173,9 @@ const Menu = () => {
               <hr className="w-36 border-t-2 border-[#06412B]" />
             </div>
           </div>
-          <div className="relative w-[350px] h-[400px] overflow-visible ">
+          <div className="relative w-full max-w-[350px] h-[400px] overflow-visible ">
             <Image
-              src={"/assets/menu/menu-semi-circle-4.jpg"}
+              src={"/assets/menu/menu-semi-circle-2.jpg"}
               alt="Menu"
               width={350}
               height={400}
@@ -235,7 +253,7 @@ const Menu = () => {
               </svg>
             </div>
           </div>
-          <div className="relative w-[350px] h-[400px] overflow-visible ">
+          <div className="relative w-full max-w-[350px] h-[400px] overflow-visible ">
             <Image
               src={"/assets/menu/menu-semi-circle-3.jpg"}
               alt="Menu"
@@ -284,7 +302,7 @@ const Menu = () => {
           </div>
         </div>
 
-        <div className="flex justify-between py-24">
+        <div className="hidden lg:flex  justify-between py-24">
           <div className="relative w-[500px] h-[300px] overflow-visible">
             <Image
               src={"/assets/menu/menu-component1-bg.jpg"}
@@ -421,26 +439,29 @@ const Menu = () => {
             </svg>
           </div>
         </div>
-        <div className=" flex py-20 text-3xl font-playfair justify-between font-bold text-[#06412B] px-36">
-          <Link href="#coffee">
-            <div>COFFEE</div>
-          </Link>
-          <Link href="#soft-drink">
-            <div>SOFT DRINK</div>
-          </Link>
-          <Link href="#signature-drink">
-            <div>SIGNATURE DRINK</div>
-          </Link>
-          <Link href="#matcha">
-            <div>MATCHA</div>
-          </Link>
+        <div className="py-10 px-6 md:px-12 lg:px-36 font-playfair font-bold text-[#06412B]">
+          <div className="flex flex-wrap justify-center lg:justify-between gap-6 text-xl md:text-2xl lg:text-3xl">
+            <Link href="#coffee">
+              <div className="cursor-pointer">COFFEE</div>
+            </Link>
+            <Link href="#soft-drink">
+              <div className="cursor-pointer">SOFT DRINK</div>
+            </Link>
+            <Link href="#signature-drink">
+              <div className="cursor-pointer">SIGNATURE DRINK</div>
+            </Link>
+            <Link href="#matcha">
+              <div className="cursor-pointer">MATCHA</div>
+            </Link>
+          </div>
         </div>
 
-        <div className="px-20 pt-10">
+        <div className="px-10 lg:px-20 pt-5 lg:pt-10">
           {groupedProducts.map((group) => {
             const typeId = group.type.id;
             const slideIndex = currentSlide[typeId] || 0;
-            const maxSlide = Math.ceil(group.products.length / 3) - 1;
+            const maxSlide =
+              Math.ceil(group.products.length / itemsPerSlide) - 1;
             const typeNameSlug = group.type.name
               .toLowerCase()
               .replace(/\s+/g, "-");
@@ -451,34 +472,39 @@ const Menu = () => {
                 className="mb-12 "
                 id={group.type.name.toLowerCase().replace(/\s+/g, "-")}
               >
-                <div className="flex justify-between items-center mb-6 ">
-                  <h2 className="font-playfair font-bold text-3xl text-[#06412B]">
+                <div className="flex flex-row justify-between items-center mb-6 gap-4">
+                  <h2 className="font-playfair font-bold text-xl sm:text-2xl md:text-3xl text-[#06412B] text-center sm:text-left">
                     {group.type.name.toUpperCase()}
                   </h2>
                   <Link href={`menu/${typeNameSlug}`}>
-                    <button className="py-1 px-2 text-[#06412B] border-2 border-[#06412B] rounded-2xl font-semibold">
+                    <button className="py-1 px-1 sm:px-4 text-[#06412B] border-2 border-[#06412B] rounded-2xl font-semibold text-sm sm:text-base">
                       See More
                     </button>
                   </Link>
                 </div>
+
                 <div className="relative">
                   {/* ปุ่มซ้าย */}
                   {slideIndex > 0 && (
                     <button
-                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-1 md:p-2"
                       onClick={() => handlePrevSlide(typeId)}
                     >
-                      <MdArrowBack size={24} />
+                      <MdArrowBack className="text-[#06412B] text-xl md:text-2xl" />
                     </button>
                   )}
+
                   {/* แสดง Card เป็น Carousel */}
-                  <div className="grid grid-cols-3 gap-6 justify-items-center overflow-hidden p-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center overflow-hidden p-3">
                     {group.products
-                      .slice(slideIndex * 3, slideIndex * 3 + 3)
+                      .slice(
+                        slideIndex * itemsPerSlide,
+                        slideIndex * itemsPerSlide + itemsPerSlide
+                      )
                       .map((product: Product, index: number) => (
                         <div
                           key={product.id}
-                          className="bg-white p-4 shadow-lg hover:shadow-xl transition-shadow duration-300  rounded-2xl w-72"
+                          className="bg-white p-4 shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl  w-60 lg:w-72 flex flex-col justify-between min-h-[250px]"
                         >
                           <Image
                             src={product.imageProduct}
@@ -487,9 +513,12 @@ const Menu = () => {
                             height={1}
                             style={{ aspectRatio: "1 / 1" }}
                             alt="product-image"
+                            className="rounded-3xl" 
                           />
                           <h3 className="text-xl font-serif4 pt-2">
-                            {(slideIndex * 3 + index + 1).toString().padStart(2, "0")}
+                            {(slideIndex * itemsPerSlide + index + 1)
+                              .toString()
+                              .padStart(2, "0")}
                           </h3>
                           <div className="flex justify-between pb-1">
                             <h2 className="text-xl font-serif4 font-semibold">
@@ -500,27 +529,26 @@ const Menu = () => {
                             </h3>
                           </div>
                           <hr className="border-black" />
-                          <div className="flex pt-1">
-                            <p className="text-black text-md font-serif4">
+                          <div className="flex justify-between items-end gap-2 pt-1">
+                            <p className="text-black text-md font-serif4 flex-1">
                               {product.description}
                             </p>
-                            <div className="flex items-end">
-                              <FaCirclePlus
-                                className="text-xl cursor-pointer"
-                                onClick={() => togglePopup(product.id)}
-                              />
-                            </div>
+                            <FaCirclePlus
+                              className="text-2xl cursor-pointer text-[#06412B] shrink-0"
+                              onClick={() => togglePopup(product.id)}
+                            />
                           </div>
                         </div>
                       ))}
                   </div>
+
                   {/* ปุ่มขวา */}
                   {slideIndex < maxSlide && (
                     <button
-                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-2"
+                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-full p-1 md:p-2"
                       onClick={() => handleNextSlide(typeId)}
                     >
-                      <MdArrowForward size={24} />
+                      <MdArrowForward className="text-[#06412B] text-xl md:text-2xl" />
                     </button>
                   )}
                 </div>

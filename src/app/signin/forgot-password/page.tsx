@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../lib/firebase";
-import Image from "next/image";
+
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -24,18 +24,18 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#013927]">
-      <div className="flex w-[50%] max-w-[1440px] h-[670px]">
-
+    <div className="min-h-screen flex items-center justify-center bg-[#013927] p-4">
+      <div className="flex flex-col lg:flex-row w-full max-w-[1440px] h-auto lg:h-[670px]">
+        {/* Left side (form section) */}
         <div className="flex-1 p-8 flex flex-col items-center">
-          <h2 className="text-5xl font-playfair font-bold mb-10 text-center text-white">
+          <h2 className="text-4xl lg:text-5xl font-playfair font-bold mb-10 text-center text-white">
             Forgot Password
           </h2>
 
           {message && <p className="text-white mb-4 text-lg">{message}</p>}
           {error && <p className="text-white-500 mb-4 text-lg">{error}</p>}
 
-          <form onSubmit={handleResetPassword} className="mt-3 w-5/6">
+          <form onSubmit={handleResetPassword} className="mt-3 w-full max-w-[500px]">
             <div className="relative">
               <input
                 type="email"
@@ -66,6 +66,8 @@ const ForgotPassword = () => {
             </a>
           </p>
         </div>
+
+  
       </div>
     </div>
   );

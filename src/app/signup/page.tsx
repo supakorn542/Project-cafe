@@ -26,8 +26,20 @@ export default function Signup() {
 
   const router = useRouter();
 
+  const validateTelNumber = (tel: string) => {
+    const phoneRegex = /^[0-9]{10}$/; 
+    return phoneRegex.test(tel);
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateTelNumber(telNumber)) {
+      alert("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
+
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -58,8 +70,26 @@ export default function Signup() {
 
       router.push("/signin");
     } catch (error) {
+      
+    if (error instanceof Error) {
+      let errorMessage = "Error signing up. Please try again.";
+
+
+      if (error.message.includes("auth/email-already-in-use")) {
+        errorMessage = "The email address is already in use. Please use a different email.";
+      } else if (error.message.includes("auth/invalid-email")) {
+        errorMessage = "The email address is not valid. Please check your email format.";
+      } else if (error.message.includes("auth/weak-password")) {
+        errorMessage = "The password is too weak. Please use at least 6 characters.";
+      } else if (error.message.includes("auth/missing-email")) {
+        errorMessage = "Email is required.";
+      } else if (error.message.includes("auth/missing-password")) {
+        errorMessage = "Password is required.";
+      }
+
+      alert(errorMessage);
       console.error("Error signing up:", error);
-      alert("Error signing up");
+    }
     }
   };
 
@@ -133,6 +163,7 @@ export default function Signup() {
                 <DatePicker
                   id="dob"
                   selected={dob}
+                
                   onChange={(dob :  Date | null) => setDOB(dob)}
                   onFocus={() => setIsFocused(true)} 
                   onBlur={() => setIsFocused(false)} 

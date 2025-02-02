@@ -130,37 +130,43 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
     <>
       {/* Overlay ด้านหลัง */}
       <div className="fixed inset-0 bg-black bg-opacity-50 z-40" />
-
+  
       {/* Popup ที่แสดงตรงกลาง */}
-      <div className="fixed inset-0 flex justify-center items-center z-50 w-full ">
-        <div className="bg-white border border-1 p-4 rounded-3xl shadow-lg w-[35%] h-[90%] grid grid-cols-1  grid-rows-[auto,1fr]">
-          <div>
+      <div className="fixed inset-0 flex justify-center items-center z-50 w-full px-4">
+        <div className="bg-white border border-1 p-4 rounded-3xl shadow-lg w-full sm:w-[80%] md:w-[50%] lg:w-[35%] max-h-[90vh] overflow-y-auto grid grid-cols-1 grid-rows-[auto,1fr]">
+          {/* ปุ่มปิด */}
+          <div className="flex justify-end">
             <AiOutlineCloseCircle
-              className="text-3xl place-self-end cursor-pointer"
+              className="text-3xl cursor-pointer"
               onClick={onClose}
             />
           </div>
-
+  
+          {/* เนื้อหา Popup */}
           <div className="flex flex-col gap-y-2">
-            <div className="text-center text-xl font-bold">
-              <h1>{product?.name}</h1>
+            <div>
+            <h1 className="text-center text-xl font-bold">{product?.name}</h1>
+            <h1 className="text-center text-sm ">{product?.calorie} Calories</h1>
+
             </div>
-            <form onSubmit={handleAddToCart} >
+
+  
+            <form onSubmit={handleAddToCart}>
+              {/* ตัวเลือกสินค้า */}
               <div>
-                {options.map((option : any) => (
+                {options.map((option: any) => (
                   <div key={option.id}>
-                    <h3 className="font-bold">{option.name}</h3>
+                    <h3 className="font-bold">{option.name} {option.require && <span className="font-normal">(ต้องเลือก)</span>}</h3>
                     <ul>
                       {groupedOptionItems[option.id]?.map((item) => (
-                        <li key={item.id}>
+                        <li key={item.id} className="flex items-center gap-2">
                           <input
                             type="radio"
                             id={item.id}
                             name={`option-${option.id}`}
                             value={item.id}
-                            onChange={() =>
-                              handleOptionChange(option.id, item.id)
-                            }
+                            required={option.require}
+                            onChange={() => handleOptionChange(option.id, item.id)}
                           />
                           <label htmlFor={item.id}>
                             {item.name} (+${item.priceModifier})
@@ -171,52 +177,47 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                   </div>
                 ))}
               </div>
-
+  
+              {/* รายละเอียดเพิ่มเติม */}
               <div className="flex flex-col mt-4">
-                <label htmlFor="">รายละเอียดเพิ่มเติม</label>
+                <label htmlFor="description">รายละเอียดเพิ่มเติม</label>
                 <input
+                  id="description"
                   type="text"
-                  className=" border-2 border-black rounded-lg p-1"
+                  className="border-2 border-black rounded-lg p-2"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
-              <div className="flex justify-between mt-4">
-                <div className="flex  px-3 border border-1 border-black rounded-2xl gap-x-2 items-center">
-                  <FaMinus
-                    className="cursor-pointer"
-                    onClick={handleDecrease}
-                  />
+  
+              {/* ปุ่มเพิ่มลดจำนวน + ราคา */}
+              <div className="flex justify-between items-center mt-4">
+                <div className="flex px-3 border border-black rounded-2xl gap-x-3 items-center">
+                  <FaMinus className="cursor-pointer" onClick={handleDecrease} />
                   <h3>{quantity}</h3>
                   <FaPlus className="cursor-pointer" onClick={handleIncrease} />
                 </div>
-                <input type="hidden" name="quantity" value={quantity} />
-                <div>
-                  <h3>${product?.price}</h3>
-                </div>
+                <h3 className="text-lg font-bold">${product?.price}</h3>
               </div>
-
-              <div className="flex justify-between mt-4">
-                <div>
-                  <button
-                    type="submit"
-                    name="action"
-                    value="add_to_cart"
-                    className="border border-1 border-black px-2 rounded-2xl"
-                  >
-                    ADD TO CART
-                  </button>
-                </div>
-                <div>
-                  <button
-                    type="submit"
-                    name="action"
-                    value="buy_now"
-                    className="bg-black px-2 border border-1 border-black rounded-2xl text-white"
-                  >
-                    BUY NOW
-                  </button>
-                </div>
+  
+              {/* ปุ่มกด Add to Cart & Buy Now */}
+              <div className="flex flex-col sm:flex-row justify-between gap-2 mt-4">
+                <button
+                  type="submit"
+                  name="action"
+                  value="add_to_cart"
+                  className="border border-black px-4 py-2 rounded-2xl w-full sm:w-auto"
+                >
+                  ADD TO CART
+                </button>
+                <button
+                  type="submit"
+                  name="action"
+                  value="buy_now"
+                  className="bg-black text-white px-4 py-2 border border-black rounded-2xl w-full sm:w-auto"
+                >
+                  BUY NOW
+                </button>
               </div>
             </form>
           </div>
@@ -224,4 +225,5 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
       </div>
     </>
   );
+  
 }
