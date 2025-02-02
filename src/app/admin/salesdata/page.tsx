@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/app/components/Navbar";
 import '../../globals.css';
-import { createDailySales, getAllDailyInStoreSales, getAllDailyOnlineSales, getTodayInStoreSales, getTodayOnlineSales, getTodayOrders } from "@/app/services/salesdata";
+import { createDailySales, deleteDailySales, getAllDailyInStoreSales, getAllDailyOnlineSales, getTodayInStoreSales, getTodayOnlineSales, getTodayOrders } from "@/app/services/salesdata";
 import { getCartItemByCartIdFromAom } from "@/app/services/orderhistory";
 import { getAllReview } from "@/app/services/review";
 import { Timestamp } from "firebase/firestore";
@@ -11,7 +11,6 @@ import NavbarAdmin from "@/app/components/navbarAdmin/page";
 const Salesdata = () => {
   const [isSalseDataPopupOpen, setIsSalseDataPopupOpen] = useState(false);
   const [isRecentDailySales, setIsRecentDailySales] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState('ธันวาคม');
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [allReview, setAllReviews] = useState<any[]>([]);
   const [productQuantities, setProductQuantities] = useState<{ name: string, quantity: number }[]>([]);
@@ -78,7 +77,7 @@ const Salesdata = () => {
         setInStoreSale(inStoreSaleAmount);
         console.log("Fetched in-store sales:", inStoreSaleAmount);
 
-        
+
         const allonlineSales = await getAllDailyOnlineSales();
         setTotalOnlineSales(allonlineSales)
         console.log("Fetched online sales:", allonlineSales);
@@ -86,7 +85,6 @@ const Salesdata = () => {
         const allInStoreSales = await getAllDailyInStoreSales();
         setTotalInStoreSales(allInStoreSales)
         console.log("Fetched In-Store sales:", allInStoreSales);
-
 
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -122,45 +120,88 @@ const Salesdata = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // แปลง saleDate จาก string เป็น Timestamp
-    const timestamp = Timestamp.fromDate(new Date(saleDate)); // แปลงเป็น Timestamp
+    if (!saleDate || !saleAmount) {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      return;
+    }
 
-    if (saleDate && saleAmount) {
+    const timestamp = Timestamp.fromDate(new Date(saleDate)); // ✅ ใช้ Timestamp
+    const dateObj = new Date(saleDate);
+    const formattedDate = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    const formattedDateThai = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')
+      }/${dateObj.getFullYear()}`;
+
+    try {
+      // ตรวจสอบว่ามีข้อมูลยอดขายของวันนี้แล้วหรือไม่
+      if (totalInStoreSales[formattedDate] !== undefined) {
+        const confirmUpdate = window.confirm(
+          `มีข้อมูลยอดขายของวันที่ ${formattedDateThai} อยู่แล้ว!\nคุณต้องการอัปเดตข้อมูลแทนหรือไม่?`
+        );
+
+        if (!confirmUpdate) {
+          alert("โปรดเลือกวันใหม่ที่ยังไม่มีข้อมูล.");
+          return;
+        }
+
+        await deleteDailySales(formattedDate);
+        console.log(`ลบข้อมูลยอดขายของวันที่ ${formattedDateThai} สำเร็จ`);
+      }
+
       const dailySales = {
-        salesDate: timestamp, // ส่งเป็น Timestamp
+        salesDate: timestamp, // ✅ บันทึกเป็น Timestamp
         totalSales: saleAmount,
       };
 
-      try {
-        await createDailySales(dailySales);
-        alert("ยอดขายถูกบันทึกเรียบร้อยแล้ว!");
-        closeSalseDataPopup();
-        // เรียกข้อมูลยอดขายใหม่หลังจากบันทึกข้อมูล
-        const updatedOnlineSales = await getTodayOnlineSales();
-        const updatedInStoreSales = await getTodayInStoreSales();
-        setOnlineSales(updatedOnlineSales);
-        setInStoreSale(updatedInStoreSales);
-        setSaleDate('');
-        setSaleAmount(0);
+      await createDailySales(dailySales);
+      alert("ยอดขายถูกบันทึกเรียบร้อยแล้ว!");
 
-      } catch (error) {
-        console.error("Error saving sales data:", error);
-        alert("เกิดข้อผิดพลาดในการบันทึกยอดขาย");
-      }
-    } else {
-      alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      // ปิด popup
+      closeSalseDataPopup();
+
+      // รีเฟรชข้อมูล
+      const updatedOnlineSales = await getTodayOnlineSales();
+      const updatedInStoreSales = await getTodayInStoreSales();
+      setOnlineSales(updatedOnlineSales);
+      setInStoreSale(updatedInStoreSales);
+      setSaleDate('');
+      setSaleAmount(0);
+
+    } catch (error) {
+      console.error("Error saving sales data:", error);
+      alert("เกิดข้อผิดพลาดในการบันทึกยอดขาย");
     }
   };
 
-  const { avgRating, starCounts } = calculateReviewSummary();
 
-  const handleChangeMonth = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedMonth(e.target.value);
-  };
+
+  const { avgRating, starCounts } = calculateReviewSummary();
 
   const openSalseDataPopupOpen = () => {
     setIsSalseDataPopupOpen(true);
   };
+
+  const openRecentDailySales = async () => {
+    await fetchSalesData();
+    setIsRecentDailySales(true);
+  };
+  
+  
+  const fetchSalesData = async () => {
+    try {
+      const fetchedOnlineSales = await getAllDailyOnlineSales();
+      setTotalOnlineSales(fetchedOnlineSales);
+      console.log("Fetched online sales:", fetchedOnlineSales);
+
+      const fetchedInStoreSales = await getAllDailyInStoreSales();
+      setTotalInStoreSales(fetchedInStoreSales);
+      console.log("Fetched in-store sales:", fetchedInStoreSales);
+      
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+    }
+  };
+  
 
   const closeSalseDataPopup = () => {
     setIsSalseDataPopupOpen(false);
@@ -202,7 +243,7 @@ const Salesdata = () => {
                   <div className="flex space-x-2">
                     <button
                       className="border-2 border-black rounded-xl py-1 px-2 text-lg text-black"
-                      onClick={() => setIsRecentDailySales(true)}
+                      onClick={openRecentDailySales}
                     >
                       ดูยอดขายย้อนหลัง
                     </button>
@@ -319,61 +360,53 @@ const Salesdata = () => {
         </div>
       )}
 
-{isRecentDailySales && salesData && (
-  <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-    <div className="bg-white px-12 py-8 rounded-lg shadow-lg w-full max-w-4xl">
-      <h2 className="text-lg font-bold mb-4">ยอดขายย้อนหลัง</h2>
+      {isRecentDailySales && salesData && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white px-12 py-8 rounded-lg shadow-lg w-full max-w-4xl">
+            <h2 className="text-lg font-bold mb-4">ยอดขายย้อนหลัง</h2>
 
-      <div className="max-h-[360px] overflow-y-auto custom-scroll">
-        <table className="w-full border-collapse min-w-[600px]">
-          <thead className="bg-white sticky top-0">
-            <tr>
-              <th className="p-2 text-left">วันที่</th>
-              <th className="p-2 text-left">ยอดขายออนไลน์</th>
-              <th className="p-2 text-left">ยอดขายหน้าร้าน</th>
-              <th className="p-2 text-left font-bold">ยอดขายรวมทั้งหมด</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from(new Set([
-              ...Object.keys(totalOnlineSales),
-              ...Object.keys(totalInStoreSales),
-            ]))
-              .sort((a, b) => new Date(b).getTime() - new Date(a).getTime()) // เรียงวันที่จากล่าสุดไปเก่า
-              .map((date) => (
-                <tr key={date}>
-                  <td className="p-2">{new Date(date).toLocaleDateString('th-TH')}</td> {/* แสดงวันที่ */}
-                  <td className="p-2">{totalOnlineSales[date] || 0} บาท</td> {/* ยอดขายออนไลน์ */}
-                  <td className="p-2">{totalInStoreSales[date] || 0} บาท</td> {/* ยอดขายหน้าร้าน */}
-                  <td className="p-2 font-bold">
-                    {(
-                      (totalOnlineSales[date] || 0) +
-                      (totalInStoreSales[date] || 0)
-                    ).toLocaleString()} บาท
-                  </td> {/* ยอดขายรวม */}
-                </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            <div className="max-h-[360px] overflow-y-auto custom-scroll">
+              <table className="w-full border-collapse min-w-[600px]">
+                <thead className="bg-white sticky top-0">
+                  <tr>
+                    <th className="p-2 text-left">วันที่</th>
+                    <th className="p-2 text-left">ยอดขายออนไลน์</th>
+                    <th className="p-2 text-left">ยอดขายหน้าร้าน</th>
+                    <th className="p-2 text-left font-bold">ยอดขายรวมทั้งหมด</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from(new Set([
+                    ...Object.keys(totalOnlineSales),
+                    ...Object.keys(totalInStoreSales),
+                  ]))
+                    .sort((a, b) => new Date(b).getTime() - new Date(a).getTime()) // เรียงวันที่จากล่าสุดไปเก่า
+                    .map((date) => (
+                      <tr key={date}>
+                        <td className="p-2">{new Date(date).toLocaleDateString('th-TH')}</td> {/* แสดงวันที่ */}
+                        <td className="p-2">{totalOnlineSales[date] || 0} บาท</td> {/* ยอดขายออนไลน์ */}
+                        <td className="p-2">{totalInStoreSales[date] || 0} บาท</td> {/* ยอดขายหน้าร้าน */}
+                        <td className="p-2">
+                          {(
+                            (totalOnlineSales[date] || 0) +
+                            (totalInStoreSales[date] || 0)
+                          ).toLocaleString()} บาท
+                        </td> {/* ยอดขายรวม */}
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
 
-      <button
-        className="mt-10 px-4 py-2 bg-black text-white rounded-lg w-full"
-        onClick={() => setIsRecentDailySales(false)}
-      >
-        ปิด
-      </button>
-    </div>
-  </div>
-)}
-
-
-
-
-
-
-
-
+            <button
+              className="mt-10 px-4 py-2 bg-black text-white rounded-lg w-full"
+              onClick={() => setIsRecentDailySales(false)}
+            >
+              ปิด
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

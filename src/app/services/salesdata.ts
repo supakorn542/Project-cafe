@@ -248,3 +248,32 @@ export const createDailySales = async (sales: DailySales): Promise<void> => {
         throw new Error("Failed to create review");
     }
 };
+
+export const deleteDailySales = async (date: string): Promise<void> => {
+    try {
+        const salesRef = collection(db, "dailySales");
+    
+        // แปลง date (YYYY-MM-DD) เป็น Timestamp
+        const timestamp = Timestamp.fromDate(new Date(date));
+    
+        // ค้นหาเอกสารที่มี salesDate ตรงกับ timestamp
+        const q = query(salesRef, where("salesDate", "==", timestamp));
+        const querySnapshot = await getDocs(q);
+    
+        if (querySnapshot.empty) {
+          console.log(`ไม่พบข้อมูลยอดขายของวันที่ ${date}`);
+          return;
+        }
+    
+        // ลบเอกสารทั้งหมดที่ตรงกับวันที่ที่ค้นพบ
+        querySnapshot.forEach(async (doc) => {
+          await deleteDoc(doc.ref);
+        });
+    
+        console.log(`ลบข้อมูลยอดขายของวันที่ ${date} สำเร็จ`);
+    } catch (error) {
+        console.error("Error deleting review:", error);
+        throw new Error("Failed to delete review.");
+    }
+};
+  
