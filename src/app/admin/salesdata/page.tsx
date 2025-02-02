@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/app/components/Navbar";
 import '../../globals.css';
-import { createDailySales, getTodayInStoreSales, getTodayOnlineSales, getTodayOrders } from "@/app/services/salesdata";
+import { createDailySales, getAllDailyInStoreSales, getAllDailyOnlineSales, getTodayInStoreSales, getTodayOnlineSales, getTodayOrders } from "@/app/services/salesdata";
 import { getCartItemByCartIdFromAom } from "@/app/services/orderhistory";
 import { getAllReview } from "@/app/services/review";
 import { Timestamp } from "firebase/firestore";
@@ -10,6 +10,7 @@ import NavbarAdmin from "@/app/components/navbarAdmin/page";
 
 const Salesdata = () => {
   const [isSalseDataPopupOpen, setIsSalseDataPopupOpen] = useState(false);
+  const [isRecentDailySales, setIsRecentDailySales] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState('ธันวาคม');
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [allReview, setAllReviews] = useState<any[]>([]);
@@ -19,8 +20,10 @@ const Salesdata = () => {
   const [saleAmount, setSaleAmount] = useState<any>(0);
   const [onlineSales, setOnlineSales] = useState<number>(0); // State สำหรับเก็บยอดขายออนไลน์
   const [inStoreSale, setInStoreSale] = useState<number>(0); // State สำหรับเก็บยอดขายออนไลน์
+  const [totalOnlineSales, setTotalOnlineSales] = useState<Record<string, number>>({});
+  const [totalInStoreSales, setTotalInStoreSales] = useState<Record<string, number>>({});
+  const [salesData, setSalesData] = useState<Record<string, any>>({});
 
-  
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -74,18 +77,28 @@ const Salesdata = () => {
         const inStoreSaleAmount = await getTodayInStoreSales();
         setInStoreSale(inStoreSaleAmount);
         console.log("Fetched in-store sales:", inStoreSaleAmount);
+
         
+        const allonlineSales = await getAllDailyOnlineSales();
+        setTotalOnlineSales(allonlineSales)
+        console.log("Fetched online sales:", allonlineSales);
+
+        const allInStoreSales = await getAllDailyInStoreSales();
+        setTotalInStoreSales(allInStoreSales)
+        console.log("Fetched In-Store sales:", allInStoreSales);
+
+
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
     };
 
     fetchOrders();
-}, []);
+  }, []);
 
-  
 
-  const totalSales = onlineSales + inStoreSale; // คำนวณยอดขายรวม
+
+  const totalSalesData = onlineSales + inStoreSale; // คำนวณยอดขายรวม
 
   const calculateReviewSummary = () => {
     if (allReview.length === 0) return { avgRating: 0, starCounts: [0, 0, 0, 0, 0] };
@@ -124,11 +137,11 @@ const Salesdata = () => {
         closeSalseDataPopup();
         // เรียกข้อมูลยอดขายใหม่หลังจากบันทึกข้อมูล
         const updatedOnlineSales = await getTodayOnlineSales();
-        const updatedInStoreSales = await getTodayInStoreSales();  
+        const updatedInStoreSales = await getTodayInStoreSales();
         setOnlineSales(updatedOnlineSales);
         setInStoreSale(updatedInStoreSales);
         setSaleDate('');
-        setSaleAmount(0); 
+        setSaleAmount(0);
 
       } catch (error) {
         console.error("Error saving sales data:", error);
@@ -152,7 +165,7 @@ const Salesdata = () => {
   const closeSalseDataPopup = () => {
     setIsSalseDataPopupOpen(false);
     setSaleDate('');
-    setSaleAmount(0); 
+    setSaleAmount(0);
   };
 
   return (
@@ -186,12 +199,20 @@ const Salesdata = () => {
               <div className="border-2 border-black text-center py-5 px-10 rounded-3xl flex flex-col justify-start items-center h-full">
                 <div className="w-full flex justify-between items-center">
                   <h2 className="text-lg font-bold text-black">สรุปยอดขายวันนี้</h2>
-                  <button
-                    className="border-2 bg-black border-black rounded-xl py-1 px-2 text-lg text-white"
-                    onClick={openSalseDataPopupOpen}
-                  >
-                    + ยอดขายหน้าร้าน
-                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      className="border-2 border-black rounded-xl py-1 px-2 text-lg text-black"
+                      onClick={() => setIsRecentDailySales(true)}
+                    >
+                      ดูยอดขายย้อนหลัง
+                    </button>
+                    <button
+                      className="border-2 bg-black border-black rounded-xl py-1 px-2 text-lg text-white"
+                      onClick={openSalseDataPopupOpen}
+                    >
+                      + ยอดขายหน้าร้าน
+                    </button>
+                  </div>
                 </div>
                 <ul className="mt-10 text-left w-full">
                   <li className="flex justify-between">
@@ -205,7 +226,7 @@ const Salesdata = () => {
                   <div className="w-full mt-8 border-t-2 border-black"></div>
                   <li className="flex justify-between mt-10 font-bold">
                     <span>ยอดขายรวมทั้งหมด</span>
-                    <span>{totalSales} บาท</span>
+                    <span>{totalSalesData} บาท</span>
                   </li>
                 </ul>
               </div>
@@ -229,7 +250,7 @@ const Salesdata = () => {
                       ))}
                     </div>
                   </div>
-                  <p className="text-black ml-2 text-justify">{}</p>
+                  <p className="text-black ml-2 text-justify">{ }</p>
                   <p className="text-black ml-2 text-justify">{review.comment}</p>
                 </div>
               ))}
@@ -297,6 +318,62 @@ const Salesdata = () => {
           </form>
         </div>
       )}
+
+{isRecentDailySales && salesData && (
+  <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+    <div className="bg-white px-12 py-8 rounded-lg shadow-lg w-full max-w-4xl">
+      <h2 className="text-lg font-bold mb-4">ยอดขายย้อนหลัง</h2>
+
+      <div className="max-h-[360px] overflow-y-auto custom-scroll">
+        <table className="w-full border-collapse min-w-[600px]">
+          <thead className="bg-white sticky top-0">
+            <tr>
+              <th className="p-2 text-left">วันที่</th>
+              <th className="p-2 text-left">ยอดขายออนไลน์</th>
+              <th className="p-2 text-left">ยอดขายหน้าร้าน</th>
+              <th className="p-2 text-left font-bold">ยอดขายรวมทั้งหมด</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from(new Set([
+              ...Object.keys(totalOnlineSales),
+              ...Object.keys(totalInStoreSales),
+            ]))
+              .sort((a, b) => new Date(b).getTime() - new Date(a).getTime()) // เรียงวันที่จากล่าสุดไปเก่า
+              .map((date) => (
+                <tr key={date}>
+                  <td className="p-2">{new Date(date).toLocaleDateString('th-TH')}</td> {/* แสดงวันที่ */}
+                  <td className="p-2">{totalOnlineSales[date] || 0} บาท</td> {/* ยอดขายออนไลน์ */}
+                  <td className="p-2">{totalInStoreSales[date] || 0} บาท</td> {/* ยอดขายหน้าร้าน */}
+                  <td className="p-2 font-bold">
+                    {(
+                      (totalOnlineSales[date] || 0) +
+                      (totalInStoreSales[date] || 0)
+                    ).toLocaleString()} บาท
+                  </td> {/* ยอดขายรวม */}
+                </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <button
+        className="mt-10 px-4 py-2 bg-black text-white rounded-lg w-full"
+        onClick={() => setIsRecentDailySales(false)}
+      >
+        ปิด
+      </button>
+    </div>
+  </div>
+)}
+
+
+
+
+
+
+
+
     </>
   );
 };
