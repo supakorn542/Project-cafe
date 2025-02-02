@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getIngredientById, updateIngredientByID, updatePackagingByID } from "../../../services/stock";
+import { getAllIdStockFromStock, getIngredientById, updateIngredientByID, updatePackagingByID } from "../../../services/stock";
+import { GrPowerCycle } from "react-icons/gr";
 
 interface updatePackagingProps {
     updatePackagingPopup: () => void;
@@ -42,6 +43,20 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
 
         }
         return date; // คืนค่าค่าว่างหาก date ไม่มีรูปแบบที่คาดหวัง
+    };
+
+    const generateIdPackage = async () => {
+        let newId = `PK-${Math.floor(10000 + Math.random() * 90000)}`; // สร้าง ID ใหม่
+
+        // ตรวจสอบว่า ID นี้มีในฐานข้อมูลแล้วหรือไม่
+        const existingIds = await getAllIdStockFromStock(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
+        console.log(existingIds)
+
+        while (existingIds.includes(newId)) {
+            console.log(newId, "XXX")
+            newId = `${Math.floor(10000 + Math.random() * 90000)}`;
+        }
+        return newId
     };
 
     // const formatDate = (date: Date) => {
@@ -98,47 +113,6 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
         }
     };
 
-    // const handleSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-
-    //     // ข้อมูลที่อัปเดตจากแบบฟอร์ม
-    //     const updatedStockData = {
-    //       name,
-    //       netQuantity,
-    //       unit,
-    //       price,
-    //       classifier,
-    //       totalPrice,
-    //       quantity,
-    //       addedDate,
-    //       description,
-    //     //   stockType: "ingredient",
-    //     };
-
-    //     // รายละเอียดที่อัปเดต
-    //     const newDetails = details.map((detail) => ({
-    //         id:detail.id,
-    //       idStock: detail.idStock,
-    //       manufactureDate: detail.manufactureDate,
-    //       expiryDate: detail.expiryDate,
-    //     }));
-
-
-    //     // เรียกใช้ฟังก์ชัน updateIngredientByID
-    //     try {
-    //       const response = await updateIngredientByID(stockId, updatedStockData, newDetails);
-    //       if (response.success) {
-    //         alert("Stock updated successfully!");
-    //         updatePackagingPopup(); // ปิด Popup
-    //       } else {
-    //         alert("Failed to update Stock");
-    //       }
-    //     } catch (error) {
-    //       console.error("Error updating stock:", error);
-    //       alert("Failed to update Stock");
-    //     }
-    //   };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (currentPopup === 1) {
@@ -147,25 +121,31 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
             // ข้อมูลที่อัปเดตจากแบบฟอร์ม
             const updatedStockData = {
                 name,
-                //   netQuantity,
-                //   unit,
                 price,
                 classifier,
                 totalPrice,
                 quantity,
                 addedDate,
                 description,
-                //   stockType: "ingredient",
             };
 
             // รายละเอียดที่อัปเดต
             const newDetails = details.map((detail) => ({
                 id: detail.id,
                 idStock: detail.idStock,
-                //   manufactureDate: detail.manufactureDate,
-                //   expiryDate: detail.expiryDate,
             }));
-
+            // const existingIds = await getAllIdStockFromPackages(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
+            // console.log("Updated existing IDs:", newDetails);
+            // console.log("Updated existing IDs:", existingIds);
+            // // const hasDuplicate = newDetails.some(detail => existingIds.includes(detail.idStock));
+            // const hasDuplicate = newDetails.some(
+            //     (detail) => existingIds.includes(detail.idStock) && detail.id !== stockId
+            // );
+            // console.log(hasDuplicate)
+            // if (hasDuplicate) {
+            //     alert("Error: Some idStock already exists in the database!");
+            //     return;
+            // }
 
             // เรียกใช้ฟังก์ชัน updateIngredientByID
             try {
@@ -187,9 +167,6 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
 
     useEffect(() => {
         fetchIngredient(); // ดึงข้อมูลเมื่อ stockId มีค่า
-        // setTotalPrice(quantity * price ); // คำนวณ totalPrice ทุกครั้งที่ quantity หรือ price เปลี่ยนแปลง
-        // setTotalPrice(details.length*price); // ตั้งค่า totalPrice
-
     }, []);
 
     return (
@@ -248,12 +225,6 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
                         </div>
                         <div className="pt-[7px]">
                             <div className="text-black mb-1">จำนวน</div>
-                            {/* <input
-                            type="text"
-                            value={quantity}
-                            onChange={(e) => setQuantity(Number(e.target.value))}
-                            className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
-                        /> */}
                             <div className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3 pt-1">
                                 {details.length}
                             </div>
@@ -308,36 +279,29 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
                                             {String(index + 1).padStart(2, "0")}
                                         </div>
                                     </div>
-                                    <div className="flex flex-row">
-                                        <div className="text-black flex items-center text-xl">
+                                    <div className="flex flex-row justify-between">
+                                        <div className="text-black flex items-center text-lg">
                                             หมายเลขไอดี
                                         </div>
-                                        <input
-                                            type="text"
-                                            value={details[index]?.idStock || ""}
-                                            onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
-                                            className="w-[113px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3"
-                                            required
-                                        />
+                                        <div className="flex items-center">
+                                            <input
+                                                type="text"
+                                                value={details[index]?.idStock || ""}
+                                                onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
+                                                className="w-[113px] h-[35px] flex items-center border-2 border-black rounded-md pl-3 ml-3"
+                                                required
+                                            />
+                                        </div>
+                                        <div className=" flex items-center pl-1 pt-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => generateIdPackage().then((id_stock) => handleDetailChange(index, "idStock", id_stock))}
+                                                className="px-1 py-1 border-2 border-black rounded-md"
+                                            >
+                                                <GrPowerCycle size={18} text-black />
+                                            </button>
+                                        </div>
                                     </div>
-                                    {/* <div className="">
-                                    <div className="text-black">วันที่ผลิต</div>
-                                    <input
-                                        type="date"
-                                        value={formatTimestamp(String((details[index]?.manufactureDate)))}
-                                        onChange={(e) => handleDetailChange(index, "manufactureDate", (e.target.value))}
-                                        className="w-[210px] h-[35px] border-2 border-black rounded-md pl-3"
-                                    />
-                                </div>
-                                <div className="">
-                                    <div className="text-black">วันหมดอายุ</div>
-                                    <input
-                                        type="date"
-                                        value={formatTimestamp(String((details[index]?.expiryDate)))}
-                                        onChange={(e) => handleDetailChange(index, "expiryDate", e.target.value)}
-                                        className="w-[210px] h-[35px] border-2 border-black rounded-md pl-3"
-                                    />
-                                </div> */}
                                 </div>
                             ))}
                         </div>

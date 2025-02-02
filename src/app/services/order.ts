@@ -49,7 +49,10 @@ export const getOrders = async () => {
     return data
   })
   )
-  const orderPending = orders.filter(order => order != null)
+  const orderPending = orders.filter(order => order != null);
+    // เรียงลำดับตาม createdAt (หรือ orderDate) จากปัจจุบัน -> อดีต
+  orderPending.sort((a, b) => b.orderDate.toMillis() - a.orderDate.toMillis());
+
   return orderPending
 
 }
@@ -104,6 +107,8 @@ export const getProcessOrders = async () => {
   })
   )
   const orderPending = orders.filter(order => order != null)
+  orderPending.sort((a, b) => b.orderDate.toMillis() - a.orderDate.toMillis());
+
   return orderPending
 
 }
@@ -159,6 +164,8 @@ export const getFinishOrders = async () => {
   })
   )
   const orderPending = orders.filter(order => order != null)
+  orderPending.sort((a, b) => b.orderDate.toMillis() - a.orderDate.toMillis());
+
   return orderPending
 
 }
