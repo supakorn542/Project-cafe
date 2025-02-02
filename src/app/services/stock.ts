@@ -178,40 +178,40 @@ export const createWithdrawal = async (
 
 export const getWithdrawals = async (): Promise<Withdrawal[]> => {
   try {
-      // ระบุ collection ที่ต้องการดึงข้อมูล
-      const withdrawalCollection = collection(db, "withdrawals");
+    // ระบุ collection ที่ต้องการดึงข้อมูล
+    const withdrawalCollection = collection(db, "withdrawals");
 
-      // ดึงเอกสารทั้งหมดใน collection
-      const withdrawalSnapshot = await getDocs(query(withdrawalCollection));
+    // ดึงเอกสารทั้งหมดใน collection
+    const withdrawalSnapshot = await getDocs(query(withdrawalCollection));
 
-      if (withdrawalSnapshot.empty) {
-          console.warn("No withdrawals found in the collection.");
-          return []; // หากไม่มีข้อมูลใน collection ให้คืนค่า array เปล่า
-      }
+    if (withdrawalSnapshot.empty) {
+      console.warn("No withdrawals found in the collection.");
+      return []; // หากไม่มีข้อมูลใน collection ให้คืนค่า array เปล่า
+    }
 
-      // แปลงข้อมูลเป็น array ของ Withdrawal
-      const withdrawals: Withdrawal[] = withdrawalSnapshot.docs.map((docSnapshot) => {
-          const data = docSnapshot.data();
+    // แปลงข้อมูลเป็น array ของ Withdrawal
+    const withdrawals: Withdrawal[] = withdrawalSnapshot.docs.map((docSnapshot) => {
+      const data = docSnapshot.data();
 
-          return {
-              id: docSnapshot.id, // ใช้ id ของเอกสารเป็น ID
-              stockId: data.stockId || "", // ระบุค่าเริ่มต้นหากไม่มีค่า
-              userName: data.userName || "",
-              name: data.name || "",
-              quantity: data.quantity || 0,
-              stockType: data.stockType || "",
-              description: data.description || "",
-              withdrawalDate: data.withdrawalDate, // แปลงวันที่
-              details: data.details || [],
-          } as Withdrawal;
-      });
+      return {
+        id: docSnapshot.id, // ใช้ id ของเอกสารเป็น ID
+        stockId: data.stockId || "", // ระบุค่าเริ่มต้นหากไม่มีค่า
+        userName: data.userName || "",
+        name: data.name || "",
+        quantity: data.quantity || 0,
+        stockType: data.stockType || "",
+        description: data.description || "",
+        withdrawalDate: data.withdrawalDate, // แปลงวันที่
+        details: data.details || [],
+      } as Withdrawal;
+    });
 
-      console.log("Withdrawals:", withdrawals);
-      return withdrawals;
+    console.log("Withdrawals:", withdrawals);
+    return withdrawals;
 
   } catch (error) {
-      console.error("Error fetching withdrawal data:", error);
-      throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
+    console.error("Error fetching withdrawal data:", error);
+    throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
   }
 };
 
@@ -619,16 +619,17 @@ export const deletedStock = async (id: string) => {
 // };
 
 
-export const getAllIdStockFromPackages = async (): Promise<string[]> => {
+export const getAllIdStockFromStock = async (): Promise<string[]> => {
   try {
     // ระบุ collection ที่ต้องการดึงข้อมูล
     const stockCollection = collection(db, "stocks");
     // ดึงเอกสารทั้งหมดใน collection ที่มี stockType = "packaging"
-    const stockSnapshot = await getDocs(query(stockCollection, where('stockType', '==', "packaging")));
+    const stockSnapshot = await getDocs(stockCollection);
+    // const stockSnapshot = await getDocs(query(stockCollection, where('stockType', '==', "packaging")));
 
     if (stockSnapshot.empty) {
       console.warn("No stocks found in the collection.");
-      return [] ; // คืนค่าเป็น object เดียวที่มี array เปล่า
+      return []; // คืนค่าเป็น object เดียวที่มี array เปล่า
     }
 
     const allDetails: string[] = [];
@@ -636,14 +637,14 @@ export const getAllIdStockFromPackages = async (): Promise<string[]> => {
     await Promise.all(stockSnapshot.docs.map(async (docSnapshot) => {
       const detailsRef = collection(db, "stocks", docSnapshot.id, "details");
       const detailsSnap = await getDocs(detailsRef);
-      
+
       // รวมค่า details ทั้งหมดเข้าไปในอาร์เรย์เดียว
       allDetails.push(...detailsSnap.docs.map((doc) => doc.data().idStock));
     }));
-    
+
     console.log("Merged Details:", allDetails);
-    
-    return allDetails ; // คืนค่าเป็น object เดียว
+
+    return allDetails; // คืนค่าเป็น object เดียว
 
   } catch (error) {
     console.error("Error fetching stock data:", error);

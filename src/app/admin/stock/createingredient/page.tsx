@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createStocks} from "../../../services/stock";
+import { createStocks, getAllIdStockFromStock} from "../../../services/stock";
 import { GrPowerCycle } from "react-icons/gr";
 interface CreateIngredientProps {
     togglePopup: () => void;
@@ -41,23 +41,19 @@ const CreateIngredient: React.FC<CreateIngredientProps> = ({ togglePopup }) => {
         return date; // คืนค่าค่าว่างหาก date ไม่มีรูปแบบที่คาดหวัง
     };
 
-    const generateIdIngredient = () => {
-        return `IG-${Math.floor(10000 + Math.random() * 90000)}`; // ตัวอย่าง ID: ST-123456
-    };
+    const generateIdIngredient = async () => {
+        let newId = `IG-${Math.floor(10000 + Math.random() * 90000)}`; // สร้าง ID ใหม่
 
-    // const generateIdIngredient = async () => {
-    //     let newId = `IG-${Math.floor(10000 + Math.random() * 90000)}`; // สร้าง ID ใหม่
-    
-    //     // ตรวจสอบว่า ID นี้มีในฐานข้อมูลแล้วหรือไม่
-    //     const existingIds = await getDetailsByStockId(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
-    
-    //     // ตรวจสอบว่ามี ID นี้อยู่แล้วหรือไม่
-    //     while (existingIds.includes(newId)) {
-    //         newId = `IG-${Math.floor(10000 + Math.random() * 90000)}`; // ถ้าซ้ำให้สร้างใหม่
-    //     }
-    
-    //     return newId;
-    // };
+        // ตรวจสอบว่า ID นี้มีในฐานข้อมูลแล้วหรือไม่
+        const existingIds = await getAllIdStockFromStock(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
+        console.log(existingIds)
+
+        while (existingIds.includes(newId)) {
+            console.log(newId, "XXX")
+            newId = `${Math.floor(10000 + Math.random() * 90000)}`;
+        }
+        return newId
+    };
 
     const formatDate = (date: Date) => {
         if (date instanceof Date) {
@@ -279,11 +275,10 @@ const CreateIngredient: React.FC<CreateIngredientProps> = ({ togglePopup }) => {
                                                 required
                                             />
                                         </div>
-
                                         <div className=" pt-7 pl-1">
                                             <button
                                                 type="button"
-                                                onClick={() => handleDetailChange(index, "idStock", generateIdIngredient())}
+                                                onClick={() => generateIdIngredient().then((id_stock) => handleDetailChange(index, "idStock", id_stock))}
                                                 className="px-1 py-1 border-2 border-black rounded-md"
                                             >
                                                 <GrPowerCycle size={18} text-black />

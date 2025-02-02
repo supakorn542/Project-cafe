@@ -1,6 +1,6 @@
 "use client";
 
-import { createPackages, createStocks, getAllIdStockFromPackages } from "@/app/services/stock";
+import { createPackages, createStocks, getAllIdStockFromStock } from "@/app/services/stock";
 import { useEffect, useState } from "react";
 import { GrPowerCycle } from "react-icons/gr";
 
@@ -35,7 +35,7 @@ const CreatePackaging: React.FC<CreatePackagingProps> = ({ togglePopup }) => {
         let newId = `PK-${Math.floor(10000 + Math.random() * 90000)}`; // สร้าง ID ใหม่
     
         // ตรวจสอบว่า ID นี้มีในฐานข้อมูลแล้วหรือไม่
-        const existingIds = await getAllIdStockFromPackages(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
+        const existingIds = await getAllIdStockFromStock(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
         console.log(existingIds)
     
         while (existingIds.includes(newId)){
@@ -84,8 +84,19 @@ const CreatePackaging: React.FC<CreatePackagingProps> = ({ togglePopup }) => {
 
             const stockDetails = details.map((detail) => ({
                 idStock: detail.idStock
+
             }));
 
+            console.log(stockDetails);
+            const existingIds = await getAllIdStockFromStock(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
+
+            const hasDuplicate = stockDetails.some(detail => existingIds.includes(detail.idStock));
+
+            if (hasDuplicate) {
+                alert("Error: Some idStock already exists in the database!");
+                return;
+            }
+    
             try {
                 const response = await createPackages(stockData, stockDetails);
                 if (response.success) {

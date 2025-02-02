@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createStocks, getIngredientById, updateIngredientByID } from "../../../services/stock";
+import { createStocks, getAllIdStockFromStock, getIngredientById, updateIngredientByID } from "../../../services/stock";
+import { GrPowerCycle } from "react-icons/gr";
 
 interface updateIngredientProps {
     updateIngredientPopup: () => void;
@@ -31,6 +32,23 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
     const goToNextPopup = () => {
         setCurrentPopup(2); // ไปยัง nextpopup
     };
+
+
+    const generateIdIngredient = async () => {
+        let newId = `IG-${Math.floor(10000 + Math.random() * 90000)}`; // สร้าง ID ใหม่
+
+        // ตรวจสอบว่า ID นี้มีในฐานข้อมูลแล้วหรือไม่
+        const existingIds = await getAllIdStockFromStock(); // ดึงรายการ ID ที่มีอยู่จากฐานข้อมูล
+        console.log(existingIds)
+
+        while (existingIds.includes(newId)) {
+            console.log(newId, "XXX")
+            newId = `${Math.floor(10000 + Math.random() * 90000)}`;
+        }
+        return newId
+    };
+
+
 
     const formatTimestamp = (date: string | undefined) => {
         if (date && date.includes('=') && date.includes(',')) {
@@ -287,15 +305,26 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                                     <div className="text-black flex items-center text-xl pt-[23px] ">
                                         {String(index + 1).padStart(2, "0")}
                                     </div>
-                                    <div className="">
-                                        <div className="text-black">หมายเลขไอดี</div>
-                                        <input
-                                            type="text"
-                                            value={details[index]?.idStock || ""}
-                                            onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
-                                            className="w-[146px] h-[35px] border-2 border-black rounded-md pl-3"
-                                            required
-                                        />
+                                    <div className="flex flex-row justify-between">
+                                        <div>
+                                            <div className="text-black">หมายเลขไอดี</div>
+                                            <input
+                                                type="text"
+                                                value={details[index]?.idStock || ""}
+                                                onChange={(e) => handleDetailChange(index, "idStock", e.target.value)}
+                                                className="w-[146px] h-[35px] border-2 border-black rounded-md pl-3"
+                                                required
+                                            />
+                                        </div>
+                                        <div className=" pt-7 pl-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => generateIdIngredient().then((id_stock) => handleDetailChange(index, "idStock", id_stock))}
+                                                className="px-1 py-1 border-2 border-black rounded-md"
+                                            >
+                                                <GrPowerCycle size={18} text-black />
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="">
                                         <div className="text-black">วันที่ผลิต</div>

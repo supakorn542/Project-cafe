@@ -188,32 +188,15 @@ const ShowOrder = () => {
                                         <div className="flex justify-between p-6 px-16">
                                             <div className=" text-lg font-semibold w-[40%] ">
                                                 <span className="font-playfair">Username : </span>
-                                                <span>{x.cart_id.user_id.firstName} {x.cart_id.user_id.lastName}</span>
+                                                <span>{x.cart_id.user_id.username}</span>
                                             </div>
-                                            {/* <div className=" flex flex-row justify-between items-center w-[20%]">
-                                                <div className=" text-xl font-semibold ">
-                                                    status :
-                                                </div>
-                                                <div>
-                                                    <select
-                                                        id="volume"
-                                                        className="w-[171px] h-[35px] border-2 border-[#013927]  rounded-2xl pl-3 bg-[#FBF6F0]"
-                                                    >
-                                                        <option value="" disabled selected>ยืนยันออเดอร์</option>
-                                                        <option value="ml">ยืนยันออเดอร์</option>
-                                                        <option value="g">ชำระเงินไม่ถูกต้อง</option>
-                                                        <option value="g">กำลังทำ</option>
-                                                        <option value="oz">ออเดอร์เสร็จสิ้น</option>
-                                                    </select>
-                                                </div>
-                                            </div> */}
                                         </div>))}
                                     <div className=" flex justify-between   px-16  pb-6">
                                         <div className="flex flex-col w-[25%] gap-4 ">
                                             {cartItems.filter(item => item.cart_id.id == i).map(x => (
                                                 <div className="flex flex-col ">
                                                     <div className="flex justify-between">
-                                                        <span className="font-playfair">
+                                                        <span className=" font-semibold">
                                                             Menu: {x.product_id.name}
                                                         </span>
                                                         <span>
@@ -239,7 +222,7 @@ const ShowOrder = () => {
 
                                                     <div>
                                                         <span className=" font-semibold">วันที่รับสินค้า : </span>
-                                                        <span>{formatDate(String(x.payment_id.pickuporderDate))}</span>
+                                                        <span>{formatDate(String(x.pickuporderDate))}</span>
                                                     </div>
                                                 </div>
                                             ))}
@@ -295,7 +278,7 @@ const ShowOrder = () => {
                                     {processOrders.filter(item => item.cart_id.id == i).map(x => (
                                         <div className="flex justify-between p-6 px-16">
                                             <div className=" text-lg font-semibold w-[40%] ">
-                                                Username : {x.cart_id.user_id.firstName} {x.cart_id.user_id.lastName}
+                                                Username : {x.cart_id.user_id.username}
                                             </div>
                                             <div className=" flex flex-row justify-between items-center w-[20%]">
                                                 <div className=" text-xl font-semibold ">
@@ -321,7 +304,7 @@ const ShowOrder = () => {
                                             {cartItemProcess.filter(item => item.cart_id.id == i).map(x => (
                                                 <div className="flex flex-col ">
                                                     <div className="flex justify-between">
-                                                        <span>
+                                                        <span className="font-semibold">
                                                             Menu: {x.product_id.name}
                                                         </span>
                                                         <span>
@@ -332,7 +315,7 @@ const ShowOrder = () => {
                                                     {x.optionitem_id.map((i:any) => {return  <span>- {i.name} <br /></span>})} 
 
                                                     <div>หมายเหตุ: {x.description}</div>
-                                                    <span>ราคา: {x.product_id.price} ฿</span>
+                                                    <span className=" font-semibold">ราคา: {x.product_id.price} ฿</span>
                                                 </div>))}
                                         </div>
 
@@ -346,7 +329,7 @@ const ShowOrder = () => {
                                                     </div>
                                                     <div>
                                                         <span className=" font-semibold">วันที่รับสินค้า : </span>
-                                                        <span>{formatDate(String(x.payment_id.pickuporderDate))}</span>
+                                                        <span>{formatDate(String(x.pickuporderDate))}</span>
                                                     </div>
                                                     <div>
                                                         <span className=" font-semibold">เบอร์โทรศัพท์ : </span>
@@ -398,7 +381,7 @@ const ShowOrder = () => {
                                     {finishOrders.filter(item => item.cart_id.id == i).map(x => (
                                         <div className="flex justify-between p-6 px-16">
                                             <div className=" text-lg font-semibold w-[40%] ">
-                                                Username : {x.cart_id.user_id.firstName} {x.cart_id.user_id.lastName}
+                                                Username : {x.cart_id.user_id.username}
                                             </div>
                                             <div className=" flex flex-row justify-between items-center w-[20%]">
                                                 <div className=" text-xl font-semibold ">
@@ -423,7 +406,7 @@ const ShowOrder = () => {
                                             {cartItemFinish.filter(item => item.cart_id.id == i).map(x => (
                                                 <div className="flex flex-col ">
                                                     <div className="flex justify-between font-notoSansThai">
-                                                        <span>
+                                                        <span className=" font-semibold">
                                                             Menu: {x.product_id?.name}
                                                         </span>
                                                         <span>
@@ -448,14 +431,13 @@ const ShowOrder = () => {
                                                     </div>
                                                     <div>
                                                         <span className=" font-semibold">วันที่รับสินค้า : </span>
-                                                        <span>{formatDate(String(x.payment_id.pickuporderDate))}</span>
+                                                        <span>{formatDate(String(x.pickuporderDate))}</span>
                                                     </div>
                                                     <div>
                                                         <span className=" font-semibold">เบอร์โทรศัพท์ : </span>
                                                         <span> {x.cart_id.user_id.telNumber}</span>
                                                     </div>
                                                 </div>
-
                                             ))}
 
                                            
