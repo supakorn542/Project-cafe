@@ -17,7 +17,6 @@ import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 
 const sdata = [
- 
   {
     imageproduct:
       "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
@@ -164,13 +163,15 @@ export default function Home() {
             and indulge in different taste profiles.
           </p>
           <button className="border border-white rounded-full px-2 mt-20">
+            <Link href={"/user/menu"}>
             Learn more
+            </Link>
           </button>
         </div>
       </section>
       <section className="mr-24 flex justify-between font-playfair ">
         <div
-        className="w-[50%]"
+          className="w-[50%]"
           data-aos="fade-right"
           data-aos-delay="50"
           data-aos-duration="1000"
@@ -183,15 +184,13 @@ export default function Home() {
               className="absolute top-[-72px] left-0 rounded-r-full w-[94%] h-[224%] hidden md:block"
               src={"/assets/esyen.jpg"}
               alt="esyen"
-              
-               // Important for image scaling
+
+              // Important for image scaling
             />
             <img
               className="absolute -top-[140px] left-0 h-[304%] w-[100%] hidden md:block"
               src={"/assets/border.png"}
               alt="border"
-              
-               
             />
           </div>
         </div>
@@ -210,7 +209,10 @@ export default function Home() {
             </label>
           </div>
           <button className=" border-2 border-black rounded-full lg:px-12 w-fit text-3xl ">
+            <Link href={"/user/menu"}>
             Order Now
+            </Link>
+            
           </button>
         </div>
       </section>
@@ -236,32 +238,30 @@ export default function Home() {
             ))}
           </div>
           <button className=" border-2 border-black rounded-full lg:px-12 w-fit text-3xl ">
-            Learn more
-          </button>
+            <Link href={"/user/menu"}>Learn more</Link>
+            </button>
         </div>
         <div
-        className="w-[50%] hidden md:block"
+          className="w-[50%] hidden md:block"
           data-aos="fade-right"
           data-aos-delay="50"
           data-aos-duration="1000"
           data-aos-easing="ease-in-out"
         >
-        <div className="relative w-[100%] h-[200px]">
+          <div className="relative w-[100%] h-[200px]">
             {" "}
             {/* Key change: Added width and height */}
             <img
               className="absolute top-[-55px] right-0 rounded-l-full w-[94%] h-[224%] "
               src={"/assets/esyen.jpg"}
               alt="esyen"
-              
-               // Important for image scaling
+
+              // Important for image scaling
             />
             <img
               className="absolute -top-[140px] right-0-0 h-[304%] w-[100%] -scale-100 "
               src={"/assets/border.png"}
               alt="border"
-              
-               
             />
           </div>
         </div>
@@ -288,13 +288,15 @@ export default function Home() {
               items: 3,
             },
           }}
-         
           className=""
         >
           {sdata.map((item, index) => (
-            <div key={index} className=" bg-[url('/assets/borderVertical.png')] bg-cover bg-center ">
+            <div
+              key={index}
+              className=" bg-[url('/assets/borderVertical.png')] bg-cover bg-center "
+            >
               <Image
-                  className={`object-none`}
+                className={`object-none`}
                 src={item.imageproduct}
                 alt={""}
                 width={300}
@@ -313,70 +315,69 @@ export default function Home() {
           <div className="flex flex-col text-[24px] md:text-[50px] lg:text-[96px] w-full">
             <div className="flex flex-col justify-center gap-2">
               <div className="flex items-center justify-evenly">
-
-              <label className="text-white">POURING</label>
-              <Image
-                      src={"/assets/Cafe Project (2)/Remove-bg.ai_1728712670851 3.png"}
-                      alt={"a"}
-                      layout="fit"
-                      width={300}
-                      height={150}
-                      objectFit="cover"
-                      className="rounded-full mr-2 w-[100px] md:w-[200px]"
-                    />
-              <label className="text-white">MOMENTS</label>
+                <label className="text-white">POURING</label>
+                <Image
+                  src={
+                    "/assets/Cafe Project (2)/Remove-bg.ai_1728712670851 3.png"
+                  }
+                  alt={"a"}
+                  layout="fit"
+                  width={300}
+                  height={150}
+                  objectFit="cover"
+                  className="rounded-full mr-2 w-[100px] md:w-[200px]"
+                />
+                <label className="text-white">MOMENTS</label>
               </div>
               <div className="flex items-center justify-evenly">
-
-              <label className="text-white">OF BLISS INTO </label>
-              <Image
-                      src={"/assets/Cafe Project (2)/image.png"}
-                      alt={"a"}
-                      layout="fit"
-                      width={200}
-                      height={100}
-                      objectFit="cover"
-                      className="rounded-full mr-2  w-[100px] md:w-[150px]"
-                    />
-              <label className="text-white">YOUR</label>
+                <label className="text-white">OF BLISS INTO </label>
+                <Image
+                  src={"/assets/Cafe Project (2)/image.png"}
+                  alt={"a"}
+                  layout="fit"
+                  width={200}
+                  height={100}
+                  objectFit="cover"
+                  className="rounded-full mr-2  w-[100px] md:w-[150px]"
+                />
+                <label className="text-white">YOUR</label>
               </div>
               <div className="flex items-center justify-evenly">
-
-              <label className="text-white">CUP OF</label>
-              <Image
-                      src={"/assets/Cafe Project (2)/สีเขียวและสีครีม เรียบง่าย ภาพประกอบ เมนูกาแฟ Instagram Post (1).png"}
-                      alt={"a"}
-                      layout="fit"
-                      width={150}
-                      height={100}
-                      objectFit="cover"
-                      className="rounded-full mr-2  w-[100px] md:w-[100px]"
-                    />
-              <label className="text-white">COFFEE</label>
-              <Image
-                      src={"/assets/Cafe Project (2)/image-1.png"}
-                      alt={"a"}
-                      layout="fit"
-                      width={250}
-                      height={100}
-                      objectFit="cover"
-                      className="rounded-full mr-2  w-[100px] md:w-[150px]"
-                    />
+                <label className="text-white">CUP OF</label>
+                <Image
+                  src={
+                    "/assets/Cafe Project (2)/สีเขียวและสีครีม เรียบง่าย ภาพประกอบ เมนูกาแฟ Instagram Post (1).png"
+                  }
+                  alt={"a"}
+                  layout="fit"
+                  width={150}
+                  height={100}
+                  objectFit="cover"
+                  className="rounded-full mr-2  w-[100px] md:w-[100px]"
+                />
+                <label className="text-white">COFFEE</label>
+                <Image
+                  src={"/assets/Cafe Project (2)/image-1.png"}
+                  alt={"a"}
+                  layout="fit"
+                  width={250}
+                  height={100}
+                  objectFit="cover"
+                  className="rounded-full mr-2  w-[100px] md:w-[150px]"
+                />
               </div>
               <div className="flex items-center justify-evenly">
-
-              <label className="text-white">AT</label>
-              <Image
-                      src={"/assets/Cafe Project (2)/image-2.png"}
-                      alt={"a"}
-                      layout="fit"
-                      width={300}
-                      height={100}
-                      objectFit="cover"
-                      className="rounded-full mr-2  w-[100px] md:w-[200px]"
-                    />
-              <label className="text-white">FOREST TALES</label>
-              
+                <label className="text-white">AT</label>
+                <Image
+                  src={"/assets/Cafe Project (2)/image-2.png"}
+                  alt={"a"}
+                  layout="fit"
+                  width={300}
+                  height={100}
+                  objectFit="cover"
+                  className="rounded-full mr-2  w-[100px] md:w-[200px]"
+                />
+                <label className="text-white">FOREST TALES</label>
               </div>
             </div>
           </div>
@@ -388,18 +389,20 @@ export default function Home() {
               {reviewData.map((review, index) => (
                 <div
                   key={index}
-                  className="bg-opacity-50 bg-black p-4 rounded-lg"
+                  className="bg-opacity-50 border-b-2 border-white p-4 rounded-lg"
                 >
                   <div className="flex items-center mb-2">
                     <Image
                       src={review.used.profileImage}
                       alt={review.used.name}
                       width={50}
-                      height={50}
-                      className="rounded-full mr-2"
+                      height={100}
+                      className="object-cover rounded-full mr-2 "
                     />
                     <div>
-                      <h3 className="font-medium">{review.used.name}</h3>
+                      <h3 className="font-medium text-3xl">
+                        {review.used.name}
+                      </h3>
                       <div className="flex gap-1">
                         {Array.from({ length: review.rating }, (_, i) => (
                           <svg
@@ -415,12 +418,12 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <p className="mb-2">{review.comment}</p>
+                  <p className="mb-2 text-lg">{review.comment}</p>
                   <div className="flex gap-2">
                     {review.order.map((item, i) => (
                       <span
                         key={i}
-                        className="bg-gray-700 px-2 py-1 rounded-md text-sm"
+                        className="border border-white rounded-full px-4 py-1  text-lg"
                       >
                         {item.name}
                       </span>
@@ -431,7 +434,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      <FooterUser />
+        <FooterUser />
       </section>
     </div>
   );
