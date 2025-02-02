@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import { FaFacebook, FaLine } from "react-icons/fa";
 
@@ -5,47 +6,46 @@ interface FooterProp {
   color?: string;
 }
 
-function FooterUser({color = "white"}: FooterProp) {
+function FooterUser({ color = "white" }: FooterProp) {
   return (
-    <footer className={`bg-transparent text-${color} mt-7 p-4 text-center  sticky top-[100vh]`}>
+    <footer
+      className={`bg-transparent text-${color} mt-7 p-4 text-center  sticky top-[100vh]`}
+    >
       <div className="flex  container mx-auto justify-between text-sm">
         <label>Forest Tales</label>
         <div>
           <ul>
             <li>
-              <a>Home</a>
+              <Link href={"/"}>Home</Link>
             </li>
             <li>
-              <a>Menu</a>
+              <Link href={"/user/menu"}>Menu</Link>
             </li>
             <li>
-              <a>About us</a>
+              <Link href={"/user/aboutus"}>About us</Link>
             </li>
           </ul>
         </div>
         <div>
-          <label>Our Product</label>
+          <Link href={"/user/menu"}>Our Product</Link>
           <div className="flex gap-2">
             <ul>
               <li>
-                <a>Coffee</a>
+                <Link href={"/user/menu"}>Coffee</Link>
               </li>
               <li>
-                <a>Soft Drink</a>
+                <Link href={"/user/menu"}>Soft Drink</Link>
               </li>
               <li>
-                <a>Signature drink</a>
+                <Link href={"/user/menu"}>Signature Drink</Link>
               </li>
             </ul>
             <ul>
               <li>
-                <a>Cookie and Cake</a>
+                <Link href={"/user/menu"}>Matcha</Link>
               </li>
               <li>
-                <a>Matcha</a>
-              </li>
-              <li>
-                <a>Coffee Beans</a>
+                <Link href={"/user/menu"}>Coffee Bean</Link>
               </li>
             </ul>
           </div>
@@ -53,10 +53,11 @@ function FooterUser({color = "white"}: FooterProp) {
         <div className="flex flex-col items-center gap-y-2">
           <label>Contacts</label>
           <label>0640691 2709</label>
-          <div className="flex gap-2">
-            <a className="text-xl">
+          <div className="flex gap-2" >
+            <Link className="text-xl" href={"https://www.facebook.com/paranyu.limkul"}>
               <FaFacebook />
-            </a>
+            </Link>
+
             <a className="text-xl">
               <FaLine />{" "}
             </a>
