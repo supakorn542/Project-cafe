@@ -120,7 +120,7 @@ export default function Home() {
         </div>
         <div
           className="flex flex-col justify-center items-center space-y-2 gap-6"
-          data-aos="fade-left"
+          data-aos="fade-up"
           data-aos-delay="50"
           data-aos-duration="1000"
           data-aos-easing="ease-in-out"
@@ -238,7 +238,7 @@ export default function Home() {
       </section>
       <section className="mt-20  bg-[url('/assets/greenscreen.png')] bg-cover bg-center pb-[100px] font-playfair">
         <div className="container mx-auto text-white w-full">
-          <div className="flex flex-col text-[24px] md:text-[50px] lg:text-[96px] w-full">
+          <div className="flex flex-col text-[22px] md:text-[50px] lg:text-[96px] w-full">
             <div className="flex flex-col justify-center gap-2">
               <div className="flex items-center justify-evenly">
                 <label className="text-white">POURING</label>
@@ -289,7 +289,7 @@ export default function Home() {
                   width={250}
                   height={100}
                   objectFit="cover"
-                  className="rounded-full mr-2  w-[100px] md:w-[150px]"
+                  className="rounded-full mr-2  w-[70px] md:w-[150px]"
                 />
               </div>
               <div className="flex items-center justify-evenly">
