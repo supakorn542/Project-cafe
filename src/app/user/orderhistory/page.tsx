@@ -296,7 +296,7 @@ const TrackOrder = () => {
                         className={`text-lg font-medium text-white relative ${activeTab === 'trackOrder' ? 'text-black' : ''}`}
                         onClick={() => setActiveTab("trackOrder")}>
                         <p className="text-4xl font-bold  group relative w-max">
-                            <span className="text-base md:text-4xl sm:text-2xl">Track Order</span>
+                            <span className="font-playfair text-base md:text-4xl sm:text-2xl">Track Order</span>
                             <span
                                 className={`absolute -bottom-1 left-1/2 transition-all h-0.5 bg-white ${activeTab === 'trackOrder' ? 'w-3/6' : 'w-0'} group-hover:w-3/6`}
                             ></span>
@@ -309,7 +309,7 @@ const TrackOrder = () => {
                         className={`text-lg font-medium text-white relative ${activeTab === 'myPurchases' ? 'text-black' : ''}`}
                         onClick={() => setActiveTab("myPurchases")}>
                         <p className="text-4xl font-bold  group relative w-max">
-                            <span className="text-base md:text-4xl sm:text-2xl">My Purchases</span>
+                            <span className="font-playfair text-base md:text-4xl sm:text-2xl">My Purchases</span>
                             <span
                                 className={`absolute -bottom-1 left-1/2 transition-all h-0.5 bg-white ${activeTab === 'myPurchases' ? 'w-3/6' : 'w-0'} group-hover:w-3/6`}
                             ></span>
@@ -360,11 +360,11 @@ const TrackOrder = () => {
 
                                                     {/* รายละเอียดเพิ่มเติม */}
                                                     <div className="w-full flex flex-wrap items-start justify-between">
-                                                        {value.optionitem_id.length > 0 && <div className="flex flex-wrap">
+                                                        <div className="flex flex-wrap">
                                                             {value.optionitem_id.map((i: any) => (
                                                                 <p className={`mr-3 ${windowWidth < 768 ? 'text-sm' : ''}`}>{i.name}</p>
                                                             ))}
-                                                        </div>}
+                                                        </div>
 
                                                         {/* จำนวน & ราคา */}
                                                         <div className="flex justify-between md:w-48 sm:w-40 w-28 gap-1 sm:gap-0">
@@ -426,11 +426,11 @@ const TrackOrder = () => {
                                                 <div className="w-full flex flex-col justify-start">
                                                     <h4 className={`font-bold mb-2 ${windowWidth < 768 ? 'text-sm' : 'text-base'}`}>{value.product_id.name}</h4>
                                                     <div className="w-full flex flex-wrap items-start justify-between">
-                                                        {value.optionitem_id.length > 0 && <div className="flex flex-wrap">
+                                                        <div className="flex flex-wrap">
                                                             {value.optionitem_id.map((i: any) => (
                                                                 <p className={`mr-3 ${windowWidth < 768 ? 'text-sm' : ''}`}>{i.name}</p>
                                                             ))}
-                                                        </div>}
+                                                        </div>
                                                         <div className="flex justify-between md:w-48 sm:w-40 w-28 gap-1 sm:gap-0">
                                                             <p className="text-sm">{`X ${value.quantity}`}</p>
                                                             <p className="text-sm font-bold">{`฿${value.product_id.price || 0}`}</p>

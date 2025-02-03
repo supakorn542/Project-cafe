@@ -14,11 +14,6 @@ export const getTodayOrders = async () => {
 
         const startOfDayTimestamp = Timestamp.fromDate(startOfDay);
         const endOfDayTimestamp = Timestamp.fromDate(endOfDay);
-
-        ;
-        ;
-        ;
-
         const ordersQuery = query(
             ordersRef,
             where("orderDate", ">=", startOfDayTimestamp),
@@ -34,14 +29,10 @@ export const getTodayOrders = async () => {
             return [];
         }
 
-        ;
-
         const orderss = querySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data(),
         }));
-
-        ;
 
         const orders = await Promise.all(querySnapshot.docs.map(async (orderDoc) => {
             const orderData = orderDoc.data();
@@ -166,12 +157,9 @@ export const getTodayInStoreSales = async () => {
 export const getAllDailyOnlineSales = async () => {
     try {
         const ordersRef = collection(db, "orders");
-
-        // ดึงข้อมูลออเดอร์ทั้งหมด
         const querySnapshot = await getDocs(ordersRef);
 
         if (querySnapshot.empty) {
-            ;
             return {};
         }
 
@@ -179,24 +167,35 @@ export const getAllDailyOnlineSales = async () => {
 
         querySnapshot.docs.forEach(doc => {
             const order = doc.data();
-            if (order.statusOrder !== "Completed" || !order.orderDate) return;
 
-            // แปลง orderDate เป็นวันที่ (Timestamp -> Date)
-            const orderDate = order.orderDate.toDate();
-            const dateKey = orderDate.toISOString().split("T")[0]; // เอาเฉพาะ YYYY-MM-DD
+            // เช็คว่ามี orderDate และอยู่ในรูปแบบ Firestore Timestamp
+            if (!["Completed", "Received"].includes(order.statusOrder) || !order.orderDate) return;
 
-            // รวมยอดขายของวันนั้น
-            salesByDate[dateKey] = (salesByDate[dateKey] || 0) + (order.total_price || 0);
+            try {
+                // แปลง Firestore Timestamp -> Date
+                const orderDate = order.orderDate.toDate();
+
+                // แปลงเป็น Local Date Format (YYYY-MM-DD)
+                const dateKey = orderDate.toLocaleDateString("en-CA");
+
+                // ตรวจสอบว่า total_price เป็นตัวเลขจริง ๆ
+                const totalPrice = typeof order.total_price === "number" ? order.total_price : 0;
+
+                // รวมยอดขายของวันนั้น
+                salesByDate[dateKey] = (salesByDate[dateKey] || 0) + totalPrice;
+
+            } catch (error) {    
+            }
         });
 
-        ;
         return salesByDate;
 
     } catch (error) {
-        ;
         return {};
     }
 };
+
+
 
 export const getAllDailyInStoreSales = async () => {
     try {
