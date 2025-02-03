@@ -4,8 +4,7 @@ import {jwtDecode} from "jwt-decode";
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
-  if (!token) {
-    
+  if (!token || token.trim() === "") {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
   try {

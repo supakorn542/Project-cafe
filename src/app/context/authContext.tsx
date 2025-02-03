@@ -134,8 +134,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       nookies.destroy(null, "token", { path: "/" });
 
+      setUser(null);
+
       console.log("Token cookie destroyed.");
-      router.push("/");
+      window.location.href = "/";
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {
