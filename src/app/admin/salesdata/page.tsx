@@ -31,9 +31,9 @@ const Salesdata = () => {
         const todayOrders = await getTodayOrders();
         console.log("Fetched Today Orders:", todayOrders); // ดีบักข้อมูลที่ดึงมาจาก getTodayOrders
 
-        // กรองคำสั่งที่มี statusOrder เป็น "Completed"
-        const completedOrders = todayOrders.filter(order => order?.statusOrder === "Completed");
-        console.log("Completed Orders:", completedOrders); // ดีบักคำสั่งที่ถูกกรอง
+        // กรองคำสั่งที่มี statusOrder เป็น "Completed และ Received"
+        const completedOrders = todayOrders.filter(order => order?.statusOrder === "Completed" || order?.statusOrder === "Received");
+        console.log("Completed Orders:", completedOrders);
 
         setOrders(completedOrders);
 
