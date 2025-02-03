@@ -12,8 +12,93 @@ service cloud.firestore {
     // Make sure to write security rules for your app before that time, or else
     // all client requests to your Firestore database will be denied until you Update
     // your rules
-    match /{document=**} {
-      allow read, write: if true;
+
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      allow read, write, delete: if request.auth != null && request.auth.token.role == 'admin';
+
     }
+
+    match /products/{productId} {
+      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
+      allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
+    }
+
+    match /productTypes/{productTypeId} {
+      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
+      allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
+    }
+
+    match /options/{optionId} {
+      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
+      allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
+    }
+
+    match /productOptions/{productOptionId} {
+      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
+      allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
+    }
+
+    match /optionItems/{optionItemId} {
+      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
+      allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
+    }
+
+    match /status/{statusId} {
+      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
+      allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
+    }
+
+
+    match /carts/{cartId} {
+      allow read, write, delete: if request.auth != null ;
+    }
+
+    match /cartItems/{cartItemId} {
+      allow read, write, delete: if request.auth != null ;
+    }
+
+    match /orders/{orderId} {
+      allow read, write, delete: if request.auth != null && request.auth.token.role == 'admin';
+
+      allow read, write: if request.auth != null && request.auth.token.role == 'user';
+    }
+
+    match /payments/{paymentId} {
+  
+      allow read, write, delete: if request.auth != null && request.auth.token.role == 'admin';
+ 
+      allow write: if request.auth != null && request.auth.token.role == 'user';
+    }
+
+    match /stocks/{stockId} {
+      allow read, write, delete: if request.auth != null && request.auth.token.role == 'admin';
+    }
+    
+    match /stocks/{stockId}/details/{detailId} {
+      allow read, write, delete: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    match /withdrawals/{withdrawalId}{
+      allow read, write, delete: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    match /reviews/{reviewId}{
+      allow read, write, delete: if request.auth != null && request.auth.token.role == 'user';
+
+      allow read: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    match /dailySales/{dailySaleId}{
+      allow read, write, delete: if request.auth != null && request.auth.token.role == 'admin';
+    }
+ 
   }
 }
