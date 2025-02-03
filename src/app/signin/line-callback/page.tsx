@@ -19,7 +19,7 @@ const LineCallback = () => {
         try {
           const userCredential = await signInWithCustomToken(auth, token);
           if (userCredential.user) {
-            let tokenResult = await userCredential.user.getIdTokenResult(true);
+            const tokenResult = await userCredential.user.getIdTokenResult(true);
             
 
             const token = tokenResult.token;
