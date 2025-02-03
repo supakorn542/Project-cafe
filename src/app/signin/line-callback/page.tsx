@@ -41,6 +41,7 @@ const LineCallback = () => {
             }
 
             const token = tokenResult.token;
+            console.log(userCredential.user);
 
             const userRef = doc(db, "users", userCredential.user.uid);
             await setDoc(
