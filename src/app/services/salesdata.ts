@@ -234,7 +234,6 @@ export const getAllDailyInStoreSales = async () => {
 };
 
 
-
 export const createDailySales = async (sales: DailySales): Promise<void> => {
     try {
         const SalesCollection = collection(db, 'dailySales');
