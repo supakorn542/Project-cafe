@@ -33,7 +33,7 @@ const Salesdata = () => {
 
         // กรองคำสั่งที่มี statusOrder เป็น "Completed"
         const completedOrders = todayOrders.filter(order => order?.statusOrder === "Completed" || order?.statusOrder === "Received");
-        console.log("Completed Orders:", completedOrders); // ดีบักคำสั่งที่ถูกกรอง
+        console.log("Completed Orders:", completedOrders);
 
         setOrders(completedOrders);
 
