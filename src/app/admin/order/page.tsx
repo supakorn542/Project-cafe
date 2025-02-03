@@ -6,6 +6,7 @@ import { getCartItemByCartIdFromAom, getFinishOrders, getOrders, getProcessOrder
 import { Order } from "@/app/interfaces/order";
 import { DiVim } from "react-icons/di";
 import { stringify } from "querystring";
+import ReceiptPopup from "@/app/components/receiptpopup/receipt"
 import NavbarAdmin from "@/app/components/navbarAdmin/page";
 
 
@@ -204,7 +205,7 @@ const ShowOrder = () => {
                                                         </span>
                                                     </div>
                                                     {/* <span>คั่วอ่อน (Ethiopia)</span> */}
-                                                   {x.optionitem_id.map((i:any) => {return  <span>- {i.name} <br /></span>})} 
+                                                    {x.optionitem_id.map((i: any) => { return <span>- {i.name} <br /></span> })}
 
                                                     <div>หมายเหตุ: {x.description}</div>
                                                     <span>ราคา: {x.product_id.price} ฿</span>
@@ -240,16 +241,9 @@ const ShowOrder = () => {
                                                 <div>
                                                     ยอดรวมทั้งหมด {x.total_price}฿
                                                 </div>
-                                                <div>
-                                                    ตรวจสอบการชำระ :
-                                                    <img src={x.payment_id.receipt} alt="" className="w-24 " />
-                                                    {/* <Image
-                                                        // alt="Profile"
-                                                        className="rounded-3xl object-cover"
-                                                        // src={product.imageProduct || ""}
-                                                        width={80}
-                                                        height={80}
-                                                    /> */}
+                                                <div key={x.id} className="mb-4">
+                                                    <span>ตรวจสอบการชำระ :</span>
+                                                    <ReceiptPopup receiptUrl={x.payment_id.receipt} />
                                                 </div>
                                             </div>
                                         ))}
@@ -312,7 +306,7 @@ const ShowOrder = () => {
                                                         </span>
                                                     </div>
                                                     {/* <span>คั่วอ่อน (Ethiopia)</span> */}
-                                                    {x.optionitem_id.map((i:any) => {return  <span>- {i.name} <br /></span>})} 
+                                                    {x.optionitem_id.map((i: any) => { return <span>- {i.name} <br /></span> })}
 
                                                     <div>หมายเหตุ: {x.description}</div>
                                                     <span className=" font-semibold">ราคา: {x.product_id.price} ฿</span>
@@ -347,10 +341,9 @@ const ShowOrder = () => {
                                                 <div>
                                                     ยอดรวมทั้งหมด {x.total_price}฿
                                                 </div>
-                                                <div>
-                                                    ตรวจสอบการชำระ :
-                                                    <img src={x.payment_id.receipt} alt="" className="w-24 " />
-
+                                                <div key={x.id} className="mb-4">
+                                                    <span>ตรวจสอบการชำระ :</span>
+                                                    <ReceiptPopup receiptUrl={x.payment_id.receipt} />
                                                 </div>
                                             </div>
                                         ))}
@@ -414,7 +407,7 @@ const ShowOrder = () => {
                                                         </span>
                                                     </div>
                                                     {/* <span>คั่วอ่อน (Ethiopia)</span> */}
-                                                    {x.optionitem_id.map((i:any) => {return  <span>- {i.name} <br /></span>})} 
+                                                    {x.optionitem_id.map((i: any) => { return <span>- {i.name} <br /></span> })}
 
                                                     <div>หมายเหตุ: {x.description}</div>
                                                     <span>ราคา: {x.product_id.price} ฿</span>
@@ -440,7 +433,7 @@ const ShowOrder = () => {
                                                 </div>
                                             ))}
 
-                                           
+
 
                                         </div>
                                         <div className="border-l-[2.5px] border-black "></div>
@@ -449,10 +442,9 @@ const ShowOrder = () => {
                                                 <div>
                                                     ยอดรวมทั้งหมด {x.total_price}฿
                                                 </div>
-                                                <div>
-                                                    ตรวจสอบการชำระ :
-                                                    <img src={x.payment_id.receipt} alt="" className="w-24 " />
-
+                                                <div key={x.id} className="mb-4">
+                                                    <span>ตรวจสอบการชำระ :</span>
+                                                    <ReceiptPopup receiptUrl={x.payment_id.receipt} />
                                                 </div>
                                             </div>
                                         ))}
@@ -478,7 +470,7 @@ const ShowOrder = () => {
 
     return (
         <div >
-           <NavbarAdmin />
+            <NavbarAdmin />
             <div className="bg-[#FBF6F0] min-h-screen">
                 <div className="flex justify-center pt-20 pb-5 ml-6">
                     <div className="flex justify-center w-[20%]">

@@ -1,6 +1,6 @@
 "use client";
 
-import { createWithdrawal, getIngredientById } from "@/app/services/stock";
+import { createWithdrawal, getStockById } from "@/app/services/stock";
 import { useEffect, useState } from "react";
 
 interface WithdrawProps {
@@ -42,7 +42,7 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
 
     const fetchIngredient = async () => {
         try {
-            const data = await getIngredientById(stockId); // เรียกฟังก์ชัน getIngredientById
+            const data = await getStockById(stockId); // เรียกฟังก์ชัน getIngredientById
             if (data) {
                 console.log(data);
                 setStockData(data); // ตั้งค่าข้อมูลที่ดึงมา

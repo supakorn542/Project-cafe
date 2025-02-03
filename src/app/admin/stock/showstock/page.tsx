@@ -146,6 +146,7 @@ const ShowStock = () => {
         if (window.confirm("Are you sure you want to delete this item?")) {
             deletedStock(id);
             fetchStockIngredients(); // เรียก API เมื่อ component ถูก mount
+            fetchStockPackages();
         }
 
     };
@@ -162,7 +163,7 @@ const ShowStock = () => {
             case "ingredients":
                 return (
                     <div className="pt-2 flex justify-center ">
-                        <div className="flex flex-col items-center w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-auto max-h-[500px]">
+                        <div className="flex flex-col items-center w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] max-h-[500px] overflow-y-scroll custom-scroll">
                             {filteredIngredients.map((ingredient) =>
                                 <div className="flex justify-between w-[92%] border-b-[2px] border-black pt-8 pb-10">
                                     <div className="w-[15%] h-full text-2xl font-semibold text-center flex items-start justify-center" >
@@ -312,7 +313,7 @@ const ShowStock = () => {
             case "packaging":
                 return (
                     <div className="pt-2 flex justify-center ">
-                        <div className="flex flex-col items-center  w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-auto max-h-[500px]">
+                        <div className="flex flex-col items-center  w-[90%] h-[30rem] border-[3px] border-black  rounded-[2rem] overflow-y-scroll custom-scroll max-h-[500px]">
                             {filteredPackages.map((packaging) =>
                                 <div className="flex flex-row justify-between w-[90%] min-h-[25%] border-b-[2px] border-black ">
                                     <div className="w-[15%] h-full font-semibold text-2xl  text-center flex items-center justify-center" >
@@ -402,7 +403,7 @@ const ShowStock = () => {
             case "withdrawal":
                 return (
                     <div className="pt-2 flex justify-center ">
-                        <div className="flex flex-col items-center  w-[90%] h-[30rem] border-[3px] border-black rounded-[2rem] overflow-y-auto max-h-[500px] pt-4">
+                        <div className="flex flex-col items-center w-[90%] h-[30rem] border-[3px] border-black rounded-[2rem] overflow-y-scroll custom-scroll max-h-[500px] pt-4">
                             {filteredWithdrawals.map((withdrawal) =>
                                 <div className="flex flex-row justify-between pt-5 w-[90%]  pb-8 border-b-[2px] border-black ">
                                     <div className="w-[15%] h-full   text-2xl font-semibold text-center " >

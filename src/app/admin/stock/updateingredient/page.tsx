@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createStocks, getAllIdStockFromStock, getIngredientById, updateIngredientByID } from "../../../services/stock";
+import { createStocks, getAllIdStockFromStock, getStockById, updateIngredientByID } from "../../../services/stock";
 import { GrPowerCycle } from "react-icons/gr";
+import { Timestamp } from "firebase/firestore";
+
 
 interface updateIngredientProps {
     updateIngredientPopup: () => void;
@@ -48,27 +50,22 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
         return newId
     };
 
-
-
-    const formatTimestamp = (date: string | undefined) => {
-        if (date && date.includes('=') && date.includes(',')) {
-            const seconds = Number(date.split('=')[1].split(',')[0]);
-            const nanoseconds = 0;
-            const fakeDate = new Date(seconds * 1000 + nanoseconds / 1000000); // nanoseconds แปลงเป็นมิลลิวินาที
-            const realDate = fakeDate.toISOString().split('T')[0];
-            return realDate;
-
+    const formatTimestamp = (date: string | Timestamp | undefined): string => {
+        console.log(date)
+        if (date instanceof Timestamp) {
+            console.log("fff")
+            return date.toDate().toISOString().split('T')[0]; // แปลง Timestamp เป็น string ที่ใช้ใน input type="date"
         }
-        return date; // คืนค่าค่าว่างหาก date ไม่มีรูปแบบที่คาดหวัง
+
+        if (typeof date === "string" && date.includes('=') && date.includes(',')) {
+            console.log("yyyy")
+            const seconds = Number(date.split('=')[1].split(',')[0]);
+            const fakeDate = new Date(seconds * 1000);
+            return fakeDate.toISOString().split('T')[0];
+        }
+
+        return date || ""; // คืนค่าว่างถ้าไม่มีข้อมูล
     };
-
-    // const formatDate = (date: Date) => {
-    //     if (date instanceof Date) {
-    //         return date.toISOString().split('T')[0]; // แปลง Date เป็น string ในรูปแบบ yyyy-mm-dd
-    //     }
-    //     return date || ''; // หากไม่มีค่า ให้ส่งคืนค่าว่าง
-    // };
-
 
     const handleDetailChange = (index: any, field: any, value: any) => {
         console.log('LLL', value)
@@ -83,7 +80,7 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
 
     const fetchIngredient = async () => {
         try {
-            const ingredient = await getIngredientById(stockId); // เรียกฟังก์ชัน getIngredientById
+            const ingredient = await getStockById(stockId); // เรียกฟังก์ชัน getIngredientById
             if (ingredient) {
                 console.log("fetch work!")
                 console.log(ingredient);
@@ -118,6 +115,9 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        console.log(addedDate);
+       
         if (currentPopup === 1) {
             goToNextPopup()
         } else {
@@ -134,7 +134,7 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                 description,
                 //   stockType: "ingredient",
             };
-
+            console.log(updatedStockData)
             // รายละเอียดที่อัปเดต
             const newDetails = details.map((detail) => ({
                 id: detail.id,
@@ -143,11 +143,13 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                 expiryDate: detail.expiryDate,
             }));
 
+            console.log(newDetails);
 
             // เรียกใช้ฟังก์ชัน updateIngredientByID
             try {
                 const response = await updateIngredientByID(stockId, updatedStockData, newDetails);
-                if (response.success) {
+                console.log(response);
+                if (response.success === true) {
                     alert("Stock updated successfully!");
                     updateIngredientPopup(); // ปิด Popup
                 } else {
@@ -160,12 +162,8 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
         }
     };
 
-
-
     useEffect(() => {
         fetchIngredient(); // ดึงข้อมูลเมื่อ stockId มีค่า
-        // setTotalPrice(quantity * price ); // คำนวณ totalPrice ทุกครั้งที่ quantity หรือ price เปลี่ยนแปลง
-        // setTotalPrice(details.length*price); // ตั้งค่า totalPrice
 
     }, []);
 
@@ -250,12 +248,6 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                         </div>
                         <div className="pt-[7px]">
                             <div className="text-black mb-1">จำนวน</div>
-                            {/* <input
-                            type="text"
-                            value={quantity}
-                            onChange={(e) => setQuantity(Number(e.target.value))}
-                            className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
-                        /> */}
                             <div className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3 pt-1">
                                 {details.length}
                             </div>
@@ -264,8 +256,8 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                             <div className="text-black mb-1">วันที่เพิ่มสินค้า</div>
                             <input
                                 type="date"
-                                value={addedDate}
-                                onChange={(e) => setAddedDate(e.target.value)}
+                                value={formatTimestamp(addedDate)}
+                                onChange={(e) => {console.log(e.target.value);setAddedDate(e.target.value)}}
                                 className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
                                 required
                             />
@@ -298,7 +290,7 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                 {/* ----nextpopup--- */}
                 {currentPopup === 2 && (
                     <div className="bg-white rounded-3xl shadow-lg p-11 pt-8 w-[100%] max-w-[772px] max-h-[90%] ">
-                        <h2 className="text-xl text-center font-bold ">{ingredientData?.name}</h2>
+                        <h2 className="text-xl text-center font-bold ">{ingredientData?.data.name}</h2>
                         <div className=" overflow-auto max-h-[400px]">
                             {ingredientData?.details?.length > 0 && Array.from({ length: ingredientData?.details?.length }).map((_, index) => (
                                 <div className="flex flex-row justify-between pt-4">

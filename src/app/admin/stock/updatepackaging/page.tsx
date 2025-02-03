@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAllIdStockFromStock, getIngredientById, updateIngredientByID, updatePackagingByID } from "../../../services/stock";
+import { getAllIdStockFromStock, getStockById, updateIngredientByID, updatePackagingByID } from "../../../services/stock";
 import { GrPowerCycle } from "react-icons/gr";
+import { Timestamp } from "firebase/firestore";
 
 interface updatePackagingProps {
     updatePackagingPopup: () => void;
@@ -12,19 +13,14 @@ interface updatePackagingProps {
 const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup, stockId }) => {
     const [idStock, setIdStock] = useState("");
     const [name, setName] = useState("");
-    const [netQuantity, setNetQuantity] = useState(0);
-    const [unit, setUnit] = useState("");
     const [price, setPrice] = useState(0);
     const [classifier, setClassifier] = useState("");
     const [totalPrice, setTotalPrice] = useState(0);
     const [quantity, setQuantity] = useState(0);
     const [addedDate, setAddedDate] = useState("");
-    const [manufactureDate, setManufactureDate] = useState("");
-    const [expiryDate, setExpiryDate] = useState("");
     const [description, setDescription] = useState("");
-    const [stockType, setStockType] = useState("");
     const [details, setDetails] = useState<
-        Array<{ id: string; idStock: string; manufactureDate: Date; expiryDate: Date }>
+        Array<{ id: string; idStock: string }>
     >([]);
     const [currentPopup, setCurrentPopup] = useState(1); // State สำหรับติดตาม popup
     const [ingredientData, setIngredientData] = useState<any>(null); // เก็บข้อมูลส่วนผสม
@@ -33,16 +29,21 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
         setCurrentPopup(2); // ไปยัง nextpopup
     };
 
-    const formatTimestamp = (date: string | undefined) => {
-        if (date && date.includes('=') && date.includes(',')) {
-            const seconds = Number(date.split('=')[1].split(',')[0]);
-            const nanoseconds = 0;
-            const fakeDate = new Date(seconds * 1000 + nanoseconds / 1000000); // nanoseconds แปลงเป็นมิลลิวินาที
-            const realDate = fakeDate.toISOString().split('T')[0];
-            return realDate;
-
+    const formatTimestamp = (date: string | Timestamp | undefined): string => {
+        console.log(date)
+        if (date instanceof Timestamp) {
+            console.log("fff")
+            return date.toDate().toISOString().split('T')[0]; // แปลง Timestamp เป็น string ที่ใช้ใน input type="date"
         }
-        return date; // คืนค่าค่าว่างหาก date ไม่มีรูปแบบที่คาดหวัง
+
+        if (typeof date === "string" && date.includes('=') && date.includes(',')) {
+            console.log("yyyy")
+            const seconds = Number(date.split('=')[1].split(',')[0]);
+            const fakeDate = new Date(seconds * 1000);
+            return fakeDate.toISOString().split('T')[0];
+        }
+
+        return date || ""; // คืนค่าว่างถ้าไม่มีข้อมูล
     };
 
     const generateIdPackage = async () => {
@@ -59,14 +60,6 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
         return newId
     };
 
-    // const formatDate = (date: Date) => {
-    //     if (date instanceof Date) {
-    //         return date.toISOString().split('T')[0]; // แปลง Date เป็น string ในรูปแบบ yyyy-mm-dd
-    //     }
-    //     return date || ''; // หากไม่มีค่า ให้ส่งคืนค่าว่าง
-    // };
-
-
     const handleDetailChange = (index: any, field: any, value: any) => {
         console.log('LLL', value)
         const updatedDetails = [...details]; // คัดลอกอาร์เรย์เก่า
@@ -78,33 +71,27 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
         setDetails(updatedDetails); // อัปเดต state
     };
 
-    const fetchIngredient = async () => {
+    const fetchPackage = async () => {
         try {
-            const ingredient = await getIngredientById(stockId); // เรียกฟังก์ชัน getIngredientById
-            if (ingredient) {
+            const packaging = await getStockById(stockId); // เรียกฟังก์ชัน getIngredientById
+            if (packaging) {
                 console.log("fetch work!")
-                console.log(ingredient);
-                console.log(ingredient.details);
-                setIngredientData(ingredient); // ตั้งค่าข้อมูลที่ดึงมา
-                setName(ingredient.data.name); // ตั้งค่า name
-                setNetQuantity(ingredient.data.netQuantity || 0); // ตั้งค่า netQuantity
-                setUnit(ingredient.data.unit || ""); // ตั้งค่า unit
-                setPrice(ingredient.data.price || 0); // ตั้งค่า price
-                setClassifier(ingredient.data.classifier || ""); // ตั้งค่า classifier
-                setTotalPrice(ingredient.data.totalPrice || details.length * price); // ตั้งค่า totalPrice
-                setQuantity(ingredient.data.quantity || 0); // ตั้งค่า quantity
-                setDescription(ingredient.data.description || "");
-                const formattedDetails = ingredient.details.map((detail: any) => ({
+                console.log(packaging);
+                console.log(packaging.details);
+                setIngredientData(packaging); // ตั้งค่าข้อมูลที่ดึงมา
+                setName(packaging.data.name); // ตั้งค่า name
+                setPrice(packaging.data.price || 0); // ตั้งค่า price
+                setClassifier(packaging.data.classifier || ""); // ตั้งค่า classifier
+                setTotalPrice(packaging.data.totalPrice || details.length * price); // ตั้งค่า totalPrice
+                setQuantity(packaging.data.quantity || 0); // ตั้งค่า quantity
+                setDescription(packaging.data.description || "");
+                const formattedDetails = packaging.details.map((detail: any) => ({
                     id: detail.id,
                     idStock: detail.idStock,
-                    manufactureDate: detail.manufactureDate,
-                    expiryDate: detail.expiryDate
 
                 }));
                 setDetails(formattedDetails); // ตั้งค่ารายละเอียด
-                // console.log(String(formattedDetails[0].expiryDate))
-                // setDetails(ingredient.details || []);
-                setAddedDate(ingredient.data.addedDate); // ตั้งค่า addedDate
+                setAddedDate(packaging.data.addedDate); // ตั้งค่า addedDate
 
             }
         } catch (error) {
@@ -166,7 +153,7 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
 
 
     useEffect(() => {
-        fetchIngredient(); // ดึงข้อมูลเมื่อ stockId มีค่า
+        fetchPackage(); // ดึงข้อมูลเมื่อ stockId มีค่า
     }, []);
 
     return (
@@ -233,7 +220,7 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
                             <div className="text-black mb-1">วันที่เพิ่มสินค้า</div>
                             <input
                                 type="date"
-                                value={addedDate}
+                                value={formatTimestamp(addedDate)}
                                 onChange={(e) => setAddedDate(e.target.value)}
                                 className="w-[100%] h-[35px] border-2 border-black rounded-md pl-3"
                                 required
