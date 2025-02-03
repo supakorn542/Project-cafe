@@ -16,8 +16,7 @@ const OwlCarousel = dynamic(() => import("react-owl-carousel"), {
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import { getAllReview } from "./services/review";
-
-
+import { getProducts } from "./services/getProduct";
 
 const mdata = [
   {
@@ -32,96 +31,25 @@ const mdata = [
   },
 ];
 
-const reviewData = [
-  {
-    rating: 5,
-    comment: "กระป๋องกาแฟเท่มาก น้ำแข็งก้อนกลมถูกใจคอกาแฟ เข้มกล่อมกล่อม",
-    order: [
-      {
-        name: "latte",
-      },
-      {
-        name: "espresso",
-      },
-    ],
-    used: {
-      profileImage:
-        "https://res.cloudinary.com/donlonxid/image/upload/v1736325901/profile_pics/profile_pics/5GA3T2LIo5EpxUVZb4EgXsUCqTzM.png",
-      name: "jay",
-    },
-  },
-  {
-    rating: 3,
-    comment: "อร่อยทุกเมนูเลย ชดชื่นมากกกกกก ไอเลิฟๆ",
-    order: [
-      {
-        name: "milk",
-      },
-      {
-        name: "shayen",
-      },
-    ],
-    used: {
-      profileImage:
-        "https://res.cloudinary.com/donlonxid/image/upload/v1736325901/profile_pics/profile_pics/5GA3T2LIo5EpxUVZb4EgXsUCqTzM.png",
-      name: "jay",
-    },
-  },
-  {
-    rating: 2,
-    comment: "อร่อยทุกเมนูเลย ชดชื่นมากกกกกก ไอเลิฟๆ",
-    order: [
-      {
-        name: "milk",
-      },
-      {
-        name: "shayen",
-      },
-    ],
-    used: {
-      profileImage:
-        "https://res.cloudinary.com/donlonxid/image/upload/v1736325901/profile_pics/profile_pics/5GA3T2LIo5EpxUVZb4EgXsUCqTzM.png",
-      name: "jay",
-    },
-  },
-  {
-    rating: 1,
-    comment: "อร่อยทุกเมนูเลย ชดชื่นมากกกกกก ไอเลิฟๆ",
-    order: [
-      {
-        name: "milk",
-      },
-      {
-        name: "shayen",
-      },
-    ],
-    used: {
-      profileImage:
-        "https://res.cloudinary.com/donlonxid/image/upload/v1736325901/profile_pics/profile_pics/5GA3T2LIo5EpxUVZb4EgXsUCqTzM.png",
-      name: "jay",
-    },
-  },
-];
-
-interface Review {
-  id: string;
-  rating: number;
-  comment: string;
-  user_id: string;
-  order_id: string;
-  deletedAt?: string | null;
-}
-
 export default function Home() {
   const [review, setReview] = useState<any[]>();
+  const [product, setProduct] = useState<any[]>();
   useEffect(() => {
     AOS.init();
     const fetchReview = async () => {
       const reviewData = await getAllReview(); // สมมติว่า return เป็น Review[]
       setReview(reviewData);
     };
+    const fetchProduct = async () => {
+      const productData = await getProducts();
+      setProduct(productData);
+      console.log(productData);
+    };
+    fetchProduct();
     fetchReview();
   }, []);
+
+  console.log(product);
   return (
     <div className="">
       <Navbar textColor="text-white" color="white" />
@@ -284,21 +212,26 @@ export default function Home() {
           }}
           className=""
         >
-          {sdata.map((item, index) => (
+          {product?.map((item, index) => (
             <div
               key={index}
-              className=" bg-[url('/assets/borderVertical.png')] bg-cover bg-center "
+              className="mx-0 relative bg-[url('/assets/borderVertical.png')] bg-cover bg-center w-full h-[300px]" // ตั้งขนาดของ div ให้ตรง
             >
-              <Image
-                className={`object-none`}
-                src={item.imageproduct}
-                alt={""}
-                width={300}
-                height={500}
-              ></Image>
+              {item.imageProduct ? (
+                <Image
+                  className="object-cover w-full h-full" // รูปภาพครอบคลุมเต็มพื้นที่ของ div
+                  src={item.imageProduct}
+                  alt={""}
+                  width={300} // ระบุขนาดที่ต้องการ
+                  height={500} // ระบุขนาดที่ต้องการ
+                />
+              ) : (
+                <div>No image available</div> // Placeholder หรือ fallback content
+              )}
             </div>
           ))}
         </OwlCarousel>
+
         <button className="border border-black rounded-full px-12 py-2 text-2xl font-semibold max-w-[50vh] self-center">
           {" "}
           Order now
