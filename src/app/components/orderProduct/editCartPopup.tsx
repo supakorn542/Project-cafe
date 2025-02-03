@@ -189,7 +189,7 @@ function EditCartPopup({
             doc(db, "optionItems", id)
           ),
           quantity: quantity,
-          pickupdate: Timestamp.fromDate(new Date(pickupdateTime)),
+          
           description: descriptionValue, // อัปเดต description
         });
 
