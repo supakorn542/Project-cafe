@@ -21,37 +21,37 @@ service cloud.firestore {
     }
 
     match /products/{productId} {
-      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow read: if true;
       allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
       allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
     }
 
     match /productTypes/{productTypeId} {
-      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow read: if true; 
       allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
       allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
     }
 
     match /options/{optionId} {
-      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow read: if true; 
       allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
       allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
     }
 
     match /productOptions/{productOptionId} {
-      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow read: if true; 
       allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
       allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
     }
 
     match /optionItems/{optionItemId} {
-      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow read: if true; 
       allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
       allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
     }
 
     match /status/{statusId} {
-      allow read: if true; // ให้ทุกคนสามารถอ่านได้
+      allow read: if true; 
       allow write: if request.auth != null && request.auth.token.role == 'admin'; // admin เขียนได้
       allow delete: if request.auth != null && request.auth.token.role == 'admin'; // admin ลบได้
     }
