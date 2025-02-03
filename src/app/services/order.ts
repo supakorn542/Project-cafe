@@ -15,7 +15,7 @@ export const getOrders = async () => {
     const paymentSnap = await getDoc(paymentRef);
     if (paymentSnap.exists()) {
       const paymentData = paymentSnap.data() as { status: string }; // ระบุ type ของ paymentData
-      if (paymentData.status === "Pending") {
+      if (paymentData.status === "Pending" || paymentData.status === "Uncompleted") {
         data.payment_id = { id: paymentRef.id, ...paymentData || {} };
 
         const cartRef = data.cart_id;
@@ -49,9 +49,25 @@ export const getOrders = async () => {
     return data
   })
   )
+
+  // กรองคำสั่งซื้อที่มีสถานะเป็น "Pending" หรือ "Uncompleted"
   const orderPending = orders.filter(order => order != null);
-    // เรียงลำดับตาม createdAt (หรือ orderDate) จากปัจจุบัน -> อดีต
-  orderPending.sort((a, b) => b.orderDate.toMillis() - a.orderDate.toMillis());
+
+  // เรียงลำดับโดยให้ "Pending" อยู่ข้างบน และเรียงตาม orderDate จากปัจจุบัน -> อดีต
+  orderPending.sort((a, b) => {
+    // ให้ "Pending" อยู่ข้างบน
+    if (a.payment_id.status === "Pending" && b.payment_id.status !== "Pending") {
+      return -1; // a อยู่ข้างบน
+    }
+    if (a.payment_id.status !== "Pending" && b.payment_id.status === "Pending") {
+      return 1; // b อยู่ข้างบน
+    }
+
+    // ถ้าสถานะเท่ากัน ให้เรียงตาม orderDate จากใหม่ -> เก่า
+    const aDate = a.orderDate?.toMillis ? a.orderDate.toMillis() : a.orderDate.getTime();
+    const bDate = b.orderDate?.toMillis ? b.orderDate.toMillis() : b.orderDate.getTime();
+    return bDate - aDate; // เรียงจากใหม่ -> เก่า
+  });
 
   return orderPending
 
@@ -163,10 +179,29 @@ export const getFinishOrders = async () => {
     return data
   })
   )
-  const orderPending = orders.filter(order => order != null)
-  orderPending.sort((a, b) => b.orderDate.toMillis() - a.orderDate.toMillis());
+  // const orderPending = orders.filter(order => order != null)
+  // orderPending.sort((a, b) => b.orderDate.toMillis() - a.orderDate.toMillis());
 
-  return orderPending
+  // กรองคำสั่งซื้อที่มีสถานะเป็น "Pending" หรือ "Uncompleted"
+  const orderCompleted = orders.filter(order => order != null);
+
+  // เรียงลำดับโดยให้ "Completed" อยู่ข้างบน และเรียงตาม orderDate จากปัจจุบัน -> อดีต
+  orderCompleted.sort((a, b) => {
+    // ให้ "Pending" อยู่ข้างบน
+    if (a.statusOrder === "Completed" && b.statusOrder !== "Completed") {
+      return -1; // a อยู่ข้างบน
+    }
+    if (a.statusOrder !== "Completed" && b.statusOrder === "Completed") {
+      return 1; // b อยู่ข้างบน
+    }
+
+    // ถ้าสถานะเท่ากัน ให้เรียงตาม orderDate จากใหม่ -> เก่า
+    const aDate = a.orderDate?.toMillis ? a.orderDate.toMillis() : a.orderDate.getTime();
+    const bDate = b.orderDate?.toMillis ? b.orderDate.toMillis() : b.orderDate.getTime();
+    return bDate - aDate; // เรียงจากใหม่ -> เก่า
+  });
+
+  return orderCompleted
 
 }
 
