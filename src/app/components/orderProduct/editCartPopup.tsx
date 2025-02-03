@@ -3,11 +3,6 @@ import {
   doc,
   getDoc,
   DocumentReference,
-  getDocs,
-  collection,
-  query,
-  where,
-  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import React, { FormEvent, useEffect, useState } from "react";
@@ -18,7 +13,6 @@ import { Product } from "../../interfaces/product";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { getOptions } from "@/app/services/options";
 import { getProductOptionsByProductId } from "@/app/services/productOption";
-import { getProductById } from "@/app/services/getProduct";
 import "./editCartPopup.css";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 function EditCartPopup({
@@ -49,7 +43,7 @@ function EditCartPopup({
     []
   );
   const [pickupdateTime, setPickupdateTime] = useState<string>("");
-  console.log("id :" ,cartItemId )
+  
   useEffect(() => {
     const fetchCartItem = async () => {
       if (cartItemId) {
@@ -95,7 +89,7 @@ function EditCartPopup({
               ) {
                 const cartData = cartSnapshot.data();
                 const productData = productSnapshot.data() as Product;
-                console.log("productData.id:", productData.id);
+                ;
 
                 // Now create the CartItemsInterface object
                 const cartItem: cartstateinterface = {
@@ -133,11 +127,6 @@ function EditCartPopup({
                     },
                   ]);
                 } catch (error) {
-                  console.error(
-                    "Error fetching options for product:",
-                    productData.id,
-                    error
-                  );
                   setallGroupedOptions([]); // Or handle the error as needed
                 }
                 setCartItems(cartItem);
@@ -149,18 +138,15 @@ function EditCartPopup({
 
                 // ... update other state variables
               } else {
-                console.error("Missing cart, option, or product document!");
+                ;
               }
             } else {
-              console.error(
-                "Missing cart_id, optionItem_id, or product_id in cart item data!"
-              );
             }
           } else {
-            console.log("No such document!");
+            ;
           }
         } catch (error) {
-          console.error("Error fetching cart item:", error);
+          ;
         }
       }
     };
@@ -170,8 +156,8 @@ function EditCartPopup({
   const handleQuantityChange = (newQuantity: number) => {
     setQuantity(newQuantity);
   };
-  console.log("product :", product);
-  console.log("option :", allGroupedOptions);
+  ;
+  ;
 
   const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -220,7 +206,7 @@ function EditCartPopup({
         onClose();
       }
     } catch (error) {
-      console.error("Error updating cartItem:", error);
+      ;
     }
   };
   const handleCheckboxChange = (itemId: string, isChecked: boolean) => {

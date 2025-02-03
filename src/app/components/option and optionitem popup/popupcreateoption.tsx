@@ -50,12 +50,12 @@ const CreateOptionPopup: React.FC<{ isOpen: boolean; onClose: () => void ;handle
     try {
       const optionId = await createOption(optionData, optionItems); // ส่งข้อมูลไปยังฟังก์ชัน createOption
       handleCreateOptionSuccess();
-      console.log("Created option with ID: ", optionId);
+      ;
       setRefresh(true);
-      console.log("setRefresh", setRefresh)
+      
       onClose(); // ปิด popup หลังบันทึกสำเร็จ
     } catch (error) {
-      console.error("Error while creating option: ", error);
+      ;
     }
   };
 

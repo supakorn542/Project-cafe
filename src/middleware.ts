@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
 
 
   } catch (error) {
-    console.error("Middleware error:", error);
+    ;
     return NextResponse.redirect(new URL("/signin", request.url));
   }
   return NextResponse.next();

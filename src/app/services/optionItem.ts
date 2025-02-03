@@ -1,4 +1,4 @@
-import { collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc,  getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from "../../app/lib/firebase";
 import { OptionItem } from "../interfaces/optionItemInterface";
 
@@ -20,7 +20,7 @@ export const getOptionItemsByOptionId = async (optionId: string): Promise<Option
   
       return items;
     } catch (error) {
-      console.error("Error fetching option items:", error);
+      ;
       throw error;
     }
   };

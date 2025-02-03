@@ -26,20 +26,20 @@ const SignIn = () => {
         password
       );
       if (userCredential.user) {
-        console.log("User signed in:", userCredential.user);
+        ;
 
         const tokenResult = await userCredential.user.getIdTokenResult();
         const token = tokenResult.token;
         const role = tokenResult.claims?.role;
 
-        console.log("User role:", role);
+        ;
 
         nookies.set(null, "token", token, {
           maxAge: 60 * 60 * 24,
           path: "/",
         });
 
-        console.log("Cookies set successfully");
+        ;
       
 
         if (role === "admin") {
@@ -51,7 +51,7 @@ const SignIn = () => {
         throw new Error("No user returned");
       }
     } catch (error: any) {
-      console.error("Error signing in:", error);
+      ;
 
       // Map Firebase error codes to user-friendly messages
       let errorMessage = "An unexpected error occurred.";
@@ -73,7 +73,7 @@ const SignIn = () => {
     try {
       await signInWithGoogle();
     } catch (error: any) {
-      console.error("Error signing in with Google:", error);
+      ;
     
       let errorMessage = "An unexpected error occurred.";
       if (error.code === "auth/popup-closed-by-user") {
@@ -88,7 +88,7 @@ const SignIn = () => {
 
   const handleLineSignIn = () => {
     const redirectUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_LINE_CHANNEL_ID}&redirect_uri=${process.env.NEXT_PUBLIC_LINE_CALLBACK_URL}&state=random_state_string&scope=profile%20openid%20email`;
-    console.log("Redirect URL:", redirectUrl);
+    ;
     window.location.href = redirectUrl;
   };
 
@@ -222,7 +222,7 @@ const SignIn = () => {
           </div>
 
           <p className="text-center font-serif4 text-sm md:text-lg text-white">
-            Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
             <a
               href="/signup"
               className="text-white font-serif4 font-semibold hover:underline"

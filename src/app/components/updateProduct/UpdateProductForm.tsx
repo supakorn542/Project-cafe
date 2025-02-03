@@ -1,8 +1,8 @@
-"use client";
+
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { getProductTypes } from "../../../../services/getproductType";
+
+import { getProductTypes } from "@/app/services/getproductType";
 import { OptionInterface } from "@/app/interfaces/optioninterface";
 import { getOptions } from "@/app/services/options";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
@@ -20,7 +20,7 @@ import CreateProductTypePopup from "@/app/components/option and optionitem popup
 import SelectOptionsPopup from "@/app/components/option and optionitem popup/SelectOptionsPopup";
 import {
   RefreshProvider,
-  useRefresh,
+
 } from "@/app/components/RefreshContext/RefreshContext";
 
 const UpdateProductForm = ({
@@ -82,7 +82,7 @@ const UpdateProductForm = ({
 
       setSelectedOptions(selectedOptionsData);
     } catch (error) {
-      console.error("Failed to fetch product:", error);
+      ;
     }
 
     try {
@@ -91,7 +91,7 @@ const UpdateProductForm = ({
       setStatus(statusData);
       setCategories(categoriesData);
     } catch (error) {
-      console.error("Failed to fetch categories or status:", error);
+      ;
     }
 
     setLoading(false);
@@ -135,7 +135,7 @@ const UpdateProductForm = ({
         }
       }
     } catch (error) {
-      console.error("Error updating product:", error);
+      ;
       alert("Failed to update product");
     }
   };

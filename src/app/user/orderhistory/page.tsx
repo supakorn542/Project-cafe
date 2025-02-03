@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { createReview, deleteReview, getReviewByUserId, updateReview } from '../../services/review';
 import { useAuth } from "../../context/authContext";
-import { Order } from "../../interfaces/order";
+
 import '../../globals.css';
-import { CartItemsInterface } from "@/app/interfaces/cartItemInterface";
-import { getCartItemByCartId, getCartsByUserId, getCompletedOrdersByUserId, getOrdersByUserId } from "../../services/orderhistory";
-import { Product } from "@/app/interfaces/product";
+
+import { getCartItemByCartId, getCompletedOrdersByUserId, getOrdersByUserId } from "../../services/orderhistory";
+
 import Image from "next/image";
 import { Review } from "@/app/interfaces/review";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
@@ -27,19 +27,18 @@ const TrackOrder = () => {
     const [statusComplete, setStatusComplete] = useState<any[]>([]);
     const [currentReviewId, setCurrentReviewId] = useState<string | null>(null);
     const [showReview, setshowReview] = useState<any>([]);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth); // เก็บขนาดหน้าจอ
+    const [windowWidth, setWindowWidth] = useState<number>(0); // เก็บขนาดหน้าจอ
 
     useEffect(() => {
-        console.log("User data:", user?.id); // ตรวจสอบข้อมูลของ user
+        ; // ตรวจสอบข้อมูลของ user
         const fetchOrders = async () => {
             if (!user?.id) {
-                console.warn("User is not logged in or userId is missing.");
                 return;
             }
             try {
                 const review = await getReviewByUserId(user.id);
                 setReviews(review.filter(item => !item.deletedAt));
-                console.log("reviews :", review);
+                ;
 
                 let fetchedOrders = await getOrdersByUserId(user.id);
                 let fetchedCompletedOrders = await getCompletedOrdersByUserId(user.id);
@@ -56,22 +55,22 @@ const TrackOrder = () => {
                 setOrders(fetchedOrders);
                 setStatusComplete(fetchedCompletedOrders);
 
-                console.log("fetchedOrders (sorted) : ", fetchedOrders);
-                console.log("fetchedCompletedOrders (sorted) :", fetchedCompletedOrders);
+                ;
+                ;
 
                 const cartIds = fetchedOrders.map((order) => order!.cart_id.id);
                 setCartsIds(cartIds);
-                console.log(cartIds);
+                ;
 
                 const fetchedCarts = await getCartItemByCartId(user.id);
                 setCarts(fetchedCarts);
-                console.log("fetchedCarts :", fetchedCarts);
+                ;
 
             } catch (error) {
-                console.error("Error fetching orders:", error);
+                ;
             }
-            setWindowWidth(window.innerWidth);
             const handleResize = () => setWindowWidth(window.innerWidth);
+            setWindowWidth(window.innerWidth);
             window.addEventListener("resize", handleResize);
             return () => window.removeEventListener("resize", handleResize);
         };
@@ -128,10 +127,10 @@ const TrackOrder = () => {
                 setIsViewReviewPopupOpen(true);
                 setshowReview(reviewsForOrder[0]); // ตั้งค่าข้อมูลรีวิวที่เลือก
             } else {
-                console.warn("No review found for the given order.");
+
             }
         } catch (error) {
-            console.error("Error fetching review for order:", error);
+            ;
         }
     };
 
@@ -173,7 +172,7 @@ const TrackOrder = () => {
             }));
             setReviews(reviewsData); // อัปเดต State ด้วยข้อมูลล่าสุดจาก Firebase
         } catch (error) {
-            console.error("Error fetching reviews:", error);
+            ;
         }
     };
 
@@ -182,7 +181,7 @@ const TrackOrder = () => {
         e.preventDefault(); // ป้องกันการรีเฟรชหน้าหลังจาก submit form
 
         if (!user?.id) {
-            console.warn("User is not logged in.");
+
             return;
         }
 
@@ -224,7 +223,7 @@ const TrackOrder = () => {
             setSelectedRating(0);
             setReviewText('');
         } catch (error) {
-            console.error("Error submitting review:", error);
+            ;
             alert("An error occurred while submitting your review.");
         }
     };
@@ -234,7 +233,6 @@ const TrackOrder = () => {
         e.preventDefault();
 
         if (!user?.id) {
-            console.warn("User is not logged in.");
             return;
         }
 
@@ -280,7 +278,7 @@ const TrackOrder = () => {
             setSelectedRating(0);
             setReviewText('');
         } catch (error) {
-            console.error("Error updating review:", error);
+            ;
             alert(error instanceof Error ? error.message : "An error occurred while updating your review.");
         }
     };

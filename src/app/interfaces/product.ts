@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase-admin/firestore";
-import { DocumentReference, FieldValue } from "firebase/firestore";
+import { FieldValue } from "firebase/firestore";
 
 export interface Product {
     imageProduct: string

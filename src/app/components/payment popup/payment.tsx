@@ -63,7 +63,7 @@ function Payment({
           status: "Pending",
         };
         const docRef = await addDoc(collection(db, "payments"), paymentData);
-        console.log("Payment saved with ID:", docRef.id);
+        ;
 
         // บันทึกข้อมูลการสั่งซื้อ
         const paymentRef = doc(db, "payments", docRef.id);
@@ -77,7 +77,7 @@ function Payment({
           payment_id: paymentRef,
         };
         const orderDocRef = await addDoc(collection(db, "orders"), orderData);
-        console.log("Order saved with ID:", orderDocRef.id);
+        ;
 
         // อัปเดตสถานะของ cart
 
@@ -89,7 +89,7 @@ function Payment({
         throw new Error("Image upload failed");
       }
     } catch (error) {
-      console.error("Error during payment process:", error);
+      ;
       alert("เกิดข้อผิดพลาดระหว่างการสั่งซื้อ");
     } finally {
       setIsUploading(false);

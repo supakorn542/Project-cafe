@@ -1,10 +1,10 @@
-"use client";
+
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/authContext";
 import { useRouter } from "next/navigation";
-import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+
 import { MdAccountCircle } from "react-icons/md";
 import "./navbarAdmin.css";
 interface NavnarProp {

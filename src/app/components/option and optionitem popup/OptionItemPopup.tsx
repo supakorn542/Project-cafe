@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
   doc,
-  deleteDoc,
+
   collection,
-  addDoc,
-  updateDoc,
+
   writeBatch,
 } from "firebase/firestore";
 import { db } from "@/app/lib/firebase";
@@ -42,7 +41,7 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
         const items = await getOptionItemsByOptionId(option.id);
         setOptionItems(items);
       } catch (error) {
-        console.error("Error fetching option items:", error);
+        ;
       } finally {
         setLoading(false);
       }
@@ -61,7 +60,7 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
     setPendingDeleteIds((prev) => [...prev, itemId]);
     setOptionItems((prev) => prev.filter((item) => item.id !== itemId));
   };
-  console.log("require : ",isRequire)
+  
 
   const handleSaveChanges = async () => {
     try {
@@ -94,7 +93,7 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
       alert("Changes saved successfully!");
       onClose();
     } catch (error) {
-      console.error("Error saving changes:", error);
+      ;
       alert("Failed to save changes. Please try again.");
     }
   };

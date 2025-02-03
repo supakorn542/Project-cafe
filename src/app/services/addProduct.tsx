@@ -1,7 +1,7 @@
 import { collection, addDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Product } from '../interfaces/product';
-import { MdDescription } from 'react-icons/md';
+
 import axios from 'axios';
 
 // ฟังก์ชันสำหรับการสร้างข้อมูลผลิตภัณฑ์ใหม่พร้อมกับ option หลายตัวในฟิลด์เดียว
@@ -26,12 +26,12 @@ export const createProductWithOptions = async (productData: Product, imageFile: 
 
             if (response.data.url) {
               imageUrl = response.data.url;
-              console.log("Image uploaded successfully:", imageUrl);
+              ;
             } else {
-              console.error("Failed to upload image");
+              ;
             }
           } catch (error) {
-            console.error("Error uploading image:", error);
+            ;
           } finally {
             resolve(); // Resolve the promise after upload attempt
           }
@@ -66,7 +66,7 @@ export const createProductWithOptions = async (productData: Product, imageFile: 
 
     return productDocRef; // คืนค่า DocumentReference ของ product ที่สร้างขึ้น
   } catch (e) {
-    console.error("Error adding product and productOptions: ", e);
+    ;
     throw e;
   }
 };

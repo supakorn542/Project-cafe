@@ -1,8 +1,4 @@
 
-import { CartInterface } from "./cartInterface";
-import { OptionInterface } from "./optioninterface";
-import { Product } from "./product";
-
 
 export interface CartItemsInterface {
     id? : string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Key, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../../lib/firebase"; // ปรับเส้นทางตามที่คุณใช้
 import {
   collection,
@@ -59,14 +59,14 @@ const Cart = () => {
 
   const handleSubmit = (formData: any) => {
     // Handle form submission (e.g., send data to server)
-    console.log("Form Data:", formData);
+    ;
     handleClosePopup();
   };
   useEffect(() => {
     const fetchCartItems = async () => {
       if (user && user.id) {
         // ดึงข้อมูลจาก Firestore
-        console.log("User are login", user);
+        ;
         try {
           setLoading(true);
 
@@ -82,7 +82,7 @@ const Cart = () => {
 
           const cartIds = cartSnapshot.docs.map((doc) => doc.id);
           // ถ้าไม่มี cart ให้หยุดการทำงานและตั้งค่า state เป็นว่าง
-          console.log("cartIds :", cartIds);
+          ;
           setCartId(cartIds[0]);
 
           if (cartIds.length === 0) {
@@ -91,16 +91,16 @@ const Cart = () => {
           }
 
           const cartRefIds = cartIds.map((cartId) => doc(db, "carts", cartId));
-          console.log("cartRefIds :", cartRefIds);
+          ;
           // 2. ดึงข้อมูล cartItems ที่ cart_id ตรงกับ cartIds
           const cartItemQuery = query(
             collection(db, "cartItems"),
             where("cart_id", "in", cartRefIds)
           );
-          console.log("cartitem", cartItemQuery);
+          ;
 
           const cartItemSnapshot = await getDocs(cartItemQuery);
-          console.log("cartItemSnapshot", cartItemSnapshot);
+          ;
           const cartItems = cartItemSnapshot.docs.map((doc) => {
             const data = doc.data();
             return {
@@ -112,7 +112,7 @@ const Cart = () => {
               description: data.description,
             };
           });
-          console.log("dd", cartItems);
+          ;
 
           // 3. ดึงข้อมูลสินค้าจาก collection "products"
           const productSnapshots = await Promise.all(
@@ -139,10 +139,6 @@ const Cart = () => {
                   return getDoc(optionRef); // optionRef เป็น DocumentReference
                 });
               } else {
-                console.error(
-                  "optionitem_ids is not an array or is missing",
-                  item.optionitem_ids
-                );
                 return []; // คืนค่า empty array ถ้าไม่ใช่ array ของ DocumentReference
               }
             })
@@ -161,7 +157,7 @@ const Cart = () => {
             {}
           );
 
-          console.log("optionItems: ", optionItems);
+          ;
 
           // 5. อัปเดต cartItems พร้อมข้อมูลสินค้าและ optionItems
           const updatedCartItems = cartItems.map((item) => {
@@ -185,7 +181,7 @@ const Cart = () => {
                     imageProduct: product.imageProduct || "",
                   };
                 }
-                console.warn("Invalid product_id format in array:", productRef);
+   
                 return { id: "", name: "Unknown", price: 0, imageProduct: "" }; // default object
               });
             } else if (item.product_id instanceof DocumentReference) {
@@ -201,7 +197,7 @@ const Cart = () => {
                 },
               ];
             } else {
-              console.warn("Invalid product_id format:", item.product_id);
+
             }
 
             let optionItemsForItem: any[] = [];
@@ -249,13 +245,13 @@ const Cart = () => {
           // 6. อัปเดต State
           setCartItems(updatedCartItems);
         } catch (error) {
-          console.error("Error fetching cart items:", error);
+          ;
         } finally {
           setLoading(false);
         }
       } else {
         // รอให้ข้อมูลผู้ใช้ถูกโหลด
-        console.log("User not logged in or user ID not found.");
+        ;
         return; // หรือสามารถใช้การแสดงข้อความหรือการเปลี่ยนเส้นทางไปยังหน้า login
       }
     };
@@ -273,9 +269,9 @@ const Cart = () => {
         prevItems.filter((item) => item.id !== itemId)
       );
 
-      console.log(`Deleted cart item with ID: ${itemId}`);
+      ;
     } catch (error) {
-      console.error("Error deleting cart item:", error);
+      ;
     }
   };
   if (loading) {
