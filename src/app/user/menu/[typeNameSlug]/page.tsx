@@ -1,9 +1,9 @@
 "use client";
 
 import Navbar from "@/app/components/Navbar";
-import Image from "next/image";
+
 import { useParams } from "next/navigation";
-import { FaCirclePlus } from "react-icons/fa6";
+
 import {
   getAllProducts,
   getAllProductTypes,
@@ -46,7 +46,7 @@ export default function ProductType() {
           type.name.toLowerCase().includes("coffee")
         );
 
-        console.log("filteredProductTypes: ", filteredProductTypes);
+        ;
         setProductTypes(filteredProductTypes);
 
         // Filter products ที่ตรงกับ productType ที่มี "coffee"
@@ -56,7 +56,7 @@ export default function ProductType() {
           )
         );
 
-        console.log("filteredProducts", filteredProducts);
+        ;
 
         setProducts(filteredProducts);
       } else {
@@ -73,7 +73,7 @@ export default function ProductType() {
     }
   }, [typeNameSlug]);
 
-  console.log("Product : ", products);
+  ;
 
   return (
     <div className="min-h-screen bg-[#FBF6F0] overflow-y-auto">

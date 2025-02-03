@@ -1,5 +1,4 @@
-import { Payment } from "../interfaces/payment"
-import { CartInterface } from "./cartInterface";
+
 export interface Order {
     id: string;
     orderDate: Date;

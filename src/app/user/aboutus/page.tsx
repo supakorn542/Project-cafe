@@ -4,7 +4,7 @@
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
 import Image from "next/image"; // Import from 'next/image'
-import { Key, useEffect } from "react";
+import {  useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // You can also use <link> for styles
 import FooterUser from "../../components/footer/footerUser";
@@ -210,7 +210,7 @@ export default function AboutUs() {
                 >
                     <div className="flex flex-col text-[#013927] gap-7 font-playfair">
                         <label className="flex flex-col text-center text-4xl font-semibold ">
-                            <span>Don't miss out, try</span>
+                            <span>Don&rsquo;t miss out, try</span>
                             <span>our roasted coffee today</span>
                         </label>
                         <div>

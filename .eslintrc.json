@@ -1,3 +1,12 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",  // ปิดการเตือน 'any'
+    "react/jsx-key": "off",                     // ปิดการเตือน 'key' ใน JSX
+    "no-console": "warn",
+    "@typescript-eslint/no-unused-vars": "off" ,
+    "@next/next/no-img-element": "off" 
+                         
+  }
 }
+

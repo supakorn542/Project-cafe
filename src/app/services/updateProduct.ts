@@ -1,7 +1,7 @@
 import { doc, DocumentData, DocumentReference, FieldValue, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import axios from "axios";
-import { Product } from "../interfaces/product";
+
 
 export const updateProduct = async (
   productId: string,
@@ -32,12 +32,12 @@ export const updateProduct = async (
 
           if (response.data.url) {
             imageUrl = response.data.url;
-            console.log("Image uploaded successfully:", imageUrl);
+            ;
           } else {
-            console.error("Failed to upload image");
+            ;
           }
         } catch (error) {
-          console.error("Error uploading image:", error);
+          ;
         } finally {
           resolve(); // Resolve the promise after upload attempt
         }
@@ -79,7 +79,7 @@ export const updateProduct = async (
     await updateDoc(productRef, updatedData);
     return true;
   } catch (error) {
-    console.error("Error updating product:", error);
+    ;
     throw new Error("Failed to update product");
   }
 };

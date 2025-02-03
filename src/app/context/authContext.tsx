@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       let role = tokenResult.claims?.role;
   
       if (!role) {
-        console.log("User has no role, setting role to 'user'");
+        ;
         await fetch("/api/role", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         tokenResult = await result.user.getIdTokenResult(true);
         role = tokenResult.claims?.role;
       } else {
-        console.log("User already has role:", role);
+        ;
       }
   
       const token = tokenResult.token;
@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(newUser);
       router.push("/user/profile");
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      ;
     } finally {
       setLoading(false);
     }
@@ -128,18 +128,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOutUser = async () => {
     setLoading(true);
     try {
-      console.log("Signing out...");
+      ;
       await signOut(auth);
-      console.log("Firebase sign out successful.");
+      ;
 
       nookies.destroy(null, "token", { path: "/" });
 
       setUser(null);
 
-      console.log("Token cookie destroyed.");
+      ;
       window.location.href = "/";
     } catch (error) {
-      console.error("Error signing out:", error);
+      ;
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,4 @@
-import { collection, doc, addDoc, where, getDocs, query, getDoc, deleteDoc, serverTimestamp, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, where, getDocs, query, getDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { DailySales } from '../interfaces/dailySales';
 
@@ -15,9 +15,9 @@ export const getTodayOrders = async () => {
         const startOfDayTimestamp = Timestamp.fromDate(startOfDay);
         const endOfDayTimestamp = Timestamp.fromDate(endOfDay);
 
-        console.log("Fetching orders from Firestore...");
-        console.log("Start of Day Timestamp:", startOfDayTimestamp.toDate());
-        console.log("End of Day Timestamp:", endOfDayTimestamp.toDate());
+        ;
+        ;
+        ;
 
         const ordersQuery = query(
             ordersRef,
@@ -28,20 +28,20 @@ export const getTodayOrders = async () => {
 
         const querySnapshot = await getDocs(ordersQuery); // ดึงข้อมูลจาก Firestore
 
-        console.log("orderr", ordersQuery); // << เช็กว่ามาถึงตรงนี้ไหม
+        ; // << เช็กว่ามาถึงตรงนี้ไหม
         if (querySnapshot.empty) {
-            console.log("No orders found for today.");
+            ;
             return [];
         }
 
-        console.log("Number of orders found:", querySnapshot.size);
+        ;
 
         const orderss = querySnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data(),
         }));
 
-        console.log("Fetched orders:", orderss);
+        ;
 
         const orders = await Promise.all(querySnapshot.docs.map(async (orderDoc) => {
             const orderData = orderDoc.data();
@@ -53,7 +53,7 @@ export const getTodayOrders = async () => {
                 const cartData = cartSnap.data();
                 orderData.cart_id = { id: cartRef.id, ...cartData || {} }; // กำหนดเป็น object ที่มี id
 
-                console.log(orderData.cart_id.status)
+                
                 if (orderData.cart_id.status == false) {
                     return orderData
                 } else {
@@ -64,10 +64,10 @@ export const getTodayOrders = async () => {
             }
         }));
 
-        console.log("Order To day", orders)
+        
         return orders.filter(order => order !== null);
     } catch (error) {
-        console.error("Error fetching today's orders with products:", error);
+        ;
         return [];
     }
 };
@@ -93,7 +93,7 @@ export const getTodayOnlineSales = async () => {
         const querySnapshot = await getDocs(ordersQuery); // ดึงข้อมูลจาก Firestore
 
         if (querySnapshot.empty) {
-            console.log("No orders found for today.");
+            ;
             return 0; // คืนค่า 0 ถ้าไม่มีคำสั่งซื้อ
         }
 
@@ -103,7 +103,7 @@ export const getTodayOnlineSales = async () => {
             .filter(order => order.statusOrder === "Completed" || order?.statusOrder === "Received");
 
         if (completedOrders.length === 0) {
-            console.log("No completed orders found for today.");
+            ;
             return 0; // คืนค่า 0 ถ้าไม่มีคำสั่งซื้อที่เสร็จสมบูรณ์
         }
 
@@ -112,11 +112,11 @@ export const getTodayOnlineSales = async () => {
             return sum + (order.total_price || 0);
         }, 0);
 
-        console.log("Total completed sales for today:", totalSales);
+        ;
         return totalSales;
 
     } catch (error) {
-        console.error("Error fetching today's completed sales:", error);
+        ;
         return 0; // คืนค่า 0 หากเกิดข้อผิดพลาด
     }
 };
@@ -142,7 +142,7 @@ export const getTodayInStoreSales = async () => {
         const querySnapshot = await getDocs(dailySalesQuery); // ดึงข้อมูลจาก Firestore
 
         if (querySnapshot.empty) {
-            console.log("No sales found for today.");
+            ;
             return 0; // หากไม่พบข้อมูลจะส่งกลับ 0
         }
 
@@ -155,10 +155,10 @@ export const getTodayInStoreSales = async () => {
             return acc;
         }, 0);
 
-        console.log("Total sales for today:", totalSales);
+        ;
         return totalSales;
     } catch (error) {
-        console.error("Error fetching today's sales:", error);
+        ;
         return 0; // หากเกิดข้อผิดพลาดจะส่งกลับ 0
     }
 };
@@ -171,7 +171,7 @@ export const getAllDailyOnlineSales = async () => {
         const querySnapshot = await getDocs(ordersRef);
 
         if (querySnapshot.empty) {
-            console.log("No orders found.");
+            ;
             return {};
         }
 
@@ -189,11 +189,11 @@ export const getAllDailyOnlineSales = async () => {
             salesByDate[dateKey] = (salesByDate[dateKey] || 0) + (order.total_price || 0);
         });
 
-        console.log("Daily sales report:", salesByDate);
+        ;
         return salesByDate;
 
     } catch (error) {
-        console.error("Error fetching all daily sales:", error);
+        ;
         return {};
     }
 };
@@ -206,7 +206,7 @@ export const getAllDailyInStoreSales = async () => {
         const querySnapshot = await getDocs(dailySalesRef);
 
         if (querySnapshot.empty) {
-            console.log("No in-store sales data found.");
+            ;
             return {};
         }
 
@@ -224,11 +224,11 @@ export const getAllDailyInStoreSales = async () => {
             salesByDate[dateKey] = (salesByDate[dateKey] || 0) + salesData.totalSales;
         });
 
-        console.log("Daily in-store sales report:", salesByDate);
+        ;
         return salesByDate;
 
     } catch (error) {
-        console.error("Error fetching all daily in-store sales:", error);
+        ;
         return {};
     }
 };
@@ -243,7 +243,7 @@ export const createDailySales = async (sales: DailySales): Promise<void> => {
             createdAt: new Date(),
         });
     } catch (error) {
-        console.error("Error creating review:", error);
+        ;
         throw new Error("Failed to create review");
     }
 };
@@ -260,7 +260,7 @@ export const deleteDailySales = async (date: string): Promise<void> => {
         const querySnapshot = await getDocs(q);
     
         if (querySnapshot.empty) {
-          console.log(`ไม่พบข้อมูลยอดขายของวันที่ ${date}`);
+          ;
           return;
         }
     
@@ -269,9 +269,9 @@ export const deleteDailySales = async (date: string): Promise<void> => {
           await deleteDoc(doc.ref);
         });
     
-        console.log(`ลบข้อมูลยอดขายของวันที่ ${date} สำเร็จ`);
+        ;
     } catch (error) {
-        console.error("Error deleting review:", error);
+        ;
         throw new Error("Failed to delete review.");
     }
 };

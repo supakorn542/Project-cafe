@@ -25,10 +25,6 @@ const sourceSerif4 = Source_Serif_4({
   weight: ["200","300","400", "600", "700"], 
 });
 
-const gloock = Gloock({
-  subsets: ["latin"],
-  weight: ["400"],
-});
 
 const notoSansThai = Noto_Sans_Thai({
   subsets: ["latin"],

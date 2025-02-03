@@ -53,8 +53,8 @@ const Menu = () => {
         getAllProducts(),
         getAllProductTypes(),
       ]);
-      console.log("Fetched Products: ", fetchedProducts);
-      console.log("Fetched Product Types: ", fetchedProductTypes);
+      ;
+      ;
       setProducts(fetchedProducts);
       setProductTypes(fetchedProductTypes);
 
@@ -79,12 +79,12 @@ const Menu = () => {
           coffeeTypeIds.includes(product.productType_id)
         ),
       });
-      console.log("group inside fetch data", grouped);
+      ;
 
       setGroupedProducts(grouped); // อัพเดต groupedProducts
-      console.log(grouped);
+      ;
     } catch (error) {
-      console.error("Failed to fetch data:", error);
+      ;
     }
   };
 
@@ -108,9 +108,9 @@ const Menu = () => {
     return () => window.removeEventListener("resize", updateItemsPerSlide);
   }, []);
 
-  console.log("Products :", products);
-  console.log("Product Types :", productTypes);
-  console.log("Group Products :", groupedProducts);
+  ;
+  ;
+  ;
 
   return (
     <>

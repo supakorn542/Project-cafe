@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Navbar from "@/app/components/Navbar";
+
 import '../../globals.css';
 import { createDailySales, deleteDailySales, getAllDailyInStoreSales, getAllDailyOnlineSales, getTodayInStoreSales, getTodayOnlineSales, getTodayOrders } from "@/app/services/salesdata";
 import { getCartItemByCartIdFromAom } from "@/app/services/orderhistory";
 import { getAllReview } from "@/app/services/review";
 import { Timestamp } from "firebase/firestore";
-import NavbarAdmin from "@/app/components/navbarAdmin/page";
+import NavbarAdmin from "@/app/components/navbarAdmin/navbarAdmin";
 
 const Salesdata = () => {
   const [isSalseDataPopupOpen, setIsSalseDataPopupOpen] = useState(false);
@@ -29,22 +29,22 @@ const Salesdata = () => {
       try {
         // ดึงข้อมูลคำสั่งทั้งหมดจาก getTodayOrders
         const todayOrders = await getTodayOrders();
-        console.log("Fetched Today Orders:", todayOrders); // ดีบักข้อมูลที่ดึงมาจาก getTodayOrders
+        ; // ดีบักข้อมูลที่ดึงมาจาก getTodayOrders
 
         // กรองคำสั่งที่มี statusOrder เป็น "Completed และ Received"
         const completedOrders = todayOrders.filter(order => order?.statusOrder === "Completed" || order?.statusOrder === "Received");
-        console.log("Completed Orders:", completedOrders);
+        ;
 
         setOrders(completedOrders);
 
         if (completedOrders && completedOrders.length > 0) {
           const cartIdsFromCompletedOrders = completedOrders.map(order => order?.cart_id.id);
-          console.log("cartIdsFromCompletedOrders:", cartIdsFromCompletedOrders); // ดีบักข้อมูล cart_id
+          ; // ดีบักข้อมูล cart_id
 
           // ลองตรวจสอบว่า cartIdsFromCompletedOrders มีข้อมูลหรือไม่
           if (cartIdsFromCompletedOrders.length > 0) {
             const cartItemForSet = await getCartItemByCartIdFromAom(cartIdsFromCompletedOrders);
-            console.log("Fetched cart items:", cartItemForSet); // ดีบักข้อมูล cartItemForSet
+            ; // ดีบักข้อมูล cartItemForSet
             setCartItems(cartItemForSet);
 
             const productQuantities = cartItemForSet.reduce((acc: { name: string, quantity: number }[], item) => {
@@ -56,38 +56,38 @@ const Salesdata = () => {
               }
               return acc;
             }, []);
-            console.log("Product quantities:", productQuantities); // ดีบักข้อมูล productQuantities
+            ; // ดีบักข้อมูล productQuantities
             setProductQuantities(productQuantities);
           } else {
-            console.log("No cart IDs found in today's orders.");
+            ;
           }
         } else {
-          console.log("No completed orders found for today.");
+          ;
         }
 
         const review = await getAllReview();
         setAllReviews(review.filter(item => !item.deletedAt));
-        console.log("Fetched reviews:", review);
+        ;
 
         const onlineSalesAmount = await getTodayOnlineSales();
         setOnlineSales(onlineSalesAmount);
-        console.log("Fetched online sales:", onlineSalesAmount);
+        ;
 
         const inStoreSaleAmount = await getTodayInStoreSales();
         setInStoreSale(inStoreSaleAmount);
-        console.log("Fetched in-store sales:", inStoreSaleAmount);
+        ;
 
 
         const allonlineSales = await getAllDailyOnlineSales();
         setTotalOnlineSales(allonlineSales)
-        console.log("Fetched online sales:", allonlineSales);
+        ;
 
         const allInStoreSales = await getAllDailyInStoreSales();
         setTotalInStoreSales(allInStoreSales)
-        console.log("Fetched In-Store sales:", allInStoreSales);
+        ;
 
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        ;
       }
     };
 
@@ -145,7 +145,7 @@ const Salesdata = () => {
         }
 
         await deleteDailySales(formattedDate);
-        console.log(`ลบข้อมูลยอดขายของวันที่ ${formattedDateThai} สำเร็จ`);
+        ;
       }
 
       const dailySales = {
@@ -168,7 +168,7 @@ const Salesdata = () => {
       setSaleAmount(0);
 
     } catch (error) {
-      console.error("Error saving sales data:", error);
+      ;
       alert("เกิดข้อผิดพลาดในการบันทึกยอดขาย");
     }
   };
@@ -191,14 +191,14 @@ const Salesdata = () => {
     try {
       const fetchedOnlineSales = await getAllDailyOnlineSales();
       setTotalOnlineSales(fetchedOnlineSales);
-      console.log("Fetched online sales:", fetchedOnlineSales);
+      ;
 
       const fetchedInStoreSales = await getAllDailyInStoreSales();
       setTotalInStoreSales(fetchedInStoreSales);
-      console.log("Fetched in-store sales:", fetchedInStoreSales);
+      ;
       
     } catch (error) {
-      console.error("Error fetching sales data:", error);
+      ;
     }
   };
   

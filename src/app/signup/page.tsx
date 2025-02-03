@@ -88,7 +88,7 @@ export default function Signup() {
       }
 
       alert(errorMessage);
-      console.error("Error signing up:", error);
+      ;
     }
     }
   };

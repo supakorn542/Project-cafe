@@ -2,9 +2,7 @@ import { db } from "../lib/firebase";
 import { collection, query, where, getDocs,doc,getDoc, DocumentReference ,documentId} from "firebase/firestore";
 import { Order } from "../interfaces/order";
 import { CartInterface } from "../interfaces/cartInterface";
-import { CartItemsInterface } from "../interfaces/cartItemInterface";
-import { Product } from "../interfaces/product";
-import { getProductById } from "./getProduct";
+
 
 
 export const getCartsByUserId = async (userId: string): Promise<CartInterface[]> => {
@@ -32,7 +30,7 @@ export const getCartsByUserId = async (userId: string): Promise<CartInterface[]>
 
     return carts;
   } catch (error) {
-    console.error("Error fetching carts:", error);
+    ;
     return [];
   }
 };
@@ -42,16 +40,16 @@ export const getCartsByUserId = async (userId: string): Promise<CartInterface[]>
 
 export const getOrdersByCartId = async (cartIds: string[], statusOrder: string) => {
   try {
-    console.log(cartIds , statusOrder);
+    ;
     const ordersRef = collection(db, "orders");
     let ordersSnapshot;
     
     // ใช้ query เฉพาะเมื่อ statusOrder เป็น "Completed"
-    if (statusOrder == "Completed") {
+    if (statusOrder == "Completed" || statusOrder == "Received") {
       const ordersQuery = query(
         ordersRef, 
         where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))), 
-        where("statusOrder", "==", "Completed")
+        where("statusOrder", "in", ["Completed", "Received"]),
       );
       ordersSnapshot = await getDocs(ordersQuery);
     }
@@ -64,12 +62,12 @@ export const getOrdersByCartId = async (cartIds: string[], statusOrder: string) 
       );
       ordersSnapshot = await getDocs(ordersQuery);
     }
-    console.log(ordersSnapshot);
+    ;
 
     // แปลงผลลัพธ์จาก ordersSnapshot ให้เป็นอาร์เรย์ของ Order
     const orders = await Promise.all(ordersSnapshot.docs.map(async (doc) => {
       const data = doc.data();
-      console.log(data);
+      ;
     
       const cartRef = data.cart_id;
       const cartSnap = await getDoc(cartRef);
@@ -92,7 +90,7 @@ export const getOrdersByCartId = async (cartIds: string[], statusOrder: string) 
 
     return orders;
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    ;
     return [];
   }
 };
@@ -103,16 +101,16 @@ export const getCartItemByCartId = async (
   userId: string
 ) => {
   try {
-    console.log("UserId:", userId);
+    ;
     const carts = await getCartsByUserId(userId);
 
     if (carts.length === 0) {
-      console.log("No carts found for this user.");
+      ;
       return [];
     }
 
     const cartIds = carts.map((cart) => cart.id);
-    console.log(cartIds);
+    ;
     const cartItemsRef = collection(db, "cartItems");
     const cartItemsQuery = query(cartItemsRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))));
     const cartItemsSnapshot = await getDocs(cartItemsQuery);
@@ -120,7 +118,7 @@ export const getCartItemByCartId = async (
     // แปลงผลลัพธ์จาก cartItemsSnapshot ให้เป็นอาร์เรย์ของ cartItem
     const cartItems = Promise.all(cartItemsSnapshot.docs.map(async (doc) => {
       const data = doc.data();
-      console.log("gggg", data);
+      ;
 
       const productRef = data.product_id;
       const productSnap = await getDoc(productRef);
@@ -139,7 +137,7 @@ export const getCartItemByCartId = async (
         throw new Error("cart not found");
       }
       const optionItemRef = data.optionitem_id;
-      console.log(optionItemRef)
+      
       // const optionItemSnap = await getDoc(optionItemRef);
       if (optionItemRef) {
         const optionItems = await Promise.all(
@@ -154,7 +152,7 @@ export const getCartItemByCartId = async (
           })
         );
         data.optionitem_id = optionItems;
-        console.log(data.optionitem_id);
+        ;
       } else {
         throw new Error("optionItem not found");
       }
@@ -169,11 +167,11 @@ export const getCartItemByCartId = async (
         optionitem_id: data.optionitem_id,
       };
     }));
-    console.log(cartItems)
+    
     return cartItems;
 
   } catch (error) {
-    console.error("Error fetching cart items:", error);
+    ;
     return [];
   }
 };
@@ -236,7 +234,7 @@ export const getCartItemByCartIdFromAom = async (cartIds: string[]) => {
 
     return cartItems;
   } catch (error) {
-    console.error("Error fetching cart items:", error);
+    ;
     return [];
   }
 };
@@ -246,59 +244,59 @@ export const getCartItemByCartIdFromAom = async (cartIds: string[]) => {
 // ฟังก์ชันเพื่อดึงข้อมูล orders โดยใช้ userId
 export const getOrdersByUserId = async (userId: string) => {
   try {
-    console.log("UserId:", userId)
+    
     // ดึง carts ที่เชื่อมโยงกับ userId
     const carts = await getCartsByUserId(userId);
-    console.log("carts55:", carts)
+    
 
     if (carts.length === 0) {
-      console.log("No carts found for this user.");
+      ;
       return [];
     }
     
     const ordersRef = collection(db, "orders");
     const cartIds = carts.map((cart) => cart.id);
 
-    console.log("cartsId:", cartIds)
+    
 
     const orders = await getOrdersByCartId(cartIds, "Not Completed");
     // const cartItems = await getCartItemByCartId(cartIds);
     // Query เพื่อดึง orders ที่ตรงกับ cart_id
     // ใช้ `in` เพื่อดึงข้อมูลหลาย `cart_id`
-    console.log("test ",orders)
+    
 
 
     return orders;
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    ;
     return [];
   }
 };
 export const getCompletedOrdersByUserId = async (userId: string): Promise<Order[]> => {
   try {
-    console.log("UserId:", userId)
+    
     // ดึง carts ที่เชื่อมโยงกับ userId
     const carts = await getCartsByUserId(userId);
-    console.log("carts55:", carts)
+    
 
     if (carts.length === 0) {
-      console.log("No carts found for this user.");
+      ;
       return [];
     }
     
     const ordersRef = collection(db, "orders");
     const cartIds = carts.map((cart) => cart.id);
 
-    console.log("cartsId:", cartIds)
+    
 
     const orders = await getOrdersByCartId(cartIds, "Completed");
 
-    console.log("orderscomplete:", orders)
+    
 
     
     return orders;
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    ;
     return [];
   }
 };

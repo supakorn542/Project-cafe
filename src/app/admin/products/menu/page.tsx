@@ -5,12 +5,13 @@ import { productTypeInterface } from "../../../interfaces/productType";
 import { getProducts, getProductType } from "../../../services/getProduct";
 import { deleteProduct } from "../../../services/deleteProduct";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+
 import { deleteProductOptionsByProductId } from "@/app/services/deleteProductOption";
-import AddProductForm from "../addmenu/page";
-import Navbar from "@/app/components/Navbar";
+
+import AddProductForm from "@/app/components/addProduct/AddProductForm";
+
 import { FaEdit, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
-import UpdateProductForm from "../updatemenu/[productId]/page";
+import UpdateProductForm from "@/app/components/updateProduct/UpdateProductForm";
 import { OptionInterface } from "@/app/interfaces/optioninterface";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { getProductOptionsByProductId } from "@/app/services/productOption";
@@ -18,7 +19,7 @@ import { getOptions } from "@/app/services/options";
 import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
-import NavbarAdmin from "@/app/components/navbarAdmin/page";
+import NavbarAdmin from "@/app/components/navbarAdmin/navbarAdmin";
 import { RefreshProvider, useRefresh } from "@/app/components/RefreshContext/RefreshContext";
 
 const MenuPage = () => {
@@ -89,7 +90,7 @@ const MenuPage = () => {
     fetchData();
   }, [refresh]);
 
-  console.log("product list:", filteredProducts);
+  ;
   const handleDelete = async (id: string, productName: string) => {
     // ลบข้อมูลสินค้า
     await deleteProduct(id);
@@ -100,9 +101,9 @@ const MenuPage = () => {
     // ลบตัวเลือกสินค้า
     try {
       await deleteProductOptionsByProductId(id);
-      console.log("Product options deleted successfully.");
+      ;
     } catch (error) {
-      console.error("Error deleting product options:", error);
+      ;
     }
 
     try {
@@ -114,12 +115,12 @@ const MenuPage = () => {
       });
 
       if (response) {
-        console.log("Image deleted successfully.");
+        ;
       } else {
-        console.error("Error deleting image:");
+        ;
       }
     } catch (error) {
-      console.error("Error deleting image:", error);
+      ;
     }
   };
 

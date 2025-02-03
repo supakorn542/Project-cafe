@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error('Error in LINE callback:', error);
+    ;
     return new NextResponse('Authentication failed', { status: 500 });
   }
 }

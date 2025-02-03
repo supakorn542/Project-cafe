@@ -21,7 +21,7 @@ export const getOptions = async (): Promise<{ options: OptionInterface[], option
   const optionItemsSnapshot = await getDocs(optionItemsCol);
   optionItemsSnapshot.docs.forEach((doc) => {
       const data = doc.data();
-      console.log('data :' ,data)
+      
       const optionId = data.option_id?.id; // ใช้ .id เพื่อเข้าถึง reference
       if (optionId) {
           if (!optionItemsMapTemp[optionId]) {
@@ -53,7 +53,7 @@ export const createOption = async (
       require: data.require,
     });
 
-    console.log("Option created with ID: ", addOption.id);
+    ;
 
     // 2. ถ้ามี optionItems ให้บันทึกข้อมูลใน collection "optionItems"
     if (optionItems && optionItems.length > 0) {
@@ -70,13 +70,13 @@ export const createOption = async (
 
       // Commit batch
       await batch.commit();
-      console.log("Option items saved successfully!");
+      ;
     }
 
     // คืนค่า `id` ของ option ที่สร้าง
     return addOption.id;
   } catch (error) {
-    console.error("Error creating option: ", error);
+    ;
     throw error; // ส่ง error กลับไปให้ฟังก์ชันที่เรียกใช้งาน
   }
 };

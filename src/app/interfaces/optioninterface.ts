@@ -1,4 +1,4 @@
-import {Product} from './product'
+
 
 export interface OptionInterface {
   id: string; 

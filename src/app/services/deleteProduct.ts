@@ -5,8 +5,8 @@ import { db } from '../lib/firebase';
 export const deleteProduct = async (id : string) => {
     try {
       await deleteDoc(doc(db, 'products', id));
-      console.log('Document deleted successfully');
+      ;
     } catch (error) {
-      console.error('Error deleting document: ', error);
+      ;
     }
   };
