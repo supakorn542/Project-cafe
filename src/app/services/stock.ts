@@ -6,8 +6,8 @@ import { Withdrawal } from "../interfaces/withdrawal";
 
 export const createStocks = async (stockData: Stock, details: Array<{ idStock: string, manufactureDate: Date, expiryDate: Date }>) => {
   try {
-    
-    
+
+
     // เพิ่มเอกสารในคอลเลกชัน "stocks"
     const stockDocRef = await addDoc(collection(db, "stocks"), {
       name: stockData.name,
@@ -131,7 +131,7 @@ export const createWithdrawal = async (
       createdAt: new Date(), // เพิ่มเวลาในการสร้าง
     };
 
-    
+
 
     // สร้างเอกสารในคอลเลกชัน Withdrawal
     const withdrawalCollectionRef = collection(db, "withdrawals");
@@ -206,7 +206,13 @@ export const getWithdrawals = async (): Promise<Withdrawal[]> => {
       } as Withdrawal;
     });
 
-    ;
+    // แปลง `withdrawalDate` เป็น timestamp และเรียงจากใหม่ -> เก่า
+    withdrawals.sort((a, b) => {
+      const aDate = new Date(a.withdrawalDate).getTime(); // แปลงเป็น timestamp
+      const bDate = new Date(b.withdrawalDate).getTime();
+      return bDate - aDate; // ใหม่ -> เก่า
+    });
+
     return withdrawals;
 
   } catch (error) {
@@ -231,19 +237,10 @@ export const updateIngredientByIDAndAddDetail = async (
     expiryDate: Date;
   }>) => {
   try {
-    
+
     // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
     const stockRef = doc(db, "stocks", stockId);
     const stockSnapshot = await getDoc(stockRef);
-
-    // if (!stockSnapshot.exists()) {
-    //   return { success: false, message: "Stock not found" };
-    // }
-
-    // อัปเดตข้อมูล Stock
-    // if (Object.keys(updatedStockData).length > 0) {
-    //   await updateDoc(stockRef, updatedStockData);
-    // }
 
     if (stockSnapshot.exists()) {
       const stockData = stockSnapshot.data(); // ข้อมูลปัจจุบันของ stock
@@ -253,7 +250,7 @@ export const updateIngredientByIDAndAddDetail = async (
         // เพิ่มจำนวน quantity
         await updateDoc(stockRef, {
           quantity: currentQuantity + updatedStockData.quantity,
-          addedDate:updatedStockData.addedDate instanceof Date ? updatedStockData.addedDate : new Date(updatedStockData.addedDate),
+          addedDate: updatedStockData.addedDate instanceof Date ? updatedStockData.addedDate : new Date(updatedStockData.addedDate),
           description: updatedStockData.description,
         });
       } else {
@@ -297,19 +294,10 @@ export const updatePackagByIDAndAddDetail = async (
     // expiryDate: Date;
   }>) => {
   try {
-    
+
     // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
     const stockRef = doc(db, "stocks", stockId);
     const stockSnapshot = await getDoc(stockRef);
-
-    // if (!stockSnapshot.exists()) {
-    //   return { success: false, message: "Stock not found" };
-    // }
-
-    // อัปเดตข้อมูล Stock
-    // if (Object.keys(updatedStockData).length > 0) {
-    //   await updateDoc(stockRef, updatedStockData);
-    // }
 
     if (stockSnapshot.exists()) {
       const stockData = stockSnapshot.data(); // ข้อมูลปัจจุบันของ stock
@@ -319,7 +307,7 @@ export const updatePackagByIDAndAddDetail = async (
         // เพิ่มจำนวน quantity
         await updateDoc(stockRef, {
           quantity: currentQuantity + updatedStockData.quantity,
-          addedDate:updatedStockData.addedDate instanceof Date ? updatedStockData.addedDate : new Date(updatedStockData.addedDate),
+          addedDate: updatedStockData.addedDate instanceof Date ? updatedStockData.addedDate : new Date(updatedStockData.addedDate),
           description: updatedStockData.description,
         });
       } else {
@@ -359,12 +347,9 @@ export const updateIngredientByID = async (
     expiryDate: Date;
   }>
 ) => {
-  
+
   try {
     // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
-    
-    
-    
     const stockRef = doc(db, "stocks", stockId);
     const stockSnapshot = await getDoc(stockRef);
 
@@ -374,19 +359,13 @@ export const updateIngredientByID = async (
 
     // อัปเดตข้อมูล Stock
     if (Object.keys(updatedStockData).length > 0) {
-      
+
       if (typeof updatedStockData.addedDate === "string") {
         updatedStockData.addedDate = updatedStockData.addedDate instanceof Date ? updatedStockData.addedDate : new Date(updatedStockData.addedDate)
       }
-      
-      await updateDoc(stockRef,updatedStockData) // เติมข้อมูลใหม่ลงไปใน��านข้อมูล
-    }
 
-    // // อัปเดตรายละเอียดใหม่ใน stock
-    // if (newDetails.length > 0) {
-    //   const detailsRef = doc(db, "stocks", stockId, "details", "details.id"); // ชื่อ collection สำหรับรายละเอียด
-    //   await updateDoc(detailsRef, { details: newDetails });
-    // }
+      await updateDoc(stockRef, updatedStockData) // เติมข้อมูลใหม่ลงไปใน��านข้อมูล
+    }
 
     // อัปเดตหรือเพิ่มข้อมูลใน subcollection "details"
     if (newDetails.length > 0) {
@@ -394,8 +373,8 @@ export const updateIngredientByID = async (
         const detailRef = doc(db, "stocks", stockId, "details", detail.id); // ใช้ id ของรายละเอียดที่ต้องการอัปเดต
         await updateDoc(detailRef, {
           idStock: detail.idStock,
-          manufactureDate: typeof detail.manufactureDate == "string"? new Date(detail.manufactureDate):detail.manufactureDate,
-          expiryDate: typeof detail.expiryDate == "string"? new Date(detail.expiryDate):detail.expiryDate,
+          manufactureDate: typeof detail.manufactureDate == "string" ? new Date(detail.manufactureDate) : detail.manufactureDate,
+          expiryDate: typeof detail.expiryDate == "string" ? new Date(detail.expiryDate) : detail.expiryDate,
         });
       }
     }
@@ -427,15 +406,15 @@ export const updatePackagingByID = async (
       return { success: false, message: "Stock not found" };
     }
 
-   // อัปเดตข้อมูล Stock
-   if (Object.keys(updatedStockData).length > 0) {
-    
-    if (typeof updatedStockData.addedDate === "string") {
-      updatedStockData.addedDate = updatedStockData.addedDate instanceof Date ? updatedStockData.addedDate : new Date(updatedStockData.addedDate)
+    // อัปเดตข้อมูล Stock
+    if (Object.keys(updatedStockData).length > 0) {
+
+      if (typeof updatedStockData.addedDate === "string") {
+        updatedStockData.addedDate = updatedStockData.addedDate instanceof Date ? updatedStockData.addedDate : new Date(updatedStockData.addedDate)
+      }
+
+      await updateDoc(stockRef, updatedStockData) // เติมข้อมูลใหม่ลงไปใน��านข้อมูล
     }
-    
-    await updateDoc(stockRef,updatedStockData) // เติมข้อมูลใหม่ลงไปใน��านข้อมูล
-  }
     // // อัปเดตรายละเอียดใหม่ใน stock
     // if (newDetails.length > 0) {
     //   const detailsRef = doc(db, "stocks", stockId, "details", "details.id"); // ชื่อ collection สำหรับรายละเอียด
@@ -469,14 +448,6 @@ export const getStockById = async (stockId: string) => {
     const ingredientRef = doc(db, "stocks", stockId); // อ้างอิงเอกสารด้วย stockId
     const docSnap = await getDoc(ingredientRef); // ดึงเอกสาร
 
-    // if (docSnap.exists()) {
-    //   // ตรวจสอบว่าเอกสารมีอยู่หรือไม่
-    //   ;
-    //   return docSnap.data(); // คืนค่าข้อมูลของเอกสาร
-    // } else {
-    //   ;
-    //   return null; // คืนค่า null ถ้าเอกสารไม่มี
-    // }
 
     if (!docSnap.exists()) {
       ;
@@ -542,10 +513,16 @@ export const getStockPackags = async (): Promise<Stock[]> => {
       } as Stock
 
     }));
-    ;
+
+     // ✅ เรียงลำดับ addedDate จากใหม่ → เก่า
+     stocks.sort((a, b) => {
+      const aDate = a.addedDate ? new Date(a.addedDate).getTime() : 0;
+      const bDate = b.addedDate ? new Date(b.addedDate).getTime() : 0;
+      return bDate - aDate; // ใหม่ → เก่า
+    });
+
     return stocks;
   } catch (error) {
-    ;
     throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
   }
 };
@@ -560,14 +537,6 @@ export const getStockIngredients = async (): Promise<Stock[]> => {
     if (stockSnapshot.empty) {
       return []; // หากไม่มีข้อมูลใน collection ให้คืนค่า array เปล่า
     }
-    // // แปลงข้อมูลเป็น array
-    // const stockData = stockSnapshot.docs.map((doc) => ({
-    //   id: doc.id, // เพิ่ม id ของเอกสารเพื่อใช้งาน
-    //   // ...doc.data(), // ข้อมูลในเอกสาร
-    // }));
-
-    // ;
-    // return stockData;
 
     const stocks = await Promise.all(stockSnapshot.docs.map(async (docSnapshot) => {
       const data = docSnapshot.data();
@@ -590,7 +559,12 @@ export const getStockIngredients = async (): Promise<Stock[]> => {
       } as Stock
 
     }));
-    ;
+     // ✅ เรียงลำดับ addedDate จากใหม่ → เก่า
+     stocks.sort((a, b) => {
+      const aDate = a.addedDate ? new Date(a.addedDate).getTime() : 0;
+      const bDate = b.addedDate ? new Date(b.addedDate).getTime() : 0;
+      return bDate - aDate; // ใหม่ → เก่า
+    });
     return stocks;
 
 

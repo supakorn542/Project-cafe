@@ -89,14 +89,14 @@ const AddIngredient: React.FC<AddIngredientProps> = ({ addIngredientPopup, stock
             try {
                 const response = await updateIngredientByIDAndAddDetail(stockId, updatedStockData, newDetails);
                 if (response.success) {
-                    alert("Stock add successfully!");
+                    alert("เพิ่มข้อมูลวัตถุดิบสำเร็จ!");
                     addIngredientPopup(); // Close the popup on success
                 } else {
-                    alert("Failed to add Stock");
+                    alert("เพิ่มข้อมูลวัตถุดิบไม่สำเร็จ!");
                 }
             } catch (error) {
                 ;
-                alert("Failed to add Stock");
+                alert("เพิ่มข้อมูลวัตถุดิบไม่สำเร็จ!");
             }
         }
     };

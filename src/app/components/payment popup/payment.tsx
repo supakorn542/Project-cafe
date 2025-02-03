@@ -102,7 +102,7 @@ function Payment({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between items-center relative max-h-[500px] md:max-h-min">
+      <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-between items-center relative max-h-full md:max-h-min overflow-auto">
         <button onClick={onClose} className="absolute top-6 right-6">
           X
         </button>

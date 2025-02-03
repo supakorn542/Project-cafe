@@ -138,14 +138,14 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
             try {
                 const response = await updatePackagingByID(stockId, updatedStockData, newDetails);
                 if (response.success) {
-                    alert("Stock updated successfully!");
+                    alert("แก้ไขข้อมูลบรรจุภัณฑ์สำเร็จ!");
                     updatePackagingPopup(); // ปิด Popup
                 } else {
-                    alert("Failed to update Stock");
+                    alert("แก้ไขข้อมูลบรรจุภัณฑ์ไม่สำเร็จ!");
                 }
             } catch (error) {
                 ;
-                alert("Failed to update Stock");
+                alert("แก้ไขข้อมูลบรรจุภัณฑ์ไม่สำเร็จ!");
             }
         }
     };
@@ -194,9 +194,11 @@ const UpdatePackaging: React.FC<updatePackagingProps> = ({ updatePackagingPopup,
                                 >
                                     <option value="" disabled selected >กรุณาเลือก</option>
                                     <option value="ถุง">ถุง</option>
+                                    <option value="ลัง">ลัง</option>
                                     <option value="ชิ้น">ชิ้น</option>
+                                    <option value="แพ็ค">แพ็ค</option>
                                     <option value="กล่อง">กล่อง</option>
-                                    <option value="อัน">อัน</option>
+                                    <option value="ขวด">ขวด</option>
                                 </select>
                             </div>
                         </div>

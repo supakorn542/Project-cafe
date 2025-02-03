@@ -150,14 +150,14 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                 const response = await updateIngredientByID(stockId, updatedStockData, newDetails);
                 ;
                 if (response.success === true) {
-                    alert("Stock updated successfully!");
+                    alert("แก้ไขข้อมูลวัตถุดิบสำเร็จ!");
                     updateIngredientPopup(); // ปิด Popup
                 } else {
-                    alert("Failed to update Stock");
+                    alert("แก้ไขข้อมูลวัตถุดิบไม่สำเร็จ!");
                 }
             } catch (error) {
                 ;
-                alert("Failed to update Stock");
+                alert("แก้ไขข้อมูลวัตถุดิบไม่สำเร็จ!");
             }
         }
     };
@@ -203,10 +203,11 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                                     required
                                 >
                                     <option value="" disabled selected>กรุณาเลือก</option>
-                                    <option value="ml">ml</option>
-                                    <option value="g">g</option>
-                                    <option value="oz">oz</option>
-                                    <option value="Kg">Kg</option>
+                                    <option value="มิลลิลิตร">มิลลิลิตร</option>
+                                    <option value="ลิตร">ลิตร</option>
+                                    <option value="กรัม">กรัม</option>
+                                    <option value="กิโลกรัม">กิโลกรัม</option>
+                                    <option value="ออนซ์">ออนซ์</option>
                                 </select>
                             </div>
                         </div>
@@ -230,9 +231,11 @@ const UpdateIngredient: React.FC<updateIngredientProps> = ({ updateIngredientPop
                                 >
                                     <option value="" disabled selected >กรุณาเลือก</option>
                                     <option value="ถุง">ถุง</option>
+                                    <option value="ลัง">ลัง</option>
                                     <option value="ชิ้น">ชิ้น</option>
+                                    <option value="แพ็ค">แพ็ค</option>
                                     <option value="กล่อง">กล่อง</option>
-                                    <option value="อัน">อัน</option>
+                                    <option value="ขวด">ขวด</option>
                                 </select>
                             </div>
                         </div>
