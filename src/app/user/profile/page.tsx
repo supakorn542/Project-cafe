@@ -98,11 +98,12 @@ function Profile() {
 
       // สมมติว่า editedData.dob เป็น Date หรือ null
       if (editedData.dob && editedData.dob instanceof Date) {
-        // แปลง Date เป็น Timestamp ก่อนบันทึก
         updatedData.dob = Timestamp.fromDate(editedData.dob); // แปลงเป็น Timestamp
-      } else {
-        updatedData.dob = null; // ถ้าไม่มีค่าให้เป็น null
+      } else if (!editedData.dob) {
+        // ถ้าไม่มีการเปลี่ยนแปลง, ไม่ต้องอัปเดตค่า dob
+        updatedData.dob = userData.dob;
       }
+  
       // อัปเดตใน Firestore
       await updateDoc(userRef, updatedData);
 

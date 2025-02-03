@@ -1,15 +1,12 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import {
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/authContext";
 import nookies from "nookies";
 import Image from "next/image";
-
 
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
@@ -26,33 +23,26 @@ const SignIn = () => {
         password
       );
       if (userCredential.user) {
-        ;
-
         const tokenResult = await userCredential.user.getIdTokenResult();
         const token = tokenResult.token;
         const role = tokenResult.claims?.role;
 
-        ;
-
         nookies.set(null, "token", token, {
           maxAge: 60 * 60 * 24,
           path: "/",
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
         });
 
-        ;
-      
-
         if (role === "admin") {
-          router.push("/admin/order"); 
+          router.push("/admin/order");
         } else {
-          router.push("/user/profile"); 
+          router.push("/");
         }
       } else {
         throw new Error("No user returned");
       }
     } catch (error: any) {
-      ;
-
       // Map Firebase error codes to user-friendly messages
       let errorMessage = "An unexpected error occurred.";
       if (error.code === "auth/invalid-email") {
@@ -64,7 +54,7 @@ const SignIn = () => {
       } else if (error.code === "auth/too-many-requests") {
         errorMessage = "Too many login attempts. Please try again later.";
       }
-  
+
       alert(errorMessage);
     }
   };
@@ -73,22 +63,22 @@ const SignIn = () => {
     try {
       await signInWithGoogle();
     } catch (error: any) {
-      ;
-    
       let errorMessage = "An unexpected error occurred.";
       if (error.code === "auth/popup-closed-by-user") {
-        errorMessage = "You closed the sign-in popup before completing the process.";
-      } else if (error.code === "auth/account-exists-with-different-credential") {
+        errorMessage =
+          "You closed the sign-in popup before completing the process.";
+      } else if (
+        error.code === "auth/account-exists-with-different-credential"
+      ) {
         errorMessage = "An account already exists with the same email address.";
       }
-  
+
       alert(errorMessage);
     }
   };
 
   const handleLineSignIn = () => {
     const redirectUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_LINE_CHANNEL_ID}&redirect_uri=${process.env.NEXT_PUBLIC_LINE_CALLBACK_URL}&state=random_state_string&scope=profile%20openid%20email`;
-    ;
     window.location.href = redirectUrl;
   };
 
@@ -103,9 +93,7 @@ const SignIn = () => {
               fill
               className="object-cover "
             />
-            <h2
-              className="absolute md:hidden top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl font-playfair font-bold text-center text-white  backdrop-blur-sm  rounded-xl  "   
-            >
+            <h2 className="absolute md:hidden top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl font-playfair font-bold text-center text-white  backdrop-blur-sm  rounded-xl  ">
               Welcome To Forest Tales
             </h2>
           </div>
@@ -114,8 +102,6 @@ const SignIn = () => {
           <h2 className="hidden md:block text-6xl font-playfair font-bold mb-10 text-center text-white">
             Welcome To Forest Tales
           </h2>
-
-        
 
           <form onSubmit={handleSignIn} className="mt-3 w-full md:w-5/6">
             <div className="relative">
@@ -222,7 +208,7 @@ const SignIn = () => {
           </div>
 
           <p className="text-center font-serif4 text-sm md:text-lg text-white">
-          Don&apos;t have an account?{" "}
+            Don&apos;t have an account?{" "}
             <a
               href="/signup"
               className="text-white font-serif4 font-semibold hover:underline"

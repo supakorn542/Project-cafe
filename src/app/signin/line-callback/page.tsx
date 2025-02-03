@@ -41,8 +41,11 @@ const LineCallback = () => {
 
 
             nookies.set(null, "token", token, {
-              maxAge: 60 * 60 * 24, 
+              maxAge: 60 * 60 * 24,
               path: "/",
+              secure: process.env.NODE_ENV === "production",
+
+              sameSite: "lax",
             });
 
             router.push("/user/profile");
