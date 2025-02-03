@@ -80,7 +80,6 @@ const [Fetch ,setFetch] = useState(false)
       price,
       name: productName,
       options: optionIds, // ใช้ array ของ id โดยตรง
-      user_id: "",
       status_id: selectedStatus,
       calorie,
       imageProduct: "",
@@ -91,8 +90,8 @@ const [Fetch ,setFetch] = useState(false)
       
       alert("บันถึกข้อมูลสินค้าเสร็จสิ้น");
       window.location.reload();
-    } catch (error) {
-      console.error("Error creating product:", error);
+    } catch (error : any) {
+      console.error("Error creating product:", error.code);
       alert("Failed to create product");
     }
   };
