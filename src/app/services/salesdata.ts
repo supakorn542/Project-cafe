@@ -100,7 +100,7 @@ export const getTodayOnlineSales = async () => {
         // กรองเฉพาะออเดอร์ที่มี statusOrder เป็น "Completed"
         const completedOrders = querySnapshot.docs
             .map(doc => doc.data())
-            .filter(order => order.statusOrder === "Completed");
+            .filter(order => order.statusOrder === "Completed" || order?.statusOrder === "Received");
 
         if (completedOrders.length === 0) {
             console.log("No completed orders found for today.");
