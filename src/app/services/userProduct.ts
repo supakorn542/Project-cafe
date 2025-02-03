@@ -6,6 +6,26 @@ import { Product } from "../interfaces/product";
 
 // ฟังก์ชันในการดึงข้อมูลสินค้าทั้งหมดจาก Firestore
 export const getAllProducts = async () => {
+
+    // ดึงข้อมูลจาก collection "status"
+    const statusSnapshot = await getDocs(collection(db, "status"));
+
+    // แปลงข้อมูล status ให้เป็น object ที่มี status_id เป็น key
+    const statusMap: Record<string, string> = statusSnapshot.docs.reduce((acc, statusDoc) => {
+      const statusData = statusDoc.data();
+      
+      // ใช้ statusDoc.id แทน statusData.id เพื่อให้ได้ id ของ document
+      if (statusDoc.id) {
+        acc[statusDoc.id] = statusData.name; // สร้าง map สำหรับ lookup โดยใช้ id
+      } else {
+
+      }
+    
+      return acc;
+    }, {} as Record<string, string>);
+    
+
+
   // ดึงข้อมูลสินค้าทั้งหมดจากคอลเลกชัน "products"
   const productsSnapshot = await getDocs(collection(db, "products"));
 
@@ -26,7 +46,12 @@ export const getAllProducts = async () => {
     };
   });
 
-  return products;  // คืนค่ารายการสินค้าทั้งหมด
+  console.log("productData",products)
+
+  const availableProducts = products.filter(product => statusMap[product.status_id] === "available");
+  console.log("availableProducts",availableProducts)
+
+  return availableProducts; 
 }
 
 export const getAllProductTypes = async () => {
