@@ -27,6 +27,7 @@ const TrackOrder = () => {
     const [statusComplete, setStatusComplete] = useState<any[]>([]);
     const [currentReviewId, setCurrentReviewId] = useState<string | null>(null);
     const [showReview, setshowReview] = useState<any>([]);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth); // เก็บขนาดหน้าจอ
 
     useEffect(() => {
         console.log("User data:", user?.id); // ตรวจสอบข้อมูลของ user
@@ -69,15 +70,14 @@ const TrackOrder = () => {
             } catch (error) {
                 console.error("Error fetching orders:", error);
             }
+            setWindowWidth(window.innerWidth);
+            const handleResize = () => setWindowWidth(window.innerWidth);
+            window.addEventListener("resize", handleResize);
+            return () => window.removeEventListener("resize", handleResize);
         };
 
         fetchOrders();
     }, [user]);
-
-
-
-
-
 
     const convertTimestampToDate = (timestamp: any) => {
         let date: Date;
@@ -292,13 +292,13 @@ const TrackOrder = () => {
             style={{ backgroundImage: "url('/assets/profile-background.jpg')" }}
         >
             <Navbar textColor="text-white" />
-            <div className="w-5/6 h-[650px] bg-white bg-opacity-20 backdrop-blur-xl rounded-3xl p-5 mt-10">
+            <div className={`w-5/6 ${windowWidth < 768 ? 'h-[90%]' : 'h-[90%]'} bg-white bg-opacity-20 backdrop-blur-xl rounded-3xl p-5 mt-14`}>
                 <div className="flex justify-around mb-5">
                     <button
                         className={`text-lg font-medium text-white relative ${activeTab === 'trackOrder' ? 'text-black' : ''}`}
                         onClick={() => setActiveTab("trackOrder")}>
                         <p className="text-4xl font-bold  group relative w-max">
-                            <span>Track Order</span>
+                            <span className="text-base md:text-4xl sm:text-2xl">Track Order</span>
                             <span
                                 className={`absolute -bottom-1 left-1/2 transition-all h-0.5 bg-white ${activeTab === 'trackOrder' ? 'w-3/6' : 'w-0'} group-hover:w-3/6`}
                             ></span>
@@ -311,7 +311,7 @@ const TrackOrder = () => {
                         className={`text-lg font-medium text-white relative ${activeTab === 'myPurchases' ? 'text-black' : ''}`}
                         onClick={() => setActiveTab("myPurchases")}>
                         <p className="text-4xl font-bold  group relative w-max">
-                            <span>My Purchases</span>
+                            <span className="text-base md:text-4xl sm:text-2xl">My Purchases</span>
                             <span
                                 className={`absolute -bottom-1 left-1/2 transition-all h-0.5 bg-white ${activeTab === 'myPurchases' ? 'w-3/6' : 'w-0'} group-hover:w-3/6`}
                             ></span>
@@ -323,62 +323,72 @@ const TrackOrder = () => {
                 </div>
                 <div className="mt-5">
                     {activeTab === "trackOrder" && (
-                        <div className="flex justify-center mb-2 pl-10 pr-10">
-
-                            <div className="w-full max-h-[550px]  overflow-y-auto flex flex-col space-y-4 scrollbar-hidden">
+                        <div className="flex justify-center mb-2 md:px-10">
+                            <div className="w-full max-h-[75vh] overflow-y-auto flex flex-col space-y-4 scrollbar-hidden">
                                 {orders.map((order, index) => (
                                     <div
                                         key={index}
-                                        className="w-full p-6 rounded-3xl border-2 border-white text-white">
+                                        className="w-full p-6 rounded-3xl border-2 border-white text-white ">
                                         <div className="flex justify-between items-center mb-4">
-                                            <h2 className="text-white text-xl font-bold">
+                                            <h2 className={`text-white font-bold ${windowWidth < 768 ? 'text-sm' : 'text-xl'}`}>
                                                 Order Date: {
                                                     order?.orderDate
                                                         ? convertTimestampToDate(order.orderDate)
                                                         : "N/A"
                                                 }
                                             </h2>
-                                            <h3 className="text-white text-lg font-bold">
+                                            <h3 className={`text-white text-lg font-bold ${windowWidth < 768 ? 'text-sm' : 'text-base'}`}>
                                                 {order.statusOrder}
                                             </h3>
                                         </div>
                                         {carts.filter(item => item.cart_id.id == order.cart_id.id).map((value, idx) => (
                                             <div key={idx} className="flex items-start mb-3 w-full">
+                                                {/* ภาพสินค้า */}
                                                 <Image
                                                     src={value.product_id.imageProduct}
-                                                    width={85}
-                                                    height={100}
+                                                    width={windowWidth < 768 ? 60 : 85}
+                                                    height={windowWidth < 768 ? 60 : 100}
                                                     style={{ aspectRatio: '1 / 1' }}
                                                     alt="Image"
-                                                    className="rounded-xl mr-4 "
-                                                ></Image>
-                                                <div className="flex flex-col justify-start text-white">
-                                                    <h4 className="font-bold mb-2">{value.product_id.name}</h4>
-                                                    <div className="w-full flex items-start">
-                                                        <div className="w-[800px] flex">
-                                                            {value.optionitem_id.map((i: any) =>
-                                                                <p className="mr-3">{i.name}</p>
-                                                            )}
+                                                    className="rounded-xl mr-4"
+                                                />
 
+                                                {/* รายละเอียดสินค้า */}
+                                                <div className="w-full flex flex-col justify-start text-white">
+                                                    {/* ชื่อสินค้า */}
+                                                    <h4 className={`font-bold mb-2 ${windowWidth < 768 ? 'text-sm' : 'text-base'}`}>
+                                                        {value.product_id.name}
+                                                    </h4>
 
-                                                        </div>
-                                                        <div className="w-48 flex justify-between space-x-32">
-                                                            <p>X {value.quantity}</p>
-                                                            <p>฿{value.product_id.price || 0}</p>
+                                                    {/* รายละเอียดเพิ่มเติม */}
+                                                    <div className="w-full flex flex-wrap items-start justify-between">
+                                                        {value.optionitem_id.length > 0 && <div className="flex flex-wrap">
+                                                            {value.optionitem_id.map((i: any) => (
+                                                                <p className={`mr-3 ${windowWidth < 768 ? 'text-sm' : ''}`}>{i.name}</p>
+                                                            ))}
+                                                        </div>}
+
+                                                        {/* จำนวน & ราคา */}
+                                                        <div className="flex justify-between md:w-48 sm:w-40 w-28 gap-1 sm:gap-0">
+                                                            <p className="text-sm">{`X ${value.quantity}`}</p>
+                                                            <p className="text-sm font-bold">{`฿${value.product_id.price || 0}`}</p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         ))}
                                         <div className="flex justify-end space-x-2">
-                                            <span className="font-bold text-lg">
-                                                <span className="mr-1">{carts
-                                                    .filter(item => item.cart_id.id == order.cart_id.id)
-                                                    .reduce((acc, item) => acc + item.quantity, 0)}
+                                            <span className={`font-bold ${windowWidth < 768 ? 'text-sm' : 'text-lg'}`}>
+                                                <span className="mr-1">
+                                                    {carts
+                                                        .filter(item => item.cart_id.id == order.cart_id.id)
+                                                        .reduce((acc, item) => acc + item.quantity, 0)}
                                                 </span>
                                                 items:
                                             </span>
-                                            <span className="font-bold text-lg">฿{order.total_price}</span>
+                                            <span className={`font-bold ${windowWidth < 768 ? 'text-sm' : 'text-lg'}`}>
+                                                ฿{order.total_price}
+                                            </span>
                                         </div>
                                     </div>
                                 ))}
@@ -386,22 +396,22 @@ const TrackOrder = () => {
                         </div>
                     )}
                     {activeTab === "myPurchases" && (
-                        <div className="flex justify-center mb-2 pl-10 pr-10">
-                            <div className="w-full max-h-[550px]  overflow-y-auto flex flex-col space-y-4 scrollbar-hidden">
+                        <div className="flex justify-center mb-2 md:px-10 ">
+                            <div className="w-full max-h-[75vh] overflow-y-auto flex flex-col space-y-4 scrollbar-hidden">
                                 {statusComplete.map((value, index) => (
                                     <div
                                         key={index}
-                                        className="w-full p-6 rounded-3xl border-2 border-white text-white">
+                                        className="w-full p-6 rounded-3xl border-2 border-white text-white"
+                                    >
                                         <div className="flex justify-between items-center mb-4">
-                                            <h2 className="text-white text-xl font-bold">
+                                            <h2 className={`text-white font-bold ${windowWidth < 768 ? 'text-sm' : 'text-xl'}`}>
                                                 Order Date: {
                                                     value?.orderDate
                                                         ? convertTimestampToDate(value.orderDate)
                                                         : "N/A"
                                                 }
                                             </h2>
-
-                                            <h3 className="text-white text-lg font-bold">
+                                            <h3 className={`text-white text-lg font-bold ${windowWidth < 768 ? 'text-sm' : 'text-base'}`}>
                                                 {value.statusOrder}
                                             </h3>
                                         </div>
@@ -409,60 +419,60 @@ const TrackOrder = () => {
                                             <div key={idx} className="flex items-start mb-3 w-full">
                                                 <Image
                                                     src={value.product_id.imageProduct}
-                                                    width={85}
-                                                    height={100}
+                                                    width={windowWidth < 768 ? 60 : 85}  // ปรับขนาดภาพตามขนาดหน้าจอ
+                                                    height={windowWidth < 768 ? 70 : 100}  // ปรับขนาดภาพตามขนาดหน้าจอ
                                                     style={{ aspectRatio: '1 / 1' }}
                                                     alt="Image"
-                                                    className="rounded-xl mr-4 "
-                                                ></Image>
-                                                <div className="flex flex-col justify-start">
-                                                    <h4 className="font-bold mb-2">{value.product_id.name}</h4>
-                                                    <div className="w-full flex items-start">
-                                                        <div className="w-[800px]">
-                                                            {value.optionitem_id.map((i: any) =>
-                                                                <p className="mr-3">{i.name}</p>
-                                                            )}
-                                                        </div>
-                                                        <div className="w-48 flex justify-end space-x-32">
-                                                            <p>X {value.quantity}</p>
-                                                            <p>฿{value.product_id.price}</p>
+                                                    className="rounded-xl mr-4"
+                                                />
+                                                <div className="w-full flex flex-col justify-start">
+                                                    <h4 className={`font-bold mb-2 ${windowWidth < 768 ? 'text-sm' : 'text-base'}`}>{value.product_id.name}</h4>
+                                                    <div className="w-full flex flex-wrap items-start justify-between">
+                                                        {value.optionitem_id.length > 0 && <div className="flex flex-wrap">
+                                                            {value.optionitem_id.map((i: any) => (
+                                                                <p className={`mr-3 ${windowWidth < 768 ? 'text-sm' : ''}`}>{i.name}</p>
+                                                            ))}
+                                                        </div>}
+                                                        <div className="flex justify-between md:w-48 sm:w-40 w-28 gap-1 sm:gap-0">
+                                                            <p className="text-sm">{`X ${value.quantity}`}</p>
+                                                            <p className="text-sm font-bold">{`฿${value.product_id.price || 0}`}</p>
                                                         </div>
                                                     </div>
+
                                                 </div>
                                             </div>
+
                                         ))}
                                         <div className="flex flex-col justify-end space-y-2">
                                             <div className="flex justify-end space-x-2">
-                                                <span className="font-bold text-lg">
+                                                <span className={`font-bold ${windowWidth < 768 ? 'text-sm' : 'text-lg'}`}>
                                                     <span className="mr-1">{carts
                                                         .filter(item => item.cart_id.id == value.cart_id.id)
                                                         .reduce((acc, item) => acc + item.quantity, 0)}
                                                     </span>
                                                     items:
                                                 </span>
-                                                <span className="font-bold text-lg">฿{value.total_price}</span>
+                                                <span className={`font-bold ${windowWidth < 768 ? 'text-sm' : 'text-lg'}`}>฿{value.total_price}</span>
                                             </div>
                                             {reviews.filter((item) => item.order_id.id === value.id && !item.deletedAt).length > 0 ? (
                                                 <div className="flex justify-end mt-2">
                                                     <button
-                                                        className="w-36 border-2 border-white text-white p-1 rounded-xl text-xl"
+                                                        className={`border-2 border-white text-white p-1 rounded-xl ${windowWidth < 768 ? 'w-24 text-sm' : 'w-36 text-xl'}`}
                                                         onClick={() => openViewReviewPopupOpen(value.id)}
                                                     >
                                                         View Review
                                                     </button>
                                                 </div>
                                             ) : (
-                                                // ถ้าไม่มีรีวิวให้แสดงปุ่ม Review
                                                 <div className="flex justify-end mt-2">
                                                     <button
-                                                        className="w-24 border-2 border-white text-white p-1 rounded-xl text-xl"
+                                                        className={`border-2 border-white text-white p-1 rounded-xl ${windowWidth < 768 ? 'w-20 text-sm' : 'w-24 text-xl'}`}
                                                         onClick={() => openReviewPopup(value.id)}
                                                     >
                                                         Review
                                                     </button>
                                                 </div>
-                                            )
-                                            }
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -472,11 +482,17 @@ const TrackOrder = () => {
                 </div>
                 {isReviewPopupOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <form className="bg-white rounded-3xl w-[50%] h-[60%] p-6" onSubmit={submitReview}>
-                            <h2 className="text-xl text-center font-bold mb-8">Write a Review</h2>
+                        <form
+                            className={`bg-white rounded-3xl ${windowWidth < 768 ? 'w-[90%] h-auto p-4' : 'w-[50%] h-[60%] p-6'}`}
+                            onSubmit={submitReview}
+                        >
+                            <h2 className={`text-center font-bold mb-6 ${windowWidth < 768 ? 'text-lg' : 'text-xl'}`}>
+                                Write a Review
+                            </h2>
+
                             {/* Rating Section */}
-                            <div className="mb-5 flex items-center justify-between">
-                                <p className="text-lg font-medium">Product Quality</p>
+                            <div className="mb-4 flex items-center justify-between">
+                                <p className={`${windowWidth < 768 ? 'text-sm' : 'text-lg'} font-medium`}>Product Quality</p>
                                 <div className="flex space-x-1">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <button
@@ -484,13 +500,7 @@ const TrackOrder = () => {
                                             className={`text-2xl ${selectedRating >= star ? 'text-yellow-500' : 'text-gray-300'}`}
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                // ถ้าคลิกดาวที่เลือกแล้วอยู่แล้ว จะทำการยกเลิกเฉพาะดาวนั้น
-                                                if (selectedRating === star) {
-                                                    setSelectedRating(selectedRating - 1); // ลบดาวนั้นออก
-                                                } else {
-                                                    setSelectedRating(star); // เลือกดาวที่คลิก
-                                                }
-                                                console.log(`Selected rating: ${selectedRating}`);
+                                                setSelectedRating(selectedRating === star ? selectedRating - 1 : star);
                                             }}
                                         >
                                             ★
@@ -498,8 +508,10 @@ const TrackOrder = () => {
                                     ))}
                                 </div>
                             </div>
+
                             <textarea
-                                className="w-full h-40 p-2 border-2 border-black rounded-2xl mb-6 focus:outline-none focus:ring focus:ring-gray-300"
+                                className={`w-full border-2 border-black rounded-2xl mb-4 p-2 focus:outline-none focus:ring focus:ring-gray-300 
+                    ${windowWidth < 768 ? 'h-24 text-sm' : 'h-40'}`}
                                 placeholder="Write your review here..."
                                 value={reviewText}
                                 onChange={(e) => setReviewText(e.target.value)}
@@ -507,14 +519,16 @@ const TrackOrder = () => {
 
                             <div className="flex justify-between w-full">
                                 <button
-                                    className="px-4 py-1 border-2 border-black rounded-3xl text-sm hover:bg-black hover:text-white transition duration-200"
+                                    className={`border-2 border-black rounded-3xl hover:bg-black hover:text-white transition duration-200 
+                        ${windowWidth < 768 ? 'px-3 py-1 text-xs' : 'px-4 py-1 text-sm'}`}
                                     onClick={closeReviewPopup}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-1 border-2 border-black rounded-3xl text-sm hover:bg-black hover:text-white transition duration-200"
+                                    className={`border-2 border-black rounded-3xl hover:bg-black hover:text-white transition duration-200 
+                        ${windowWidth < 768 ? 'px-3 py-1 text-xs' : 'px-4 py-1 text-sm'}`}
                                 >
                                     Submit
                                 </button>
@@ -523,52 +537,62 @@ const TrackOrder = () => {
                     </div>
                 )}
 
+
                 {isViewReviewPopupOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-3xl w-[40%] h-auto p-6 shadow-lg">
-                            <h2 className="text-xl text-center font-bold mb-4">My review</h2>
+                        <div className={`bg-white rounded-3xl shadow-lg ${windowWidth < 768 ? 'w-[90%] h-auto p-4' : 'w-[40%] h-auto p-6'}`}>
+                            <h2 className={`text-center font-bold mb-4 ${windowWidth < 768 ? 'text-lg' : 'text-xl'}`}>
+                                My review
+                            </h2>
+
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center">
                                     <Image
                                         src={showReview.user_id.profileImage}
                                         alt="Profile"
-                                        width={60}
-                                        height={60}
-                                        style={{ aspectRatio: '1 / 1' }}
+                                        width={windowWidth < 768 ? 50 : 60}
+                                        height={windowWidth < 768 ? 50 : 60}
                                         className="rounded-full border-2 border-white mr-2"
                                     />
-                                    <p className="text-lg font-medium">{showReview.user_id.username}</p>
+                                    <p className={`${windowWidth < 768 ? 'text-sm' : 'text-lg'} font-medium`}>
+                                        {showReview.user_id.username}
+                                    </p>
                                 </div>
                                 <div className="flex items-center">
                                     {[...Array(5)].map((_, index) => (
                                         <span
                                             key={index}
-                                            className={`text-2xl ${index < showReview.rating ? "text-yellow-500" : "text-gray-300"
-                                                }`}
+                                            className={`text-2xl ${index < showReview.rating ? "text-yellow-500" : "text-gray-300"}`}
                                         >
                                             ★
                                         </span>
                                     ))}
                                 </div>
                             </div>
-                            <p className="text-black  mb-16 text-justify">
-                                {showReview.comment}</p>
+
+                            <p className={`text-black text-justify ${windowWidth < 768 ? 'mb-6 text-sm' : 'mb-16'}`}>
+                                {showReview.comment}
+                            </p>
+
                             <div className="flex justify-between">
                                 <button
-                                    className="px-4 py-1 border-2 border-black rounded-3xl text-sm hover:bg-black hover:text-white transition duration-200"
+                                    className={`border-2 border-black rounded-3xl hover:bg-black hover:text-white transition duration-200 
+                        ${windowWidth < 768 ? 'px-3 py-1 text-xs' : 'px-4 py-1 text-sm'}`}
                                     onClick={closeViewReviewPopupOpen}
                                 >
                                     Back
                                 </button>
                                 <div className="flex space-x-4">
                                     <button
-                                        className="px-4 py-1 border-2 border-black rounded-3xl text-sm hover:bg-black hover:text-white transition duration-200"
+                                        className={`border-2 border-black rounded-3xl hover:bg-black hover:text-white transition duration-200 
+                            ${windowWidth < 768 ? 'px-3 py-1 text-xs' : 'px-4 py-1 text-sm'}`}
                                         onClick={() => handleDeleteReview(showReview.id)}
                                     >
                                         Delete
                                     </button>
                                     <button
-                                        className="px-4 py-1 bg-black text-white rounded-3xl text-sm hover:opacity-80 transition duration-200"
+                                        className={`bg-black text-white rounded-3xl hover:opacity-80 transition duration-200 
+                            ${windowWidth < 768 ? 'px-3 py-1 text-xs' : 'px-4 py-1 text-sm'}`}
                                         onClick={openupdateReviewPopup}
                                     >
                                         Edit
@@ -579,16 +603,22 @@ const TrackOrder = () => {
                     </div>
                 )}
 
+
                 {updateReviewPopup && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <form
-                            className="bg-white rounded-3xl w-[50%] h-[60%] p-6"
-                            onSubmit={submitUpdateReview} // เมื่อผู้ใช้กด update ให้เรียกใช้ฟังก์ชันนี้
+                            className={`bg-white rounded-3xl shadow-lg ${windowWidth < 768 ? 'w-[90%] h-auto p-4' : 'w-[50%] h-[60%] p-6'}`}
+                            onSubmit={submitUpdateReview}
                         >
-                            <h2 className="text-xl text-center font-bold mb-8">Update Your Review</h2>
+                            <h2 className={`text-center font-bold mb-8 ${windowWidth < 768 ? 'text-lg' : 'text-xl'}`}>
+                                Update Your Review
+                            </h2>
+
                             {/* Rating Section */}
                             <div className="mb-5 flex items-center justify-between">
-                                <p className="text-lg font-medium">Product Quality</p>
+                                <p className={`${windowWidth < 768 ? 'text-sm' : 'text-lg'} font-medium`}>
+                                    Product Quality
+                                </p>
                                 <div className="flex space-x-1">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <button
@@ -596,11 +626,7 @@ const TrackOrder = () => {
                                             className={`text-2xl ${selectedRating >= star ? 'text-yellow-500' : 'text-gray-300'}`}
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                if (selectedRating === star) {
-                                                    setSelectedRating(selectedRating - 1); // ลบดาวนั้นออก
-                                                } else {
-                                                    setSelectedRating(star); // เลือกดาวที่คลิก
-                                                }
+                                                setSelectedRating(selectedRating === star ? selectedRating - 1 : star);
                                             }}
                                         >
                                             ★
@@ -610,7 +636,7 @@ const TrackOrder = () => {
                             </div>
 
                             <textarea
-                                className="w-full h-40 p-2 border-2 border-black rounded-2xl mb-6 focus:outline-none focus:ring focus:ring-gray-300"
+                                className={`w-full ${windowWidth < 768 ? 'h-32' : 'h-40'} p-2 border-2 border-black rounded-2xl mb-6 focus:outline-none focus:ring focus:ring-gray-300`}
                                 placeholder="Update your review here..."
                                 value={reviewText}
                                 onChange={(e) => setReviewText(e.target.value)}
@@ -619,14 +645,16 @@ const TrackOrder = () => {
                             <div className="flex justify-between w-full">
                                 <button
                                     type="button"
-                                    className="px-4 py-1 border-2 border-black rounded-3xl text-sm hover:bg-black hover:text-white transition duration-200"
-                                    onClick={() => setUpdateReviewPopup(false)} // ปิด popup
+                                    className={`border-2 border-black rounded-3xl hover:bg-black hover:text-white transition duration-200 
+                        ${windowWidth < 768 ? 'px-3 py-1 text-xs' : 'px-4 py-1 text-sm'}`}
+                                    onClick={() => setUpdateReviewPopup(false)}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-1 bg-black text-white rounded-3xl text-sm hover:opacity-80 transition duration-200"
+                                    className={`bg-black text-white rounded-3xl hover:opacity-80 transition duration-200 
+                        ${windowWidth < 768 ? 'px-3 py-1 text-xs' : 'px-4 py-1 text-sm'}`}
                                 >
                                     Update
                                 </button>
@@ -634,7 +662,6 @@ const TrackOrder = () => {
                         </form>
                     </div>
                 )}
-
             </div>
         </div>
     );
