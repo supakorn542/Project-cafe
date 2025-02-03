@@ -4,7 +4,7 @@
 import Link from "next/link";
 import Navbar from "./components/Navbar";
 import Image from "next/image"; // Import from 'next/image'
-import { Key, useEffect } from "react";
+import { Key, useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // You can also use <link> for styles
 import FooterUser from "./components/footer/footerUser";
@@ -15,25 +15,9 @@ const OwlCarousel = dynamic(() => import("react-owl-carousel"), {
 });
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
+import { getAllReview } from "./services/review";
 
-const sdata = [
-  {
-    imageproduct:
-      "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
-  },
-  {
-    imageproduct:
-      "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
-  },
-  {
-    imageproduct:
-      "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
-  },
-  {
-    imageproduct:
-      "https://res.cloudinary.com/donlonxid/image/upload/v1737210203/product_pics/product_pics/%E0%B8%8A%E0%B8%AD%E0%B8%99%E0%B8%B2%E0%B8%81%E0%B8%AD%E0%B8%99.png",
-  },
-];
+
 
 const mdata = [
   {
@@ -119,10 +103,25 @@ const reviewData = [
   },
 ];
 
+interface Review {
+  id: string;
+  rating: number;
+  comment: string;
+  user_id: string;
+  order_id: string;
+  deletedAt?: string | null;
+}
+
 export default function Home() {
+  const [review, setReview] = useState<any[]>();
   useEffect(() => {
     AOS.init();
-  });
+    const fetchReview = async () => {
+      const reviewData = await getAllReview(); // สมมติว่า return เป็น Review[]
+      setReview(reviewData);
+    };
+    fetchReview();
+  }, []);
   return (
     <div className="">
       <Navbar textColor="text-white" color="white" />
@@ -163,9 +162,7 @@ export default function Home() {
             and indulge in different taste profiles.
           </p>
           <button className="border border-white rounded-full px-2 mt-20">
-            <Link href={"/user/menu"}>
-            Learn more
-            </Link>
+            <Link href={"/user/menu"}>Learn more</Link>
           </button>
         </div>
       </section>
@@ -181,8 +178,8 @@ export default function Home() {
             {" "}
             {/* Key change: Added width and height */}
             <img
-              className="absolute top-[-72px] left-0 rounded-r-full w-[94%] h-[224%] hidden md:block"
-              src={"/assets/esyen.jpg"}
+              className="absolute top-[-72px] left-0 rounded-r-full w-[94%] h-[224%] hidden md:block object-cover"
+              src={"/assets/amarigano.jpg"}
               alt="esyen"
 
               // Important for image scaling
@@ -209,10 +206,7 @@ export default function Home() {
             </label>
           </div>
           <button className=" border-2 border-black rounded-full lg:px-12 w-fit text-3xl ">
-            <Link href={"/user/menu"}>
-            Order Now
-            </Link>
-            
+            <Link href={"/user/menu"}>Order Now</Link>
           </button>
         </div>
       </section>
@@ -239,7 +233,7 @@ export default function Home() {
           </div>
           <button className=" border-2 border-black rounded-full lg:px-12 w-fit text-3xl ">
             <Link href={"/user/menu"}>Learn more</Link>
-            </button>
+          </button>
         </div>
         <div
           className="w-[50%] hidden md:block"
@@ -386,22 +380,24 @@ export default function Home() {
               Impression
             </h2>
             <div className="space-y-6 overflow-auto scrollbar-hidden max-h-[400px]">
-              {reviewData.map((review, index) => (
+              {review?.map((review, index) => (
                 <div
                   key={index}
                   className="bg-opacity-50 border-b-2 border-white p-4 rounded-lg"
                 >
-                  <div className="flex items-center mb-2">
-                    <Image
-                      src={review.used.profileImage}
-                      alt={review.used.name}
-                      width={50}
-                      height={100}
-                      className="object-cover rounded-full mr-2 "
-                    />
+                  <div className="flex items-center mb-2 ">
+                    <div className="w-12 h-12 rounded-full overflow-hidden mr-2">
+                      <Image
+                        src={review.user_id.profileImage}
+                        alt={review.user_id.username}
+                        width={50}
+                        height={50}
+                        className="object-cover"
+                      />
+                    </div>
                     <div>
                       <h3 className="font-medium text-3xl">
-                        {review.used.name}
+                        {review.user_id.username}
                       </h3>
                       <div className="flex gap-1">
                         {Array.from({ length: review.rating }, (_, i) => (
@@ -420,14 +416,14 @@ export default function Home() {
                   </div>
                   <p className="mb-2 text-lg">{review.comment}</p>
                   <div className="flex gap-2">
-                    {review.order.map((item, i) => (
+                    {/* {review.order.map((item, i) => (
                       <span
                         key={i}
                         className="border border-white rounded-full px-4 py-1  text-lg"
                       >
                         {item.name}
                       </span>
-                    ))}
+                    ))} */}
                   </div>
                 </div>
               ))}
