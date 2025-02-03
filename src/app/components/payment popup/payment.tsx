@@ -93,7 +93,7 @@ function Payment({
       router.push("/user/orderhistory");
       onClose();
     } catch (error) {
-      console.error("Error during payment process:", error);
+      ;
       alert("เกิดข้อผิดพลาดระหว่างการสั่งซื้อ");
     } finally {
       setIsUploading(false);

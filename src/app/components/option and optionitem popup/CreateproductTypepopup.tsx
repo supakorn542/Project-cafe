@@ -25,7 +25,7 @@ function CreateProductTypePopup({ onClose }: { onClose: () => void }) {
       alert("Product Type created successfully!");
       onClose(); // ปิด popup หลังจากสร้างเสร็จ
     } catch (error) {
-      console.error("Error creating product type:", error);
+      ;
       alert("Failed to create product type. Please try again.");
     } finally {
       setLoading(false);

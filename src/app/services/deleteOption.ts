@@ -26,8 +26,8 @@ export const deleteOptionWithReferences = async (optionId: string) => {
     // 3️⃣ ลบเอกสารจาก options
     await deleteDoc(optionRef);
 
-    console.log(`Deleted option ${optionId} and its references successfully.`);
+    ;
   } catch (error) {
-    console.error("Error deleting option and its references: ", error);
+    ;
   }
 };

@@ -28,7 +28,7 @@ export const getOrders = async () => {
         }
 
         const userRef = data.cart_id.user_id;
-        console.log(userRef)
+        
         const userSnap = await getDoc(userRef);
         if (userSnap) {
           const userData = userSnap.data();
@@ -100,7 +100,7 @@ export const getProcessOrders = async () => {
           }
   
           const userRef = data.cart_id.user_id;
-          console.log(userRef)
+          
           const userSnap = await getDoc(userRef);
           if (userSnap) {
             const userData = userSnap.data();
@@ -156,7 +156,7 @@ export const getFinishOrders = async () => {
           }
 
           const userRef = data.cart_id.user_id;
-          console.log(userRef)
+          
           const userSnap = await getDoc(userRef);
           if (userSnap) {
             const userData = userSnap.data();
@@ -264,7 +264,7 @@ export const getCartItemByCartIdFromAom = async (cartIds: string[]) => {
 
     return cartItems;
   } catch (error) {
-    console.error("Error fetching cart items:", error);
+    ;
     return [];
   }
 };
@@ -291,7 +291,7 @@ export const updateStatusOrderByID = async (
 
     return { success: true, message: "Stock updated and details added successfully" };
   } catch (error) {
-    console.error("Error updating stock and adding details:", error);
+    ;
     return { success: false, message: "Failed to update stock or add details", error };
   }
 };
@@ -311,7 +311,7 @@ export const updateStatusPaymentByID = async (
     }
     else {
       const data = orderSnapshot.data()
-      console.log(data)
+      
 
       const paymentRef = data.payment_id;
       let payment_id = '';
@@ -332,7 +332,7 @@ export const updateStatusPaymentByID = async (
     }
     return { success: true, message: "Stock updated and details added successfully" };
   } catch (error) {
-    console.error("Error updating stock and adding details:", error);
+    ;
     return { success: false, message: "Failed to update stock or add details", error };
   }
 };

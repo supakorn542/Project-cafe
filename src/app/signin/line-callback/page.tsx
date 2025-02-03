@@ -23,7 +23,7 @@ const LineCallback = () => {
             let role = tokenResult.claims?.role;
             
             if (!role) {
-              console.log("User has no role, setting role to 'user'");
+              ;
               await fetch("/api/role", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -34,7 +34,7 @@ const LineCallback = () => {
               tokenResult = await userCredential.user.getIdTokenResult(true);
               role = tokenResult.claims?.role;
             } else {
-              console.log("User already has role:", role);
+              ;
             }
         
             const token = tokenResult.token;
@@ -50,12 +50,12 @@ const LineCallback = () => {
             setError("No user returned after signing in.");
           }
         } catch (error: any) {
-          console.error("Error signing in with LINE:", error);
+          ;
           setError("Error signing in with LINE: " + error.message);
         }
       })();
     }
-  }, []);
+  }, [router]);
 
   return (
     <div className="flex flex-col md:flex-row justify-center min-h-screen bg-white p-4">

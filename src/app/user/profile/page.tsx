@@ -57,10 +57,10 @@ function Profile() {
             setUserData(data);
             setEditedData(data);
           } else {
-            console.warn("User data not found in Firestore");
+
           }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          ;
         }
       }
     };
@@ -76,7 +76,7 @@ function Profile() {
 
     const currentUser = auth.currentUser;
     if (!currentUser) {
-      console.error("No authenticated user found");
+      ;
       return;
     }
 
@@ -110,9 +110,9 @@ function Profile() {
       setUserData({ ...userData, ...updatedData });
       setUploadedImageUrl(undefined); // เคลียร์ค่า URL รูปภาพ
       setIsEditing(false);
-      console.log("Profile updated successfully");
+      ;
     } catch (error) {
-      console.error("Error updating profile:", error);
+      ;
     }
   };
 
@@ -140,12 +140,12 @@ function Profile() {
 
           if (response.data.url) {
             setUploadedImageUrl(response.data.url);
-            console.log("Image uploaded successfully:", response.data.url);
+            ;
           } else {
-            console.error("Failed to upload image");
+            ;
           }
         } catch (error) {
-          console.error("Error uploading image:", error);
+          ;
         } finally {
           setLoading(false);
         }
@@ -155,7 +155,7 @@ function Profile() {
     }
   };
 
-  console.log("uploadedImageUrl",uploadedImageUrl)
+  
   return (
     <>
       <div

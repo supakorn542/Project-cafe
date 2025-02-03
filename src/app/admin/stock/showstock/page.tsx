@@ -1,18 +1,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Navbar from "@/app/components/Navbar";
+
 import { Stock } from "@/app/interfaces/stock";
 import { Withdrawal as withdrawals } from "@/app/interfaces/withdrawal";
-import Withdrawal from "../withdraw/page";
-import CreateIngredient from "../createingredient/page";
-import CreatePackaging from "../createpackaging/page";
-import AddIngredient from "../addingredient/page";
-import AddPackaging from "../addpackaging/page";
+import Withdrawal from "@/app/components/stock/Withdrawal";
+import CreateIngredient from "@/app/components/stock/CreateIngredient";
+import CreatePackaging from "@/app/components/stock/CreatePackaging";
+import AddIngredient from "@/app/components/stock/AddIngredient";
+import AddPackaging from "@/app/components/stock/addpackaging";
 import { deletedStock, getStockIngredients, getStockPackags, getWithdrawals } from "@/app/services/stock";
-import UpdateIngredient from "../updateingredient/page";
-import UpdatePackaging from "../updatepackaging/page";
-import NavbarAdmin from "@/app/components/navbarAdmin/page";
+import UpdateIngredient from "@/app/components/stock/UpdateIngredient";
+import UpdatePackaging from "@/app/components/stock/UpdatePackaging";
+import NavbarAdmin from "@/app/components/navbarAdmin/navbarAdmin";
 
 
 const ShowStock = () => {
@@ -115,9 +115,9 @@ const ShowStock = () => {
         try {
             const ingredientData = await getStockIngredients();
             setIngredients(ingredientData); // เก็บข้อมูลใน state
-            console.log(ingredientData);
+            ;
         } catch (error) {
-            console.error("Error:", error);
+            ;
         }
     };
 
@@ -125,9 +125,9 @@ const ShowStock = () => {
         try {
             const packageData = await getStockPackags();
             setPackages(packageData); // เก็บข้อมูลใน state
-            console.log(packageData);
+            ;
         } catch (error) {
-            console.error("Error:", error);
+            ;
         }
     };
 
@@ -135,14 +135,14 @@ const ShowStock = () => {
         try {
             const withdrawalData = await getWithdrawals();
             setWithdrawals(withdrawalData); // เก็บข้อมูลใน state
-            console.log(withdrawalData);
+            ;
         } catch (error) {
-            console.error("Error:", error);
+            ;
         }
     };
 
     const handleDelete = (id: string) => {
-        console.log(id)
+        
         if (window.confirm("Are you sure you want to delete this item?")) {
             deletedStock(id);
             fetchStockIngredients(); // เรียก API เมื่อ component ถูก mount

@@ -1,13 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Navbar from "@/app/components/Navbar";
+
 import { getCartItemByCartIdFromAom, getFinishOrders, getOrders, getProcessOrders, updateStatusOrderByID, updateStatusPaymentByID } from "@/app/services/order";
-import { Order } from "@/app/interfaces/order";
-import { DiVim } from "react-icons/di";
-import { stringify } from "querystring";
+
 import ReceiptPopup from "@/app/components/receiptpopup/receipt"
-import NavbarAdmin from "@/app/components/navbarAdmin/page";
+import NavbarAdmin from "@/app/components/navbarAdmin/navbarAdmin";
 
 
 const ShowOrder = () => {
@@ -67,7 +65,7 @@ const ShowOrder = () => {
                 alert("Failed to update Stock");
             }
         } catch (error) {
-            console.error("Error updating stock:", error);
+            ;
             alert("Failed to update Stock");
         }
     }
@@ -87,7 +85,7 @@ const ShowOrder = () => {
                 alert("Failed to update StatusOrder");
             }
         } catch (error) {
-            console.error("Error updating StatusOrder:", error);
+            ;
             alert("Failed to update StatusOrder");
         }
     }
@@ -120,17 +118,17 @@ const ShowOrder = () => {
     const fetchOrders = async () => {
         const orders = await getOrders();
         setOrders(orders);
-        console.log(orders)
+        
 
         const cartIds = orders.map((order) => {
             return order!.cart_id.id;
         });
         setcartIds(cartIds)
-        console.log(cartIds)
+        
 
         const cartItems = await getCartItemByCartIdFromAom(cartIds)
         setCartItems(cartItems)
-        console.log("ERTYUIKNBTUI", cartItems)
+        
 
         //cartItemsที่ดึงออกมาตอนนี้จะเป็นแบบ เช่น 3 obj. แยกกันแต่ cart_id เดียวกัน
         //งั้นเราอาจจะทำให้มันเก็บแบบ ทุกcartItemsที่มี cart_id เดียวกัน รวมเป็นหนึ่ง
@@ -157,17 +155,17 @@ const ShowOrder = () => {
     const fetchFinishOrders = async () => {
         const getfinishOrders = await getFinishOrders();
         setFinishOrders(getfinishOrders);
-        console.log(getfinishOrders)
+        
 
         const cartIds = getfinishOrders.map((order) => {
             return order!.cart_id.id;
         });
         setcartIdFinish(cartIds)
-        console.log(cartIds)
+        
 
         const cartItems = await getCartItemByCartIdFromAom(cartIds)
         setCartItemFinish(cartItems)
-        console.log(cartItems)
+        
     };
 
 

@@ -99,7 +99,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
     if (action.value === "add_to_cart") {
       onClose();
     } else if (action.value === "buy_now") {
-      router.push("user/cart");
+      router.push("/user/cart");
     }
   };
   
@@ -122,9 +122,9 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
     fetchData();
   }, [productId]);
 
-  console.log("Options : ", options);
-  console.log("Grouped Option Items:", groupedOptionItems);
-  console.log("Product: ", product);
+  ;
+  ;
+  ;
 
   return (
     <>

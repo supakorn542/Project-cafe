@@ -58,11 +58,10 @@ export const fetchProductById = async (productId: string): Promise<Product | nul
         imageProduct: data.imageProduct || "",
       };
     } else {
-      console.warn(`No product found for ID: ${productId}`);
       return null;
     }
   } catch (error) {
-    console.error("Error fetching product by ID:", error);
+    ;
     throw error;
   }
 };
@@ -78,12 +77,12 @@ export const fetchOptionsByProductId = async (productId: string): Promise<Option
     );
     const productOptionsSnapshot = await getDocs(productOptionsQuery);
 
-    console.log("productOptionsSnapshot: ",productOptionsSnapshot.docs)
+    
 
     const optionRefs = productOptionsSnapshot.docs.flatMap(doc => doc.data().option_id || []);
-    console.log("optionRefs",optionRefs)
+    
     if (optionRefs.length === 0) {
-      console.warn("No options found for productId:", productId);
+
       return [];
     }
 
@@ -98,11 +97,11 @@ export const fetchOptionsByProductId = async (productId: string): Promise<Option
         return { id: optionDoc.id, ...data } as OptionInterface;
       })
     );
-    console.log("Options After Promise: ",options)
+    
 
     return options.filter((option): option is OptionInterface => option !== null);
   } catch (error) {
-    console.error("Error fetching options:", error);
+    ;
     return [];
   }
 };
@@ -139,7 +138,7 @@ export const fetchOptionItemsByOptionIds = async (
 
     return groupedOptionItems;
   } catch (error) {
-    console.error("Error fetching option items:", error);
+    ;
     return {};
   }
 };
@@ -153,7 +152,7 @@ export async function getProductsByType(productTypeName: string) {
       where("name", "==", productTypeName)
     );
     const productTypeQuerySnapshot = await getDocs(productTypeQuery);
-    console.log("productTypeQuerySnapshot",productTypeQuerySnapshot)
+    
 
     if (productTypeQuerySnapshot.empty) return [];
 
@@ -166,7 +165,7 @@ export async function getProductsByType(productTypeName: string) {
       where("productType_id", "==", doc(db, `productTypes/${productTypeId}`)) // ใช้ Firestore Reference
     );
     const productsQuerySnapshot = await getDocs(productsQuery);
-    console.log("productsQuerySnapshot",productsQuerySnapshot)
+    
 
     // 🔹 4. Map ข้อมูล products ออกมา
     return productsQuerySnapshot.docs.map((doc) => ({
@@ -174,7 +173,7 @@ export async function getProductsByType(productTypeName: string) {
       ...doc.data(),
     }));
   } catch (error) {
-    console.error("🔥 Error fetching products:", error);
+    ;
     return [];
   }
 }

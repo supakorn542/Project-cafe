@@ -1,4 +1,4 @@
-import { collection, doc, addDoc, where, getDocs, query, getDoc, deleteDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, doc, addDoc, where, getDocs, query, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Review } from '../interfaces/review';
 
@@ -40,10 +40,10 @@ export const getReviewByUserId = async (userId: string) => {
             };
         }));
 
-        console.log(review);
+        ;
         return review;
     } catch (error) {
-        console.error("Error fetching reviews:", error);
+        ;
         return [];
     }
 };
@@ -84,10 +84,10 @@ export const getAllReview = async () => {
             };
         }));
 
-        console.log(reviews);
+        ;
         return reviews;
     } catch (error) {
-        console.error("Error fetching reviews:", error);
+        ;
         return [];
     }
 };
@@ -107,7 +107,7 @@ export const createReview = async (review: Review): Promise<void> => {
             createdAt: new Date(),
         });
     } catch (error) {
-        console.error("Error creating review:", error);
+        ;
         throw new Error("Failed to create review");
     }
 };
@@ -118,9 +118,9 @@ export const deleteReview = async (reviewId: string): Promise<void> => {
         await updateDoc(reviewRef, {
             deletedAt: serverTimestamp(), // บันทึกเวลาปัจจุบัน
         });
-        console.log(`Review with ID: ${reviewId} marked as deleted.`);
+        ;
     } catch (error) {
-        console.error("Error deleting review:", error);
+        ;
         throw new Error("Failed to delete review.");
     }
 };
@@ -130,8 +130,8 @@ export const updateReview = async (reviewId: string, updatedReview: Review): Pro
         // ตรวจสอบว่าเอกสารรีวิวมีอยู่ใน Firestore หรือไม่
         const reviewRef = doc(db, "reviews", reviewId);
         const reviewSnapshot = await getDoc(reviewRef);
-        console.log("upreview", reviewSnapshot)
-        console.log("upreviewid", reviewId)
+        
+        
         
 
         // ถ้ามีเอกสาร ให้ทำการอัพเดทข้อมูล
@@ -141,7 +141,7 @@ export const updateReview = async (reviewId: string, updatedReview: Review): Pro
             updatedAt: new Date(), // อัพเดทวันที่
         });
     } catch (error) {
-        console.error("Error updating review:", error);
+        ;
         throw new Error("Failed to update review");
     }
 };

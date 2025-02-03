@@ -1,4 +1,4 @@
-"use client";
+
 
 import { createWithdrawal, getStockById } from "@/app/services/stock";
 import { useEffect, useState } from "react";
@@ -31,10 +31,10 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
     const handleCheckboxChange = (detail: any, checked: boolean) => {
         setSelectedDetails((prev) => {
             if (checked) {
-                console.log([...prev, detail])
+                
                 return [...prev, detail]; // เพิ่ม detail หากถูกเลือก
             } else {
-                console.log(prev.filter((d) => d.id !== detail.id))
+                
                 return prev.filter((d) => d.id !== detail.id); // ลบ detail หากยกเลิกเลือก
             }
         });
@@ -44,11 +44,11 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
         try {
             const data = await getStockById(stockId); // เรียกฟังก์ชัน getIngredientById
             if (data) {
-                console.log(data);
+                ;
                 setStockData(data); // ตั้งค่าข้อมูลที่ดึงมา
             }
         } catch (error) {
-            console.error("Error fetching ingredient:", error);
+            ;
         }
     };
 
@@ -86,7 +86,7 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
                     alert(`เกิดข้อผิดพลาด: ${result.message}`);
                 }
             } catch (error) {
-                console.error("Error during save:", error);
+                ;
                 alert("ไม่สามารถบันทึกข้อมูลได้");
             }
         }

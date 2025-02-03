@@ -1,5 +1,4 @@
-import { Product } from './product'
-import { productTypeInterface } from './productType'
+
 
 export interface ProductOption {
     id: string;      

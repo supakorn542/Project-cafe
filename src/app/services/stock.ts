@@ -1,14 +1,13 @@
 import { addDoc, collection, deleteDoc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
-import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { db } from '../lib/firebase';
 import { Stock } from '../interfaces/stock';
-import { assert, log } from "console";
 import { Withdrawal } from "../interfaces/withdrawal";
 
 export const createStocks = async (stockData: Stock, details: Array<{ idStock: string, manufactureDate: Date, expiryDate: Date }>) => {
   try {
-    console.log(stockData.addedDate)
-    console.log(stockData.addedDate instanceof Date ? stockData.addedDate : new Date(stockData.addedDate))
+    
+    
     // เพิ่มเอกสารในคอลเลกชัน "stocks"
     const stockDocRef = await addDoc(collection(db, "stocks"), {
       name: stockData.name,
@@ -48,7 +47,7 @@ export const createStocks = async (stockData: Stock, details: Array<{ idStock: s
       id: stockDocRef.id,
     };
   } catch (error) {
-    console.error("Error creating stock: ", error);
+    ;
 
     // คืนค่าข้อผิดพลาด
     return {
@@ -97,7 +96,7 @@ export const createPackages = async (stockData: Stock, details: Array<{ idStock:
       id: stockDocRef.id,
     };
   } catch (error) {
-    console.error("Error creating stock: ", error);
+    ;
 
     // คืนค่าข้อผิดพลาด
     return {
@@ -132,7 +131,7 @@ export const createWithdrawal = async (
       createdAt: new Date(), // เพิ่มเวลาในการสร้าง
     };
 
-    console.log(withdrawalData)
+    
 
     // สร้างเอกสารในคอลเลกชัน Withdrawal
     const withdrawalCollectionRef = collection(db, "withdrawals");
@@ -172,7 +171,7 @@ export const createWithdrawal = async (
 
     return { success: true, message: "Creation in Withdrawal and withdrawal from details completed successfully" };
   } catch (error) {
-    console.error("Error during creation in Withdrawal and withdrawal:", error);
+    ;
     return { success: false, message: "Failed to complete creation in Withdrawal and withdrawal", error };
   }
 };
@@ -187,7 +186,6 @@ export const getWithdrawals = async (): Promise<Withdrawal[]> => {
     const withdrawalSnapshot = await getDocs(query(withdrawalCollection));
 
     if (withdrawalSnapshot.empty) {
-      console.warn("No withdrawals found in the collection.");
       return []; // หากไม่มีข้อมูลใน collection ให้คืนค่า array เปล่า
     }
 
@@ -208,11 +206,11 @@ export const getWithdrawals = async (): Promise<Withdrawal[]> => {
       } as Withdrawal;
     });
 
-    console.log("Withdrawals:", withdrawals);
+    ;
     return withdrawals;
 
   } catch (error) {
-    console.error("Error fetching withdrawal data:", error);
+    ;
     throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
   }
 };
@@ -233,7 +231,7 @@ export const updateIngredientByIDAndAddDetail = async (
     expiryDate: Date;
   }>) => {
   try {
-    console.log(stockId)
+    
     // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
     const stockRef = doc(db, "stocks", stockId);
     const stockSnapshot = await getDoc(stockRef);
@@ -279,7 +277,7 @@ export const updateIngredientByIDAndAddDetail = async (
 
     return { success: true, message: "Stock updated and details added successfully" };
   } catch (error) {
-    console.error("Error updating stock and adding details:", error);
+    ;
     return { success: false, message: "Failed to update stock or add details", error };
   }
 };
@@ -299,7 +297,7 @@ export const updatePackagByIDAndAddDetail = async (
     // expiryDate: Date;
   }>) => {
   try {
-    console.log(stockId)
+    
     // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
     const stockRef = doc(db, "stocks", stockId);
     const stockSnapshot = await getDoc(stockRef);
@@ -345,7 +343,7 @@ export const updatePackagByIDAndAddDetail = async (
 
     return { success: true, message: "Stock updated and details added successfully" };
   } catch (error) {
-    console.error("Error updating stock and adding details:", error);
+    ;
     return { success: false, message: "Failed to update stock or add details", error };
   }
 };
@@ -361,12 +359,12 @@ export const updateIngredientByID = async (
     expiryDate: Date;
   }>
 ) => {
-  console.log(updatedStockData)
+  
   try {
     // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
-    console.log(stockId)
-    console.log(updatedStockData)
-    console.log(newDetails)
+    
+    
+    
     const stockRef = doc(db, "stocks", stockId);
     const stockSnapshot = await getDoc(stockRef);
 
@@ -376,7 +374,7 @@ export const updateIngredientByID = async (
 
     // อัปเดตข้อมูล Stock
     if (Object.keys(updatedStockData).length > 0) {
-      console.log(typeof updatedStockData.addedDate)
+      
       if (typeof updatedStockData.addedDate === "string") {
         updatedStockData.addedDate = updatedStockData.addedDate instanceof Date ? updatedStockData.addedDate : new Date(updatedStockData.addedDate)
       }
@@ -404,7 +402,7 @@ export const updateIngredientByID = async (
 
     return { success: true, message: "Stock updated and details added successfully" };
   } catch (error) {
-    console.error("Error updating stock and adding details:", error);
+    ;
     return { success: false, message: "Failed to update stock or add details", error };
   }
 };
@@ -431,7 +429,7 @@ export const updatePackagingByID = async (
 
    // อัปเดตข้อมูล Stock
    if (Object.keys(updatedStockData).length > 0) {
-    console.log(typeof updatedStockData.addedDate)
+    
     if (typeof updatedStockData.addedDate === "string") {
       updatedStockData.addedDate = updatedStockData.addedDate instanceof Date ? updatedStockData.addedDate : new Date(updatedStockData.addedDate)
     }
@@ -459,7 +457,7 @@ export const updatePackagingByID = async (
 
     return { success: true, message: "Stock updated and details added successfully" };
   } catch (error) {
-    console.error("Error updating stock and adding details:", error);
+    ;
     return { success: false, message: "Failed to update stock or add details", error };
   }
 };
@@ -467,21 +465,21 @@ export const updatePackagingByID = async (
 
 export const getStockById = async (stockId: string) => {
   try {
-    console.log(stockId);
+    ;
     const ingredientRef = doc(db, "stocks", stockId); // อ้างอิงเอกสารด้วย stockId
     const docSnap = await getDoc(ingredientRef); // ดึงเอกสาร
 
     // if (docSnap.exists()) {
     //   // ตรวจสอบว่าเอกสารมีอยู่หรือไม่
-    //   console.log("Document data:", docSnap.data());
+    //   ;
     //   return docSnap.data(); // คืนค่าข้อมูลของเอกสาร
     // } else {
-    //   console.log("No such document!");
+    //   ;
     //   return null; // คืนค่า null ถ้าเอกสารไม่มี
     // }
 
     if (!docSnap.exists()) {
-      console.log("No such document!");
+      ;
       return null; // คืนค่า null ถ้าเอกสารไม่มี
     }
 
@@ -505,7 +503,7 @@ export const getStockById = async (stockId: string) => {
       details, // เพิ่มข้อมูลจากคอลเลกชันย่อย
     };
   } catch (error) {
-    console.error("Error fetching document:", error);
+    ;
     throw error; // โยน error ถ้ามีข้อผิดพลาด
   }
 };
@@ -519,7 +517,7 @@ export const getStockPackags = async (): Promise<Stock[]> => {
     const stockSnapshot = await getDocs(query(stockCollection, where('stockType', '==', "packaging")));
 
     if (stockSnapshot.empty) {
-      console.warn("No stocks found in the collection.");
+
       return []; // หากไม่มีข้อมูลใน collection ให้คืนค่า array เปล่า
     }
 
@@ -544,10 +542,10 @@ export const getStockPackags = async (): Promise<Stock[]> => {
       } as Stock
 
     }));
-    console.log("Stocks:", stocks);
+    ;
     return stocks;
   } catch (error) {
-    console.error("Error fetching stock data:", error);
+    ;
     throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
   }
 };
@@ -560,7 +558,6 @@ export const getStockIngredients = async (): Promise<Stock[]> => {
     const stockSnapshot = await getDocs(query(stockCollection, where('stockType', '==', "ingredient")));
 
     if (stockSnapshot.empty) {
-      console.warn("No stocks found in the collection.");
       return []; // หากไม่มีข้อมูลใน collection ให้คืนค่า array เปล่า
     }
     // // แปลงข้อมูลเป็น array
@@ -569,7 +566,7 @@ export const getStockIngredients = async (): Promise<Stock[]> => {
     //   // ...doc.data(), // ข้อมูลในเอกสาร
     // }));
 
-    // console.log("Stock Data:", stockData);
+    // ;
     // return stockData;
 
     const stocks = await Promise.all(stockSnapshot.docs.map(async (docSnapshot) => {
@@ -593,12 +590,12 @@ export const getStockIngredients = async (): Promise<Stock[]> => {
       } as Stock
 
     }));
-    console.log("Stocks:", stocks);
+    ;
     return stocks;
 
 
   } catch (error) {
-    console.error("Error fetching stock data:", error);
+    ;
     throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
   }
 };
@@ -606,9 +603,9 @@ export const getStockIngredients = async (): Promise<Stock[]> => {
 export const deletedStock = async (id: string) => {
   try {
     await deleteDoc(doc(db, 'stocks', id));
-    console.log('Document deleted successfully');
+    ;
   } catch (error) {
-    console.error('Error deleting document: ', error);
+    ;
   }
 };
 
@@ -627,9 +624,9 @@ export const deletedStock = async (id: string) => {
 
 //     // ลบเอกสารหลักใน `stocks`
 //     await deleteDoc(doc(db, 'stocks', id));
-//     console.log('Document and its subcollection deleted successfully');
+//     ;
 //   } catch (error) {
-//     console.error('Error deleting document and its subcollection: ', error);
+//     ;
 //   }
 // };
 
@@ -643,7 +640,7 @@ export const getAllIdStockFromStock = async (): Promise<string[]> => {
     // const stockSnapshot = await getDocs(query(stockCollection, where('stockType', '==', "packaging")));
 
     if (stockSnapshot.empty) {
-      console.warn("No stocks found in the collection.");
+
       return []; // คืนค่าเป็น object เดียวที่มี array เปล่า
     }
 
@@ -657,12 +654,12 @@ export const getAllIdStockFromStock = async (): Promise<string[]> => {
       allDetails.push(...detailsSnap.docs.map((doc) => doc.data().idStock));
     }));
 
-    console.log("Merged Details:", allDetails);
+    ;
 
     return allDetails; // คืนค่าเป็น object เดียว
 
   } catch (error) {
-    console.error("Error fetching stock data:", error);
+    ;
     throw error; // โยน error เพื่อจัดการในที่ที่เรียกฟังก์ชัน
   }
 };

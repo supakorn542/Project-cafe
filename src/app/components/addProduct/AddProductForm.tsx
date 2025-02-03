@@ -1,20 +1,21 @@
-"use client";
+
 
 import { useEffect, useState } from "react";
-import { getProductTypes } from "../../../services/getproductType";
-import { createProductWithOptions } from "../../../services/addProduct";
+import { getProductTypes } from "@/app/services/getproductType";
+import { createProductWithOptions } from "@/app/services/addProduct";
 import { OptionInterface } from "@/app/interfaces/optioninterface";
 import { getOptions } from "@/app/services/options";
 import { OptionItem } from "@/app/interfaces/optionItemInterface";
 import { statusInterface } from "@/app/interfaces/statusInterface";
 import { getStatus } from "@/app/services/getstatus";
-import axios from "axios";
+
 
 import SelectOptionsPopup from "@/app/components/option and optionitem popup/SelectOptionsPopup";
-import { FaPlus } from "react-icons/fa";
+
 import { GoPlus } from "react-icons/go";
 import CreateProductTypePopup from "@/app/components/option and optionitem popup/CreateproductTypepopup";
 import { useRefresh } from "@/app/components/RefreshContext/RefreshContext";
+
 
 const AddProductForm = ({ onClose }: { onClose: () => void }) => {
   const { refresh } = useRefresh();
@@ -66,7 +67,7 @@ const [Fetch ,setFetch] = useState(false)
   }, [showOptionsPopup, showPopup, refresh,Fetch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("image :", uploadedImage);
+    ;
     e.preventDefault();
 
     // ดึงเฉพาะ option.id จาก selectedOptions
@@ -91,7 +92,7 @@ const [Fetch ,setFetch] = useState(false)
       alert("บันถึกข้อมูลสินค้าเสร็จสิ้น");
       window.location.reload();
     } catch (error : any) {
-      console.error("Error creating product:", error.code);
+      ;
       alert("Failed to create product");
     }
   };
@@ -99,7 +100,7 @@ const [Fetch ,setFetch] = useState(false)
 
   const handleOptionCheckboxChange = (option: OptionInterface) => {
     if (!option.id) {
-      console.error("Option ID is undefined");
+      ;
       return; // หยุดทำงานถ้า id เป็น undefined
     }
 
@@ -299,7 +300,7 @@ const [Fetch ,setFetch] = useState(false)
             <button
               type="button"
               className="text-black border border-black rounded-md px-4 py-2 hover:bg-black hover:text-white"
-              onClick={() => onClose()}
+              onClick={onClose}
             >
               ยกเลิก
             </button>

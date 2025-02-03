@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   
       return NextResponse.json({ message: `Role ${role} assigned to user ${uid}` });
     } catch (error) {
-      console.error("Error setting custom claims:", error);
+
       return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
   }
