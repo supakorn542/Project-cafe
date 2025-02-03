@@ -104,8 +104,8 @@ const CreateIngredient: React.FC<CreateIngredientProps> = ({ togglePopup }) => {
 
             const stockDetails = details.map((detail) => ({
                 idStock: detail.idStock,
-                manufactureDate: formatDate(detail.manufactureDate),
-                expiryDate: formatDate(detail.expiryDate),
+                manufactureDate: detail.manufactureDate,
+                expiryDate: detail.expiryDate,
             }));
 
             try {

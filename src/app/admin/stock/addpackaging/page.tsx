@@ -12,7 +12,7 @@ interface AddPackagingProps {
 const AddPackaging: React.FC<AddPackagingProps> = ({ addPackagingPopup, stockId }) => {
     const [currentPopup, setCurrentPopup] = useState(1); // State สำหรับติดตาม popup
     const [quantity, setQuantity] = useState(0);
-    const [addedDate, setAddedDate] = useState(Date);
+    const [addedDate, setAddedDate] = useState("");
     const [description, setDescription] = useState("");
     const [details, setDetails] = useState<
         Array<{ idStock: string }>
