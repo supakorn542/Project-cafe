@@ -92,7 +92,7 @@ const [Fetch ,setFetch] = useState(false)
       alert("บันถึกข้อมูลสินค้าเสร็จสิ้น");
       window.location.reload();
     } catch (error : any) {
-      ;
+      console.log(error)
       alert("Failed to create product");
     }
   };

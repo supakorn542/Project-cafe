@@ -189,7 +189,7 @@ export default function Home() {
         </div>
       </section>
       <section
-        className=" container mx-auto mt-20  flex flex-col gap-14"
+        className="  mt-20  flex flex-col "
         data-aos="fade-up"
         data-aos-delay="50"
         data-aos-duration="1000"
@@ -197,7 +197,7 @@ export default function Home() {
       >
         <OwlCarousel
           items={3}
-          nav
+          
           autoplay={true}
           responsive={{
             0: {
@@ -215,7 +215,7 @@ export default function Home() {
           {product?.map((item, index) => (
             <div
               key={index}
-              className="mx-0 relative bg-[url('/assets/borderVertical.png')] bg-cover bg-center w-full h-[300px]" // ตั้งขนาดของ div ให้ตรง
+              className="  w-full h-[500px]" // ตั้งขนาดของ div ให้ตรง
             >
               {item.imageProduct ? (
                 <Image
