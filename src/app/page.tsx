@@ -43,13 +43,12 @@ export default function Home() {
     const fetchProduct = async () => {
       const productData = await getProducts();
       setProduct(productData);
-      console.log(productData);
     };
     fetchProduct();
     fetchReview();
   }, []);
 
-  console.log(product);
+
   return (
     <div className="">
       <Navbar textColor="text-white" color="white" />

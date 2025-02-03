@@ -46,10 +46,9 @@ export const getAllProducts = async () => {
     };
   });
 
-  console.log("productData",products)
+
 
   const availableProducts = products.filter(product => statusMap[product.status_id] === "available");
-  console.log("availableProducts",availableProducts)
 
   return availableProducts; 
 }
