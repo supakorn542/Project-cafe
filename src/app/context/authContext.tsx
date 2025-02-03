@@ -99,6 +99,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       nookies.set(null, "token", token, {
         maxAge: 60 * 60 * 24,
         path: "/",
+        secure: process.env.NODE_ENV === "production",
+        httpOnly: process.env.NODE_ENV === "production",
+        sameSite: "lax",
       });
 
       await saveUserData(newUser);
