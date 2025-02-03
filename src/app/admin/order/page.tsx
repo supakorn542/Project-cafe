@@ -60,6 +60,7 @@ const ShowOrder = () => {
         try {
             const response = await updateStatusPaymentByID(orderId, status);
             if (response.success) {
+                fetchOrders()
                 alert("Stock updated successfully!");
 
             } else {
@@ -247,12 +248,31 @@ const ShowOrder = () => {
                                                 </div>
                                             </div>
                                         ))}
-                                        {orders.filter(item => item.cart_id.id == i).map(x => (
-                                            <div className=" flex justify-between items-end  w-[22%] ">
-                                                <button className="w-[130px] h-[29px] font-semibold border-2 border-black text-white text-sm bg-black rounded-xl" onClick={() => { updatedStatusPayment(x.id, "Completed") }}> ยืนยันออเดอร์ </button>
-                                                <button className="w-[130px] h-[29px] font-semibold border-2 border-black text-black text-sm rounded-xl" onClick={() => { updatedStatusPayment(x.id, "Uncompleted") }}> ชำระเงินไม่ถูกต้อง </button>
-                                            </div>
-                                        ))}
+                                        {orders
+                                            .filter(item => item.cart_id.id == i)
+                                            .map(x => (
+                                                x.payment_id.status === "Pending" ? (
+                                                    <div key={x.id} className="flex justify-between items-end w-[22%]">
+                                                        <button
+                                                            className="w-[130px] h-[29px] font-semibold border-2 border-black text-white text-sm bg-black rounded-xl"
+                                                            onClick={() => updatedStatusPayment(x.id, "Completed")}
+                                                        >
+                                                            ยืนยันออเดอร์
+                                                        </button>
+                                                        <button
+                                                            className="w-[130px] h-[29px] font-semibold border-2 border-black text-black text-sm rounded-xl"
+                                                            onClick={() => updatedStatusPayment(x.id, "Uncompleted")}
+                                                        >
+                                                            ชำระเงินไม่ถูกต้อง
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex justify-center items-end w-[22%] text-xl font-semibold">
+                                                        <span>ชำระเงินไม่ถูกต้อง</span>
+                                                    </div>
+                                                )
+                                            ))}
+
 
                                     </div>
                                 </div>
@@ -449,14 +469,18 @@ const ShowOrder = () => {
                                             </div>
                                         ))}
                                         {finishOrders.filter(item => item.cart_id.id == i).map(x => (
-                                            <div className=" flex ">
-                                                {button[x.id] && (<div className="flex justify-between items-end gap-4">
-                                                    <button className="w-[110px] h-[28px] font-semibold border-2 border-black text-white bg-black rounded-xl" onClick={() => { updatedStatusOrder(x.id, statusOrder[x.id]) }}> Done </button>
-                                                    <button className="w-[110px] h-[28px] font-semibold border-2 border-black text-black rounded-xl" onClick={() => setStatusAndButton("", x.id)}> Cancel </button>
-                                                </div>)}
-                                            </div>
+                                            x.statusOrder === "Completed" ? (
+                                                <div className=" flex ">
+                                                    {button[x.id] && (<div className="flex justify-between items-end gap-4">
+                                                        <button className="w-[110px] h-[28px] font-semibold border-2 border-black text-white bg-black rounded-xl" onClick={() => { updatedStatusOrder(x.id, statusOrder[x.id]) }}> Done </button>
+                                                        <button className="w-[110px] h-[28px] font-semibold border-2 border-black text-black rounded-xl" onClick={() => setStatusAndButton("", x.id)}> Cancel </button>
+                                                    </div>)}
+                                                </div>) : (
+                                                <div className="flex justify-center items-end w-[22%] text-xl font-semibold">
+                                                    <span>ลูกค้ารับแล้ว</span>
+                                                </div>
+                                            )
                                         ))}
-
                                     </div>
                                 </div>
                             </div>)

@@ -1,6 +1,6 @@
 "use client";
 
-import { getAllIdStockFromStock, getIngredientById, updateIngredientByIDAndAddDetail } from "@/app/services/stock";
+import { getAllIdStockFromStock, getStockById, updateIngredientByIDAndAddDetail } from "@/app/services/stock";
 import { useEffect, useState } from "react";
 import { GrPowerCycle } from "react-icons/gr";
 
@@ -57,7 +57,7 @@ const AddIngredient: React.FC<AddIngredientProps> = ({ addIngredientPopup, stock
 
     const fetchIngredient = async () => {
         try {
-            const data = await getIngredientById(stockId); // เรียกฟังก์ชัน getIngredientById
+            const data = await getStockById(stockId); // เรียกฟังก์ชัน getIngredientById
             if (data) {
                 console.log(data);
                 setIngredientData(data); // ตั้งค่าข้อมูลที่ดึงมา

@@ -22,7 +22,7 @@ export default function AboutUs() {
         AOS.init();
     });
     return (
-        <div className="bg-[#FBF6F0]">
+        <div className="bg-[#FBF6F0] min-h-screen overflow-y-auto">
             <Navbar textColor="text-white" color="white" />
             <section className="h-screen w-full">
                 <Image
@@ -39,24 +39,24 @@ export default function AboutUs() {
                     data-aos-duration="1000"
                     data-aos-easing="ease-in-out"
                 >
-                    <div className="flex flex-col leading-tight pt-8">
-                        <label className="text-6xl font-semibold font-playfair">
+                    <div className="flex flex-col leading-tight lg:pt-8 pt-10">
+                        <label className=" text-3xl md:text-4xl lg:text-6xl font-semibold font-playfair">
                             Welcome to
                         </label>
-                        <label className="text-[160px] uppercase font-semibold font-playfair">
+                        <label className=" text-[60px] md:text-[100px] lg:text-[160px] uppercase font-semibold font-playfair">
                             f o r e s t
                             <Image
-                                className="absolute top-[18%] left-[48.7%]  "
+                                className="absolute md:top-[18%] md:left-[48.7%] -top-[10%] left-[48.7%]"
                                 src={"/assets/star.png"}
                                 alt="star"
                                 width={150}
                                 height={150}
                             />
                         </label>
-                        <label className="relative text-[160px] uppercase font-semibold font-playfair">
+                        <label className="relative text-[60px] md:text-[100px] lg:text-[160px] uppercase font-semibold font-playfair">
                             t a l e s
                             <Image
-                                className="absolute top-[40%] left-[23%]  "
+                                className="absolute lg:top-[40%] md:left-[23%] top-[100%]"
                                 src={"/assets/star.png"}
                                 alt="star"
                                 width={100}
@@ -66,9 +66,9 @@ export default function AboutUs() {
                     </div>
                 </div>
             </section>
-            <section className="flex justify-between mt-24 px-24">
+            <section className="flex lg:justify-between justify-center item-center lg:w-full lg:mt-24  px-24 ">
                 <div
-                    className="w-[30%]"
+                    className="w-[30%] hidden lg:block"
                     data-aos="fade-right"
                     data-aos-delay="50"
                     data-aos-duration="1000"
@@ -99,15 +99,18 @@ export default function AboutUs() {
                 </div>
 
                 <div
-                    className="flex flex-col justify-center items-center space-y-2 gap-6 w-[30%]"
+                    className="flex flex-col justify-center items-center space-y-2 gap-6 lg:w-[30%] w-[100%] "
                     data-aos="fade-up"
                     data-aos-delay="50"
                     data-aos-duration="1000"
                     data-aos-easing="ease-in-out"
                 >
                     <div className="flex flex-col text-[#013927] gap-7 ">
-                        <label className="text-center text-4xl ">ยินดีต้อนรับสู่ <span className=" font-playfair font-semibold">Forest Tales</span></label>
-                        <label className="flex flex-col text-center text-2xl ">
+                        <label className="text-center md:text-4xl text-2xl">
+                            ยินดีต้อนรับสู่ <br className="hidden lg:block" />
+                        <span className=" font-playfair font-semibold">Forest Tales</span>
+                        </label>
+                        <label className="flex flex-col text-center md:text-2xl text-sm">
                             <span>ร้านกาแฟในโลกแห่งจินตนาการ</span>
                             <span>ที่ซ่อนตัวอยู่ในเมืองนครพนม</span>
                             <span>ดื่มด่ำไปกับความละเมียดละไมของกาแฟ</span>
@@ -118,16 +121,10 @@ export default function AboutUs() {
                             <span>กาแฟคัดสรรพิเศษจากเมล็ดกาแฟ</span>
                             <span>ที่เราคั่วเองอย่างพิถีพิถัน</span>
                         </label>
-                        {/* <label className="text-center text-6xl">
-                            of our house-roasted coffee.
-                        </label> */}
                     </div>
-                    {/* <button className=" border-2 border-black rounded-full lg:px-12 w-fit text-3xl ">
-                        Order Now
-                    </button> */}
                 </div>
                 <div
-                    className="w-[30%]"
+                    className="w-[30%] hidden lg:block"
                     data-aos="fade-left"
                     data-aos-delay="50"
                     data-aos-duration="1000"
