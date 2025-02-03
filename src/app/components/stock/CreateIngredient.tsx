@@ -110,15 +110,15 @@ const CreateIngredient: React.FC<CreateIngredientProps> = ({ togglePopup }) => {
             try {
                 const response = await createStocks(stockData, stockDetails);
                 if (response.success) {
-                    alert("Stock created successfully!");
+                    alert("บันทึกข้อมูลวัตถุดิบสำเร็จ!");
                     togglePopup(); // Close the popup on success
 
                 } else {
-                    alert("Failed to create Stock");
+                    alert("บันทึกข้อมูลวัตถุดิบไม่สำเร็จ!");
                 }
             } catch (error) {
                 ;
-                alert("Failed to create Stock");
+                alert("บันทึกข้อมูลวัตถุดิบไม่สำเร็จ!");
             }
         }
 
@@ -162,12 +162,14 @@ const CreateIngredient: React.FC<CreateIngredientProps> = ({ togglePopup }) => {
                                     className="w-[35%] h-[35px] border-2 border-black rounded-md pl-3"
                                     onChange={(e) => setUnit(e.target.value)}
                                     required
-                                >
+                                > 
                                     <option value="" disabled selected>กรุณาเลือก</option>
-                                    <option value="ml">ml</option>
-                                    <option value="g">g</option>
-                                    <option value="oz">oz</option>
-                                    <option value="Kg">Kg</option>
+                                    <option value="มิลลิลิตร">มิลลิลิตร</option>
+                                    <option value="ลิตร">ลิตร</option>
+                                    <option value="กรัม">กรัม</option>
+                                    <option value="กิโลกรัม">กิโลกรัม</option>
+                                    <option value="ออนซ์">ออนซ์</option>
+                                    
                                 </select>
                             </div>
                         </div>
@@ -190,9 +192,11 @@ const CreateIngredient: React.FC<CreateIngredientProps> = ({ togglePopup }) => {
                                 >
                                     <option value="" disabled selected >กรุณาเลือก</option>
                                     <option value="ถุง">ถุง</option>
+                                    <option value="ลัง">ลัง</option>
                                     <option value="ชิ้น">ชิ้น</option>
+                                    <option value="แพ็ค">แพ็ค</option>
                                     <option value="กล่อง">กล่อง</option>
-                                    <option value="อัน">อัน</option>
+                                    <option value="ขวด">ขวด</option>
                                 </select>
                             </div>
                         </div>

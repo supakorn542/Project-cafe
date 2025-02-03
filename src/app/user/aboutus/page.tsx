@@ -4,7 +4,7 @@
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
 import Image from "next/image"; // Import from 'next/image'
-import {  useEffect } from "react";
+import { Key, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // You can also use <link> for styles
 import FooterUser from "../../components/footer/footerUser";
@@ -74,21 +74,8 @@ export default function AboutUs() {
                     data-aos-duration="1000"
                     data-aos-easing="ease-in-out"
                 >
-                    {/* <Image
-                        className="rounded-r-full border border-black p-4"
-                        src={"/assets/esyen.jpg"}
-                        alt="iamge"
-                        width={700}
-                        height={200}
-                    /> */}
                     <div className="relative w-[100%] h-[200px]">
                         {" "}
-                        {/* <img
-                            className="absolute top-[-72px] left-0 rounded-r-full w-[94%] h-[224%]"
-                            src={"/assets/esyen.jpg"}
-                            alt="esyen"
-
-                        /> */}
                         <img
                             className="absolute -top-[140px] left-0 h-[304%] w-[100%]"
                             src={"/assets/2.png"}
@@ -130,21 +117,8 @@ export default function AboutUs() {
                     data-aos-duration="1000"
                     data-aos-easing="ease-in-out"
                 >
-                    {/* <Image
-                        className="rounded-r-full border border-black p-4"
-                        src={"/assets/esyen.jpg"}
-                        alt="iamge"
-                        width={700}
-                        height={200}
-                    /> */}
                     <div className="relative w-[100%] h-[200px]">
                         {" "}
-                        {/* <img
-                            className="absolute top-[-72px] left-0 rounded-r-full w-[94%] h-[224%]"
-                            src={"/assets/esyen.jpg"}
-                            alt="esyen"
-
-                        /> */}
                         <img
                             className="absolute -top-[140px] left-0 h-[304%] w-[100%] "
                             src={"/assets/1.png"}
@@ -154,7 +128,7 @@ export default function AboutUs() {
 
                 </div>
             </section>
-            <section className=" flex justify-between pt-36 px-24">
+            <section className=" flex md:flex-row flex-col justify-between pt-36 px-24 gap-12">
                 <div
                     className="flex flex-col justify-center items-center space-y-2 gap-6"
                     data-aos="fade-right"
@@ -163,7 +137,7 @@ export default function AboutUs() {
                     data-aos-easing="ease-in-out"
                 >
                     <div className="flex flex-col text-[#013927] gap-7 ">
-                        <label className="flex flex-col text-center text-2xl ">
+                        <label className="flex flex-col text-center lg:text-2xl text-base">
                             <span>นอกจากจะได้สัมผัสบรรยากาศ</span>
                             <span>แฟนตาซีและลิ้มรสกาแฟสดใหม่</span>
                             <span>ที่ร้านแล้ว Forest Tales</span>
@@ -179,22 +153,18 @@ export default function AboutUs() {
 
                         </label>
                     </div>
-
-                    {/* <button className=" border-2 border-black rounded-full lg:px-12 w-fit text-3xl ">
-                        Learn more
-                    </button> */}
                 </div>
                 <div
-                    className="w-[30%]"
+                    className="w-[30%] md:h-full h-72 "
                     data-aos="fade-down"
                     data-aos-delay="50"
                     data-aos-duration="1000"
                     data-aos-easing="ease-in-out"
                 >
-                    <div className="relative w-[100%] h-[200px] flex justify-center ">
+                    <div className="relative md:w-[100%] md:h-[200px] w-[300%] h-[200px] flex justify-center ">
                         {" "}
                         <img
-                            className="absolute -top-[110px] w-[90%] h-[240%] mt-4"
+                            className="absolute md:-top-[110px] top-[20px] left-[10px] md:w-[90%] md:h-[240%] w-[500%] h-[150%] md:mt-4 "
                             src={"/assets/สีเขียวและสีครีม เรียบง่าย ภาพประกอบ เมนูกาแฟ Instagram Post (1).png"}
                             alt="border"
                         />
@@ -202,15 +172,15 @@ export default function AboutUs() {
 
                 </div>
                 <div
-                    className="flex flex-col justify-center items-center gap-6 "
+                    className="flex flex-col justify-center items-center gap-6 md:pt-0 pt-4"
                     data-aos="fade-left"
                     data-aos-delay="50"
                     data-aos-duration="1000"
                     data-aos-easing="ease-in-out"
                 >
                     <div className="flex flex-col text-[#013927] gap-7 font-playfair">
-                        <label className="flex flex-col text-center text-4xl font-semibold ">
-                            <span>Don&rsquo;t miss out, try</span>
+                        <label className="flex flex-col text-center md:text-4xl text-2xl font-semibold ">
+                            <span>Don&apos;t miss out, try</span>
                             <span>our roasted coffee today</span>
                         </label>
                         <div>
@@ -222,24 +192,20 @@ export default function AboutUs() {
                             </button>
                         </div>
                     </div>
-
-                    {/* <button className=" border-2 border-black rounded-full lg:px-12 w-fit text-3xl ">
-                        Learn more
-                    </button> */}
                 </div>
             </section>
             <section className="  mt-10 w-full bg-[url('/assets/greenscreen.png')] bg-cover bg-center h-[100%]">
                 <div className=" flex flex-col justify-between ">
-                    <div className=" flex flex-row justify-center items-center pt-32">
+                    <div className=" flex md:flex-row md:justify-center md:items-center md:pt-32 flex-col justify-between">
                         <div
-                            className="flex flex-row justify-center items-center space-y-2 gap-6 mt-32"
+                            className="flex flex-row justify-center items-center space-y-2 gap-6 md:mt-32 mt-20"
                             data-aos="fade-right"
                             data-aos-delay="50"
                             data-aos-duration="1000"
                             data-aos-easing="ease-in-out"
                         >
                             <div className="flex flex-col text-white gap-7 ">
-                                <label className="flex flex-col text-center text-3xl ">
+                                <label className="flex flex-col text-center md:text-3xl text-base">
                                     <span>นอกจากจะมีเมล็ดกาแฟคั่วสดจำหน่ายแล้ว</span>
                                     <span>Forest Tales ยังมีการสอนพื้นฐานเกี่ยวกับกาแฟ</span>
                                     <span>ตั้งแต่การทำกาแฟไปจนถึงการดมกลิ่นแบบ sensory</span>
@@ -257,7 +223,7 @@ export default function AboutUs() {
                             </div>
                         </div>
                         <div
-                            className="w-[30%]"
+                            className="w-[30%] hidden lg:block"
                             data-aos="fade-down"
                             data-aos-delay="50"
                             data-aos-duration="1000"
@@ -294,7 +260,7 @@ export default function AboutUs() {
                         </div>
 
                     </div>
-                    <div className=" flex justify-center items-center pt-24">
+                    <div className=" flex justify-center items-center pt-24 ">
                         <MapComponent />
                     </div>
                 </div>

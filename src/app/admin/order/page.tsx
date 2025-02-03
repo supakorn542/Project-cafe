@@ -59,14 +59,14 @@ const ShowOrder = () => {
             const response = await updateStatusPaymentByID(orderId, status);
             if (response.success) {
                 fetchOrders()
-                alert("Stock updated successfully!");
+                alert("บันทึกข้อมูลสำเร็จ!");
 
             } else {
-                alert("Failed to update Stock");
+                alert("บันทึกข้อมูลไม่สำเร็จ");
             }
         } catch (error) {
             ;
-            alert("Failed to update Stock");
+            alert("บันทึกข้อมูลไม่สำเร็จ");
         }
     }
 
@@ -74,7 +74,7 @@ const ShowOrder = () => {
         try {
             const response = await updateStatusOrderByID(orderId, statusOrder);
             if (response.success) {
-                alert("StatusOrder updated successfully!");
+                alert("บันทึกข้อมูล status สำเร็จ");
                 fetchProcessOrders()
                 fetchFinishOrders()
                 setButton((prev) => ({
@@ -82,11 +82,11 @@ const ShowOrder = () => {
                     [orderId]: false,
                 }));
             } else {
-                alert("Failed to update StatusOrder");
+                alert("บันทึกข้อมูล status ไม่สำเร็จ");
             }
         } catch (error) {
             ;
-            alert("Failed to update StatusOrder");
+            alert("บันทึกข้อมูล status ไม่สำเร็จ");
         }
     }
 

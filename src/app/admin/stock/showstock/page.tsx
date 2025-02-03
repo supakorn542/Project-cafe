@@ -32,7 +32,7 @@ const ShowStock = () => {
     const [searchItem, setSearchItem] = useState("");
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchItem(event.target.value);
-      };
+    };
 
     const filteredIngredients = ingredients.filter((ingredient) => {
         const search = searchItem.toLowerCase();
@@ -56,7 +56,7 @@ const ShowStock = () => {
             withdrawals.description.toLowerCase().includes(search)
         );
     });
-    
+
 
     const togglePopup = () => {
         setIsPopupOpen(!isPopupOpen);
@@ -87,18 +87,6 @@ const ShowStock = () => {
         setAddPackagingPopupOpen(!addPackagingPopupOpen);
     };
 
-    // const formatDate = (date: String) => {
-    //     if (date) {
-    //         const seconds = Number(date.split('=')[1].split(',')[0])
-    //         const nanoseconds = 0;
-    //         const fakeDate = new Date(seconds * 1000 + nanoseconds / 1000000); // nanoseconds แปลงเป็นมิลลิวินาที
-    //         const realDate = fakeDate.toISOString().split('T')[0]
-    //         // ฟังก์ชัน format วันที่
-    //         return String(realDate); // แปลง Date เป็น string ในรูปแบบ yyyy-mm-dd
-    //     }
-    //     return date || ''; // หากไม่มีค่า ให้ส่งคืนค่าว่าง
-    // };
-
     const formatDate = (date: string | undefined) => {
         if (date && date.includes('=') && date.includes(',')) {
             const seconds = Number(date.split('=')[1].split(',')[0]);
@@ -115,9 +103,9 @@ const ShowStock = () => {
         try {
             const ingredientData = await getStockIngredients();
             setIngredients(ingredientData); // เก็บข้อมูลใน state
-            ;
+            
         } catch (error) {
-            ;
+            
         }
     };
 
@@ -142,8 +130,8 @@ const ShowStock = () => {
     };
 
     const handleDelete = (id: string) => {
-        
-        if (window.confirm("Are you sure you want to delete this item?")) {
+
+        if (window.confirm("คุณแน่ใจที่จะลบข้อมูลนี้หรือไม่?")) {
             deletedStock(id);
             fetchStockIngredients(); // เรียก API เมื่อ component ถูก mount
             fetchStockPackages();
@@ -240,64 +228,8 @@ const ShowStock = () => {
                                                 </button>
                                             </div>
 
-                                        </div></div>
-                                    {/* <div className="w-[28%] h-full pt-9 flex flex-row justify-between " >
-                                        <button
-                                            onClick={() => withdrawalPopup(ingredient.id)}
-                                            className="w-[120px] h-8   rounded-3xl font-semibold text-white bg-black">
-                                            - เบิกของ
-                                        </button>
-
-                                        <button
-                                            onClick={() => addIngredientPopup(ingredient.id)}
-                                            className="w-[120px] h-8 border-2 border-black rounded-3xl font-semibold  ">
-                                            + เพิ่มของ
-                                        </button>
-
-
-                                        <div>
-                                            <button
-                                                onClick={() => updateIngredientPopup(ingredient.id)}
-                                                className="">
-                                                <svg
-                                                    className="h-7 w-7  "
-                                                    width="24"
-                                                    height="24"
-                                                    viewBox="0 0 24 24"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-                                                </svg>
-                                            </button>
                                         </div>
-
-                                        <div>
-                                            <button onClick={() => handleDelete(ingredient.id!)}>
-                                                <svg
-                                                    className="h-7 w-7 text-black"
-                                                    width="24"
-                                                    height="24"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="2"
-                                                    stroke="currentColor"
-                                                    fill="none"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" />
-                                                    <line x1="4" y1="7" x2="20" y2="7" />
-                                                    <line x1="10" y1="11" x2="10" y2="17" />
-                                                    <line x1="14" y1="11" x2="14" y2="17" />
-                                                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
-                                                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
-                                                </svg>
-                                            </button>
-                                        </div>
-
-                                    </div> */}
+                                    </div>
                                 </div>)}
 
                         </div>
@@ -340,7 +272,6 @@ const ShowStock = () => {
                                         >
                                             - เบิกของ
                                         </button>
-                                        {/* {withdrawalPopupOpen && <Withdrawal withdrawalPopup={withdrawalPopup} />} */}
                                         <button
                                             onClick={() => addPackagingPopup(packaging.id)}
                                             className="w-[120px] h-8 border-2 border-black rounded-3xl font-semibold  ">
@@ -393,8 +324,6 @@ const ShowStock = () => {
                                 </div>)}
                         </div>
                         {withdrawalPopupOpen && <Withdrawal withdrawalPopup={() => withdrawalPopup(selectedIngredientId)} stockId={selectedIngredientId!} />}
-                        {/* {addIngredientPopupOpen && <AddIngredient addIngredientPopup={() => addIngredientPopup(selectedStockId)} stockId={selectedStockId!} />} */}
-                        {/* {withdrawalPopupOpen && <Withdrawal withdrawalPopup={withdrawalPopup} />} */}
                         {addPackagingPopupOpen && <AddPackaging addPackagingPopup={() => addPackagingPopup(selectedStockId)} stockId={selectedStockId!} />}
                         {updatePackagingPopupOpen && <UpdatePackaging updatePackagingPopup={() => updatePackagingPopup(selectedStockId)} stockId={selectedStockId!} />}
 
