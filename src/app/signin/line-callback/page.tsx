@@ -42,19 +42,16 @@ const LineCallback = () => {
 
             const token = tokenResult.token;
 
-            const { displayName, email, photoURL } = userCredential.user;
-            if (displayName && email && photoURL) {
-              const userRef = doc(db, "users", userCredential.user.uid);
-              await setDoc(
-                userRef,
-                {
-                  username: displayName,
-                  email: email,
-                  profileImage: photoURL,
-                },
-                { merge: true } 
-              );
-            }
+            const userRef = doc(db, "users", userCredential.user.uid);
+            await setDoc(
+              userRef,
+              {
+                username: userCredential.user.displayName,
+                email: userCredential.user.email,
+                profileImage: userCredential.user.photoURL,
+              },
+              { merge: true }
+            );
 
             nookies.set(null, "token", token, {
               maxAge: 60 * 60 * 24,
