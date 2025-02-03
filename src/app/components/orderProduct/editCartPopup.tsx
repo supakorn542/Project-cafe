@@ -30,11 +30,8 @@ function EditCartPopup({
   onSubmit: (formData: any) => void;
   cartItemId: string;
 }) {
-
-
-  interface cartstateinterface extends CartItemsInterface{
-    
-    option : any
+  interface cartstateinterface extends CartItemsInterface {
+    option: any;
   }
   const [cartItem, setCartItems] = useState<cartstateinterface | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
@@ -49,7 +46,7 @@ function EditCartPopup({
     []
   );
   const [pickupdateTime, setPickupdateTime] = useState<string>("");
-  console.log("id :" ,cartItemId )
+  console.log("id :", cartItemId);
   useEffect(() => {
     const fetchCartItem = async () => {
       if (cartItemId) {
@@ -101,11 +98,11 @@ function EditCartPopup({
                 const cartItem: cartstateinterface = {
                   id: cartItemSnapshot.id,
                   cart_id: cartData.id,
-                  product_id: productData.id?? "",
+                  product_id: productData.id ?? "",
                   description: cartItemData.description,
                   option: optionData[0], // Assuming you want the first option
                   quantity: cartItemData.quantity,
-                  
+
                   optionitem_ids: cartItemData.optionitem_id.map(
                     (ref: { id: any }) => ref.id
                   ),
@@ -143,7 +140,6 @@ function EditCartPopup({
                 setCartItems(cartItem);
                 setQuantity(cartItem.quantity); // Set initial quantity from cartItem
                 setProduct(productData); // Set the product state
-               
 
                 setCheckedOptionItemIds(cartItem.optionitem_ids ?? []);
 
@@ -184,38 +180,16 @@ function EditCartPopup({
             ? descriptionElement.value
             : "";
         // 1. อัปเดต cartItem ใน Firestore
-        await updateDoc(doc(db, "cartItems", cartItem.id!),  {
+        await updateDoc(doc(db, "cartItems", cartItem.id!), {
           optionitem_id: checkedOptionItemIds.map((id) =>
             doc(db, "optionItems", id)
           ),
           quantity: quantity,
-          
+
           description: descriptionValue, // อัปเดต description
         });
 
-        // 2. อ่านข้อมูล cartItem ที่อัปเดตแล้ว
-        const updatedCartItemSnapshot = await getDoc(
-          doc(db, "cartItems", cartItem.id!)
-        );
-        const updatedCartItemData = updatedCartItemSnapshot.data();
-
-        // 3. สร้าง updatedCartItem object
-        const updatedCartItem: cartstateinterface = {
-          id: cartItem.id,
-          cart_id: cartItem.cart_id,
-          product_id: cartItem.product_id,
-          description: updatedCartItemData?.description || "",
-          option: cartItem.option,
-          quantity: cartItem.quantity,
-          
-          optionitem_ids:
-            updatedCartItemData?.optionitem_id.map(
-              (ref: { id: any }) => ref.id
-            ) || [],
-        };
-
-        // 4. ส่ง updatedCartItem ไปยัง onSubmit prop
-        onSubmit(updatedCartItem);
+        onSubmit(true);
 
         onClose();
       }
@@ -223,32 +197,31 @@ function EditCartPopup({
       console.error("Error updating cartItem:", error);
     }
   };
-  const handleCheckboxChange = (itemId: string, isChecked: boolean) => {
-    setCheckedOptionItemIds((prevChecked) => {
-      if (isChecked) {
-        return [...prevChecked, itemId];
-      } else {
-        return prevChecked.filter((id) => id !== itemId);
-      }
-    });
-  };
 
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
       <form onSubmit={handleFormSubmit}>
         <div className="bg-white w-96 h-auto flex justify-start flex-col p-6 rounded-xl relative gap-y-3">
           <h2 className="text-2xl self-center">{product?.name}</h2>
-          <button onClick={onClose} className="absolute top-0 right-0 mt-2 mr-4 text-3xl">
-          <IoIosCloseCircleOutline />
+          <h1 className="text-center text-sm ">{product?.calorie} Calories</h1>
+          <button
+            onClick={onClose}
+            className="absolute top-0 right-0 mt-2 mr-4 text-3xl"
+          >
+            <IoIosCloseCircleOutline />
           </button>
           <div>
             {allGroupedOptions
               .find((selected) => selected.productId === product?.id)
               ?.options?.map(({ option, items }) => (
                 <div key={option.id}>
-                  <h4 className="text-xl font-semibold self-start flex mt-3">
-                    {option.name}
-                  </h4>
+                  <h3 className="font-bold flex self-start">
+                    {option.name}{" "}
+                    {option.require && (
+                      <span className="font-normal">(ต้องเลือก)</span>
+                    )}
+                  </h3>
+
                   <ul className="mt-1 flex flex-col gap-y-[0.25rem]">
                     {items.map((item) => (
                       <li
@@ -257,12 +230,23 @@ function EditCartPopup({
                       >
                         <div className="">
                           <input
-                            type="checkbox"
-                            id={`checkbox-${item.id}`}
-                            onChange={(e) =>
-                              handleCheckboxChange(item.id, e.target.checked)
+                            type="radio"
+                            id={`radio-${item.id}`}
+                            name={`option-${option.id}`} // ตั้งชื่อให้เหมือนกันในแต่ละกลุ่ม option
+                            onChange={() =>
+                              setCheckedOptionItemIds((prevChecked) => [
+                                ...prevChecked.filter(
+                                  (checkedId) =>
+                                    !items.some(
+                                      (optionItem) =>
+                                        optionItem.id === checkedId
+                                    )
+                                ), // ลบตัวเลือกอื่นในกลุ่มเดียวกัน
+                                item.id, // เพิ่มตัวเลือกที่เลือก
+                              ])
                             }
-                            checked={checkedOptionItemIds.includes(item.id)}
+                            required={option.require}
+                            checked={checkedOptionItemIds.includes(item.id)} // เช็คว่าเลือกตัวเลือกนี้ไหม
                             className="mr-2"
                           />
                           {item.name}
@@ -289,7 +273,7 @@ function EditCartPopup({
               defaultValue={cartItem?.description} // ใช้ defaultValue แทน value
             />
           </div>
-          
+
           <div>
             <div className="flex justify-between">
               <div className="flex border rounded-full px-2 border-black w-fit">
@@ -324,7 +308,7 @@ function EditCartPopup({
             </div>
             <button
               type="submit"
-              className="border border-black rounded-lg py-1 px-3 bg shadow-xl bg-green-700 hover:animate-pulse text-white  mt-3 w-full text-center"
+              className="border border-black rounded-lg py-1 px-3 bg shadow-xl bg-black hover:animate-pulse text-white  mt-3 w-full text-center"
             >
               ยืนยัน
             </button>
