@@ -20,23 +20,8 @@ const LineCallback = () => {
           const userCredential = await signInWithCustomToken(auth, token);
           if (userCredential.user) {
             let tokenResult = await userCredential.user.getIdTokenResult(true);
-            let role = tokenResult.claims?.role;
             
-            if (!role) {
-              ;
-              await fetch("/api/role", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ uid: userCredential.user.uid, role: "user" }),
-              });
-        
-              // รีเฟรช token หลังจากตั้งค่า role ใหม่
-              tokenResult = await userCredential.user.getIdTokenResult(true);
-              role = tokenResult.claims?.role;
-            } else {
-              ;
-            }
-        
+
             const token = tokenResult.token;
 
 

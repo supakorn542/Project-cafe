@@ -58,9 +58,12 @@ export async function GET(request: NextRequest) {
     if (!profile.uid) {
       throw new Error("User ID not found in LINE profile");
     }
-    
-   
 
+    const role = 'user';
+
+    await admin.auth().setCustomUserClaims(profile.uid, { role });
+    
+  
     const firebaseToken = await admin.auth().createCustomToken(profile.uid);
     
 
