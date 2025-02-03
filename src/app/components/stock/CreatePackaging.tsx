@@ -100,14 +100,14 @@ const CreatePackaging: React.FC<CreatePackagingProps> = ({ togglePopup }) => {
             try {
                 const response = await createPackages(stockData, stockDetails);
                 if (response.success) {
-                    alert("Stock created successfully!");
+                    alert("บันทึกข้อมูลบรรจุภัณฑ์สำเร็จ!");
                     togglePopup(); // Close the popup on success
                 } else {
-                    alert("Failed to create Stock");
+                    alert("บันทึกข้อมูลบรรจุภัณฑ์ไม่สำเร็จ!");
                 }
             } catch (error) {
                 ;
-                alert("Failed to create Stock");
+                alert("บันทึกข้อมูลบรรจุภัณฑ์ไม่สำเร็จ!");
             }
         }
     };
@@ -151,9 +151,11 @@ const CreatePackaging: React.FC<CreatePackagingProps> = ({ togglePopup }) => {
                                 >
                                     <option value="" disabled selected >กรุณาเลือก</option>
                                     <option value="ถุง">ถุง</option>
+                                    <option value="ลัง">ลัง</option>
                                     <option value="ชิ้น">ชิ้น</option>
+                                    <option value="แพ็ค">แพ็ค</option>
                                     <option value="กล่อง">กล่อง</option>
-                                    <option value="อัน">อัน</option>
+                                    <option value="ขวด">ขวด</option>
                                 </select>
                             </div>
                         </div>

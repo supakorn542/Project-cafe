@@ -87,7 +87,7 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
                 }
             } catch (error) {
                 ;
-                alert("ไม่สามารถบันทึกข้อมูลได้");
+                alert("ไม่สามารถบันทึกข้อมูลการเบิกได้");
             }
         }
         
@@ -204,7 +204,7 @@ const Withdrawal: React.FC<WithdrawProps> = ({ withdrawalPopup, stockId }) => {
                         }
                     </div>
                     <div className="pt-4">
-                        จำนวนที่เบิก : {selectedDetails.length} กล่อง
+                        จำนวนที่เบิก : {selectedDetails.length} {stockData?.data.classifier}
                     </div>
                     <div className="flex justify-between pt-6">
                         <button

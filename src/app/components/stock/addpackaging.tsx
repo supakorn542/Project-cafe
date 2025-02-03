@@ -85,14 +85,14 @@ const AddPackaging: React.FC<AddPackagingProps> = ({ addPackagingPopup, stockId 
             try {
                 const response = await updatePackagByIDAndAddDetail(stockId, updatedStockData, newDetails);
                 if (response.success) {
-                    alert("Stock add successfully!");
+                    alert("เพิ่มข้อมูลบรรจุภัณฑ์สำเร็จ!");
                     addPackagingPopup(); // Close the popup on success
                 } else {
-                    alert("Failed to add Stock");
+                    alert("เพิ่มข้อมูลบรรจุภัณฑ์ไม่สำเร็จ!");
                 }
             } catch (error) {
                 ;
-                alert("Failed to add Stock");
+                alert("เพิ่มข้อมูลบรรจุภัณฑ์ไม่สำเร็จ!");
             }
         }
 
