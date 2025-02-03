@@ -8,6 +8,7 @@ import { getAllReview } from "@/app/services/review";
 import { Timestamp } from "firebase/firestore";
 import NavbarAdmin from "@/app/components/navbarAdmin/navbarAdmin";
 
+
 const Salesdata = () => {
   const [isSalseDataPopupOpen, setIsSalseDataPopupOpen] = useState(false);
   const [isRecentDailySales, setIsRecentDailySales] = useState(false);
@@ -29,22 +30,18 @@ const Salesdata = () => {
       try {
         // ดึงข้อมูลคำสั่งทั้งหมดจาก getTodayOrders
         const todayOrders = await getTodayOrders();
-        ; // ดีบักข้อมูลที่ดึงมาจาก getTodayOrders
 
         // กรองคำสั่งที่มี statusOrder เป็น "Completed และ Received"
         const completedOrders = todayOrders.filter(order => order?.statusOrder === "Completed" || order?.statusOrder === "Received");
-        ;
-
+        
         setOrders(completedOrders);
 
         if (completedOrders && completedOrders.length > 0) {
           const cartIdsFromCompletedOrders = completedOrders.map(order => order?.cart_id.id);
-          ; // ดีบักข้อมูล cart_id
 
           // ลองตรวจสอบว่า cartIdsFromCompletedOrders มีข้อมูลหรือไม่
           if (cartIdsFromCompletedOrders.length > 0) {
             const cartItemForSet = await getCartItemByCartIdFromAom(cartIdsFromCompletedOrders);
-            ; // ดีบักข้อมูล cartItemForSet
             setCartItems(cartItemForSet);
 
             const productQuantities = cartItemForSet.reduce((acc: { name: string, quantity: number }[], item) => {
@@ -56,38 +53,36 @@ const Salesdata = () => {
               }
               return acc;
             }, []);
-            ; // ดีบักข้อมูล productQuantities
             setProductQuantities(productQuantities);
           } else {
-            ;
+            
           }
         } else {
-          ;
+          
         }
 
         const review = await getAllReview();
         setAllReviews(review.filter(item => !item.deletedAt));
-        ;
+        
 
         const onlineSalesAmount = await getTodayOnlineSales();
         setOnlineSales(onlineSalesAmount);
-        ;
+        
 
         const inStoreSaleAmount = await getTodayInStoreSales();
         setInStoreSale(inStoreSaleAmount);
-        ;
+        
 
 
-        const allonlineSales = await getAllDailyOnlineSales();
-        setTotalOnlineSales(allonlineSales)
-        ;
+        const allOnlineSales = await getAllDailyOnlineSales();
+        setTotalOnlineSales(allOnlineSales);
 
         const allInStoreSales = await getAllDailyInStoreSales();
         setTotalInStoreSales(allInStoreSales)
-        ;
+        
 
       } catch (error) {
-        ;
+        
       }
     };
 

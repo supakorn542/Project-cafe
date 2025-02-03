@@ -58,22 +58,15 @@ export async function GET(request: NextRequest) {
     if (!profile.uid) {
       throw new Error("User ID not found in LINE profile");
     }
-    
-   
 
+
+
+    
+  
     const firebaseToken = await admin.auth().createCustomToken(profile.uid);
     
 
-    const userRef = doc(db, "users", profile.uid);
-    await setDoc(
-      userRef,
-      {
-        username: profile.displayName,
-        email: profile.email,
-        profileImage: profile.photoURL,
-      },
-      { merge: true }
-    );
+
 
     const response = NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/signin/line-callback?firebaseToken=${firebaseToken}`);
 
