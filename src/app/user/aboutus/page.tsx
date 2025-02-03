@@ -130,14 +130,14 @@ export default function AboutUs() {
             </section>
             <section className=" flex md:flex-row flex-col justify-between pt-36 px-24 gap-12">
                 <div
-                    className="flex flex-col justify-center items-center space-y-2 gap-6"
+                    className="flex flex-col justify-center items-center space-y-2 gap-6 "
                     data-aos="fade-right"
                     data-aos-delay="50"
                     data-aos-duration="1000"
                     data-aos-easing="ease-in-out"
                 >
                     <div className="flex flex-col text-[#013927] gap-7 ">
-                        <label className="flex flex-col text-center lg:text-2xl text-base">
+                        <label className="flex flex-col text-center lg:text-2xl text-base md:hidden ">
                             <span>นอกจากจะได้สัมผัสบรรยากาศ</span>
                             <span>แฟนตาซีและลิ้มรสกาแฟสดใหม่</span>
                             <span>ที่ร้านแล้ว Forest Tales</span>
@@ -164,7 +164,7 @@ export default function AboutUs() {
                     <div className="relative md:w-[100%] md:h-[200px] w-[300%] h-[200px] flex justify-center ">
                         {" "}
                         <img
-                            className="absolute md:-top-[110px] top-[20px] left-[10px] md:w-[90%] md:h-[240%] w-[500%] h-[150%] md:mt-4 "
+                            className="absolute md:-top-[110px] top-[20px] left-[10px] md:w-[100%] md:h-[150%] w-[500%] h-[150%] md:mt-4 "
                             src={"/assets/สีเขียวและสีครีม เรียบง่าย ภาพประกอบ เมนูกาแฟ Instagram Post (1).png"}
                             alt="border"
                         />
