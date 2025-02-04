@@ -23,6 +23,7 @@ const LineCallback = () => {
           return null; // ถ้า error ให้ return null แทน
         }
       })();
+      console.log("Parsed profile from cookies:", parsedProfile);
 
       if (parsedProfile) {
         setProfile(parsedProfile);
