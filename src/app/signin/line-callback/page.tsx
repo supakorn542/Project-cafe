@@ -11,8 +11,28 @@ import { db } from "@/app/lib/firebase";
 const LineCallback = () => {
   const router = useRouter();
   const [error, setError] = useState<string>("");
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
+
+    const cookies = nookies.get(null);
+    if (cookies.line_profile) {
+      const parsedProfile = (() => {
+        try {
+          return JSON.parse(cookies.line_profile);
+        } catch {
+          return null; // ถ้า error ให้ return null แทน
+        }
+      })();
+
+      if (parsedProfile) {
+        setProfile(parsedProfile);
+      } else {
+        setError("Failed to load profile from cookies.");
+      }
+    }
+
+
     const token = new URLSearchParams(window.location.search).get(
       "firebaseToken"
     );
@@ -41,15 +61,15 @@ const LineCallback = () => {
             }
 
             const token = tokenResult.token;
-            console.log(userCredential.user);
+
 
             const userRef = doc(db, "users", userCredential.user.uid);
             await setDoc(
               userRef,
               {
-                username: userCredential.user.displayName,
-                email: userCredential.user.email,
-                profileImage: userCredential.user.photoURL,
+                username: profile?.displayName || userCredential.user.displayName,
+                email: profile?.email || userCredential.user.email,
+                profileImage: profile?.photoURL || userCredential.user.photoURL,
               },
               { merge: true }
             );

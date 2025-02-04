@@ -70,6 +70,13 @@ export async function GET(request: NextRequest) {
 
     const response = NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/signin/line-callback?firebaseToken=${firebaseToken}`);
 
+    response.cookies.set('line_profile', JSON.stringify(profile), {
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      sameSite: 'lax', 
+
+    });
+
     return response;
   } catch (error) {
     ;
