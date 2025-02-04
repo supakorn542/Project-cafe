@@ -15,22 +15,10 @@ const LineCallback = () => {
 
   useEffect(() => {
     const cookies = nookies.get(null);
-    if (cookies.line_profile) {
-      const parsedProfile = (() => {
-        try {
-          return JSON.parse(cookies.line_profile);
-        } catch {
-          return null; // ถ้า error ให้ return null แทน
-        }
-      })();
-      console.log("Parsed profile from cookies:", parsedProfile);
+    const parsedProfile = cookies.line_profile
+    ? JSON.parse(cookies.line_profile)
+    : null;
 
-      if (parsedProfile) {
-        setProfile(parsedProfile);
-      } else {
-        setError("Failed to load profile from cookies.");
-      }
-    }
 
     const token = new URLSearchParams(window.location.search).get(
       "firebaseToken"
@@ -66,9 +54,9 @@ const LineCallback = () => {
             console.log("User credential:", userCredential.user); // ตรวจสอบข้อมูลจาก Firebase user
 
             const userData = {
-              username: profile?.displayName || userCredential.user.displayName,
-              email: profile?.email || userCredential.user.email,
-              profileImage: profile?.photoURL || userCredential.user.photoURL,
+              username: parsedProfile?.displayName,
+              email: parsedProfile?.email ,
+              profileImage: parsedProfile?.photoURL ,
             };
 
             console.log("userData:", userData);
