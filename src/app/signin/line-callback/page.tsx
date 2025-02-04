@@ -11,7 +11,7 @@ import { db } from "@/app/lib/firebase";
 const LineCallback = () => {
   const router = useRouter();
   const [error, setError] = useState<string>("");
-  const [profile, setProfile] = useState<any>(null);
+
 
   useEffect(() => {
     const cookies = nookies.get(null);
@@ -50,8 +50,7 @@ const LineCallback = () => {
             const token = tokenResult.token;
 
             const userRef = doc(db, "users", userCredential.user.uid);
-            console.log("Profile from cookies:", profile); // ตรวจสอบค่า profile จาก cookies
-            console.log("User credential:", userCredential.user); // ตรวจสอบข้อมูลจาก Firebase user
+
 
             const userData = {
               username: parsedProfile?.displayName,
@@ -59,7 +58,7 @@ const LineCallback = () => {
               profileImage: parsedProfile?.photoURL ,
             };
 
-            console.log("userData:", userData);
+
 
             // ตรวจสอบว่า userData มีค่าหรือไม่ก่อนบันทึก
             if (userData.username && userData.email) {
