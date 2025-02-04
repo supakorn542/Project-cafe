@@ -14,7 +14,6 @@ const LineCallback = () => {
   const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
-
     const cookies = nookies.get(null);
     if (cookies.line_profile) {
       const parsedProfile = (() => {
@@ -31,7 +30,6 @@ const LineCallback = () => {
         setError("Failed to load profile from cookies.");
       }
     }
-
 
     const token = new URLSearchParams(window.location.search).get(
       "firebaseToken"
@@ -62,8 +60,9 @@ const LineCallback = () => {
 
             const token = tokenResult.token;
 
-
             const userRef = doc(db, "users", userCredential.user.uid);
+            console.log("Profile from cookies:", profile); // ตรวจสอบค่า profile จาก cookies
+            console.log("User credential:", userCredential.user); // ตรวจสอบข้อมูลจาก Firebase user
 
             const userData = {
               username: profile?.displayName || userCredential.user.displayName,
@@ -71,15 +70,14 @@ const LineCallback = () => {
               profileImage: profile?.photoURL || userCredential.user.photoURL,
             };
 
-            console.log("userData:", userData); 
-            
+            console.log("userData:", userData);
+
             // ตรวจสอบว่า userData มีค่าหรือไม่ก่อนบันทึก
             if (userData.username && userData.email) {
               console.log("User data is valid, attempting to set document.");
               await setDoc(userRef, userData, { merge: true });
-              
             } else {
-              console.log("Profile information is incomplete."); 
+              console.log("Profile information is incomplete.");
               setError("Profile information is incomplete.");
             }
             nookies.set(null, "token", token, {

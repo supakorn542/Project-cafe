@@ -131,18 +131,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOutUser = async () => {
     setLoading(true);
     try {
-      ;
+      
       await signOut(auth);
-      ;
+      
 
       nookies.destroy(null, "token", { path: "/" });
+      nookies.destroy(null, "line_profile", { path: "/" });
 
       setUser(null);
 
-      ;
+      
       window.location.href = "/";
     } catch (error) {
-      ;
+      
     } finally {
       setLoading(false);
     }
