@@ -70,11 +70,16 @@ const LineCallback = () => {
               email: profile?.email || userCredential.user.email,
               profileImage: profile?.photoURL || userCredential.user.photoURL,
             };
+
+            console.log("userData:", userData); 
             
             // ตรวจสอบว่า userData มีค่าหรือไม่ก่อนบันทึก
             if (userData.username && userData.email) {
+              console.log("User data is valid, attempting to set document.");
               await setDoc(userRef, userData, { merge: true });
+              
             } else {
+              console.log("Profile information is incomplete."); 
               setError("Profile information is incomplete.");
             }
             nookies.set(null, "token", token, {
@@ -102,6 +107,7 @@ const LineCallback = () => {
         <h4 className="text-xl sm:text-2xl md:text-3xl font-serif4 text-center">
           เข้าสู่ระบบสำเร็จ
         </h4>
+        <h2>{error}</h2>
         <h5 className="text-sm sm:text-lg md:text-xl font-serif4 text-center mt-2">
           ระบบกำลังนำท่านเข้าสู่ระบบ กรุณารอสักครู่....
         </h5>
