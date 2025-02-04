@@ -64,16 +64,19 @@ const LineCallback = () => {
 
 
             const userRef = doc(db, "users", userCredential.user.uid);
-            await setDoc(
-              userRef,
-              {
-                username: profile?.displayName || userCredential.user.displayName,
-                email: profile?.email || userCredential.user.email,
-                profileImage: profile?.photoURL || userCredential.user.photoURL,
-              },
-              { merge: true }
-            );
 
+            const userData = {
+              username: profile?.displayName || userCredential.user.displayName,
+              email: profile?.email || userCredential.user.email,
+              profileImage: profile?.photoURL || userCredential.user.photoURL,
+            };
+            
+            // ตรวจสอบว่า userData มีค่าหรือไม่ก่อนบันทึก
+            if (userData.username && userData.email) {
+              await setDoc(userRef, userData, { merge: true });
+            } else {
+              setError("Profile information is incomplete.");
+            }
             nookies.set(null, "token", token, {
               maxAge: 60 * 60 * 24,
               path: "/",
