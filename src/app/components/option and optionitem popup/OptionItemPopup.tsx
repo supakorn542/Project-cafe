@@ -76,7 +76,7 @@ const OptionItemPopup: React.FC<OptionItemPopupProps> = ({
         const newItemRef = doc(optionItemsCollection);
         batch.set(newItemRef, {
           name: item.name,
-          pricemodifier: item.priceModifier,
+          priceModifier: item.priceModifier,
           option_id: optionRef,
         });
       });
