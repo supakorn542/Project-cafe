@@ -53,8 +53,12 @@ const Menu = () => {
         getAllProducts(),
         getAllProductTypes(),
       ]);
-      ;
-      ;
+
+      if (!fetchedProducts || !fetchedProductTypes) {
+        console.error("Error: Products or Product Types is null.");
+        return;
+      }
+      
       setProducts(fetchedProducts);
       setProductTypes(fetchedProductTypes);
 
@@ -84,7 +88,7 @@ const Menu = () => {
       setGroupedProducts(grouped); // อัพเดต groupedProducts
       ;
     } catch (error) {
-      ;
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -457,9 +461,9 @@ const Menu = () => {
         </div>
 
         <div className="px-10 lg:px-20 pt-5 lg:pt-10">
-          {groupedProducts.map((group) => {
+          {groupedProducts.length > 0 && groupedProducts.map((group) => {
             const typeId = group.type.id;
-            const slideIndex = currentSlide[typeId] || 0;
+            const slideIndex = currentSlide?.[typeId] ?? 0;
             const maxSlide =
               Math.ceil(group.products.length / itemsPerSlide) - 1;
             const typeNameSlug = group.type.name
@@ -525,7 +529,7 @@ const Menu = () => {
                               {product?.name}
                             </h2>
                             <h3 className="font-serif4 text-xl font-semibold">
-                              ${product?.price}
+                              ฿{product?.price}
                             </h3>
                           </div>
                           <hr className="border-black" />

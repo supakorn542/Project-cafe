@@ -169,7 +169,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                             onChange={() => handleOptionChange(option.id, item.id)}
                           />
                           <label htmlFor={item.id}>
-                            {item.name} (+${item.priceModifier})
+                            {item.name} (+฿{item.priceModifier})
                           </label>
                         </li>
                       )) || <li>No items available</li>}
