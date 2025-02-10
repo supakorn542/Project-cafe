@@ -30,7 +30,7 @@ export const getOptions = async (): Promise<{ options: OptionInterface[], option
           optionItemsMapTemp[optionId].push({
               id: doc.id,
               name: data.name || '',
-              priceModifier: data.pricemodifier || 0,
+              priceModifier: data.priceModifier || 0,
               option_id: optionId // เพิ่ม option_id ลงใน OptionItem
           });
       }
