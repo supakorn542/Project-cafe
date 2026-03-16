@@ -7,7 +7,6 @@ import { Withdrawal } from "../interfaces/withdrawal";
 export const createStocks = async (stockData: Stock, details: Array<{ idStock: string, manufactureDate: Date, expiryDate: Date }>) => {
   try {
 
-
     // เพิ่มเอกสารในคอลเลกชัน "stocks"
     const stockDocRef = await addDoc(collection(db, "stocks"), {
       name: stockData.name,
@@ -23,19 +22,12 @@ export const createStocks = async (stockData: Stock, details: Array<{ idStock: s
     });
 
     // บันทึกข้อมูลที่แตกต่างกัน (หน้า 2)
-    const stockDetailsPromises = details.map((detail) =>
+    const stockDetails = details.map((detail) =>
       addDoc(collection(db, "stocks", stockDocRef.id, "details"), {
         idStock: detail.idStock,
         manufactureDate: detail.manufactureDate instanceof Date ? detail.manufactureDate : new Date(detail.manufactureDate),
         expiryDate: detail.expiryDate instanceof Date ? detail.expiryDate : new Date(detail.expiryDate),
         name: stockData.name,
-        // netQuantity: stockData.netQuantity,
-        // unit: stockData.unit,
-        // price: stockData.price,
-        // classifier: stockData.classifier,
-        // totalPrice: stockData.totalPrice,
-        // quantity: stockData.quantity,
-        // description: stockData.description,
         stockType: stockData.stockType,
         addedDate: stockData.addedDate instanceof Date ? stockData.addedDate : new Date(stockData.addedDate),
       })
@@ -47,8 +39,7 @@ export const createStocks = async (stockData: Stock, details: Array<{ idStock: s
       id: stockDocRef.id,
     };
   } catch (error) {
-    ;
-
+  
     // คืนค่าข้อผิดพลาด
     return {
       success: false,
@@ -74,17 +65,11 @@ export const createPackages = async (stockData: Stock, details: Array<{ idStock:
     });
 
     // บันทึกข้อมูลที่แตกต่างกัน (หน้า 2)
-    const stockDetailsPromises = details.map((detail) =>
+    const stockDetails = details.map((detail) =>
       addDoc(collection(db, "stocks", stockDocRef.id, "details"), {
         idStock: detail.idStock,
         name: stockData.name,
-        // netQuantity: stockData.netQuantity,
-        // unit: stockData.unit,
-        // price: stockData.price,
         classifier: stockData.classifier,
-        // totalPrice: stockData.totalPrice,
-        // quantity: stockData.quantity,
-        // description: stockData.description,
         stockType: stockData.stockType,
         addedDate: stockData.addedDate instanceof Date ? stockData.addedDate : new Date(stockData.addedDate),
       })
@@ -111,7 +96,6 @@ export const createWithdrawal = async (
   selectedDetails: Array<any>,
   newData: Array<any>,
   data: Withdrawal
-  // data: { userName: string, withdrawDate: string, description: string, quantity: number, stockType: string}
 ) => {
   try {
     if (newData.length === 0) {
@@ -130,8 +114,6 @@ export const createWithdrawal = async (
       details: newData, // เก็บข้อมูล selectedDetails เป็น array
       createdAt: new Date(), // เพิ่มเวลาในการสร้าง
     };
-
-
 
     // สร้างเอกสารในคอลเลกชัน Withdrawal
     const withdrawalCollectionRef = collection(db, "withdrawals");
@@ -393,8 +375,6 @@ export const updatePackagingByID = async (
   newDetails: Array<{
     id: string
     idStock: string;
-    // manufactureDate: Date;
-    // expiryDate: Date;
   }>
 ) => {
   try {
@@ -415,21 +395,14 @@ export const updatePackagingByID = async (
 
       await updateDoc(stockRef, updatedStockData) // เติมข้อมูลใหม่ลงไปใน��านข้อมูล
     }
-    // // อัปเดตรายละเอียดใหม่ใน stock
-    // if (newDetails.length > 0) {
-    //   const detailsRef = doc(db, "stocks", stockId, "details", "details.id"); // ชื่อ collection สำหรับรายละเอียด
-    //   await updateDoc(detailsRef, { details: newDetails });
-    // }
-
+ 
     // อัปเดตหรือเพิ่มข้อมูลใน subcollection "details"
     if (newDetails.length > 0) {
       for (const detail of newDetails) {
         const detailRef = doc(db, "stocks", stockId, "details", detail.id); // ใช้ id ของรายละเอียดที่ต้องการอัปเดต
         await updateDoc(detailRef, {
           idStock: detail.idStock,
-          // addedDate: new Date(),
-          // manufactureDate: detail.manufactureDate,
-          // expiryDate: detail.expiryDate,
+
         });
       }
     }

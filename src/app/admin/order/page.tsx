@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import { getCartItemByCartIdFromAom, getFinishOrders, getOrders, getProcessOrders, updateStatusOrderByID, updateStatusPaymentByID } from "@/app/services/order";
+import { getCartItemByCartIdFromOrder, getFinishOrders, getOrders, getProcessOrders, updateStatusOrderByID, updateStatusPaymentByID } from "@/app/services/order";
 
 import ReceiptPopup from "@/app/components/receiptpopup/receipt"
 import NavbarAdmin from "@/app/components/navbarAdmin/navbarAdmin";
@@ -126,7 +126,7 @@ const ShowOrder = () => {
         setcartIds(cartIds)
         
 
-        const cartItems = await getCartItemByCartIdFromAom(cartIds)
+        const cartItems = await getCartItemByCartIdFromOrder(cartIds)
         setCartItems(cartItems)
         
 
@@ -148,7 +148,7 @@ const ShowOrder = () => {
         const cartIds = processOrders.map((order) => order!.cart_id.id);
         setcartIdProcess(cartIds);
 
-        const cartItems = await getCartItemByCartIdFromAom(cartIds);
+        const cartItems = await getCartItemByCartIdFromOrder(cartIds);
         setCartItemProcess(cartItems);
     };
 
@@ -163,7 +163,7 @@ const ShowOrder = () => {
         setcartIdFinish(cartIds)
         
 
-        const cartItems = await getCartItemByCartIdFromAom(cartIds)
+        const cartItems = await getCartItemByCartIdFromOrder(cartIds)
         setCartItemFinish(cartItems)
         
     };

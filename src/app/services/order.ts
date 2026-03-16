@@ -22,7 +22,7 @@ export const getOrders = async () => {
         const cartSnap = await getDoc(cartRef);
         if (cartSnap.exists()) {
           const cartData = cartSnap.data();
-          data.cart_id = { id: cartRef.id, ...cartData || {} }; // กำหนดเป็น object ที่มี id
+          data.cart_id = { id: cartRef.id, ...cartData || {} }; 
         } else {
           throw new Error("cart not found");
         }
@@ -32,7 +32,7 @@ export const getOrders = async () => {
         const userSnap = await getDoc(userRef);
         if (userSnap) {
           const userData = userSnap.data();
-          data.cart_id.user_id = { id: userRef.id, ...userData || {} }; // กำหนดเป็น object ที่มี id
+          data.cart_id.user_id = { id: userRef.id, ...userData || {} };
         } else {
           throw new Error("user not found");
         }
@@ -86,7 +86,7 @@ export const getProcessOrders = async () => {
       const paymentRef = data.payment_id;
       const paymentSnap = await getDoc(paymentRef);
       if (paymentSnap.exists()) {
-        const paymentData = paymentSnap.data() as { status: string }; // ระบุ type ของ paymentData
+        const paymentData = paymentSnap.data() as { status: string };
         if (paymentData.status === "Completed") {
           data.payment_id = { id: paymentRef.id, ...paymentData || {} };
   
@@ -179,8 +179,6 @@ export const getFinishOrders = async () => {
     return data
   })
   )
-  // const orderPending = orders.filter(order => order != null)
-  // orderPending.sort((a, b) => b.orderDate.toMillis() - a.orderDate.toMillis());
 
   // กรองคำสั่งซื้อที่มีสถานะเป็น "Pending" หรือ "Uncompleted"
   const orderCompleted = orders.filter(order => order != null);
@@ -205,78 +203,109 @@ export const getFinishOrders = async () => {
 
 }
 
-
-export const getCartItemByCartIdFromAom = async (cartIds: string[]) => {
+export const getCartItemByCartIdFromOrder = async (cartIds: string[]) => {
   try {
     const cartItemsRef = collection(db, "cartItems");
-    const cartItemsQuery = query(cartItemsRef, where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id))));
+
+    const cartItemsQuery = query(
+      cartItemsRef,
+      where("cart_id", "in", cartIds.map((id) => doc(db, "carts", id)))
+    );
+
     const cartItemsSnapshot = await getDocs(cartItemsQuery);
 
-    // แปลงผลลัพธ์จาก cartItemsSnapshot ให้เป็นอาร์เรย์ของ cartItem
-    const cartItems = Promise.all(cartItemsSnapshot.docs.map(async (doc) => {
-      const data = doc.data();
+    const cartItems = await Promise.all(
+      cartItemsSnapshot.docs.map(async (docSnap) => {
+        try {
+          const data = docSnap.data();
 
-      const productRef = data.product_id;
-      const productSnap = await getDoc(productRef);
-      if (productSnap.exists()) {
-        const productData = productSnap.data();
-        data.product_id = { id: productRef.id, ...productData || {} }; // กำหนดเป็น object ที่มี id
-      } else {
-        throw new Error("product not found");
-      }
-      const cartRef = data.cart_id;
-      const cartSnap = await getDoc(cartRef);
-      if (cartSnap.exists()) {
-        const cartData = cartSnap.data();
-        data.cart_id = { id: cartRef.id, ...cartData || {} }; // กำหนดเป็น object ที่มี id
-      } else {
-        throw new Error("cart not found");
-      }
-      const optionItemRef = data.optionitem_id;
-      // const optionItemSnap = await getDoc(optionItemRef);
-      if (optionItemRef) {
-        const optionItems = await Promise.all(
-          optionItemRef.map(async (optionItemRef: any) => {
-            const optionItemSnap = await getDoc(optionItemRef);
-            if (optionItemSnap) {
-              const optionItemData = optionItemSnap.data();
-              return { id: optionItemRef.id, ...optionItemData || {} };
-            } else {
-              throw new Error("optionItem not found");
-            }
-          })
-        );
-        data.optionitem_id = optionItems;
-      } else {
-        throw new Error("optionItem not found");
-      }
+          // ---------------- product ----------------
+          const productRef = data.product_id;
+          if (!productRef) {
+            throw new Error("productRef is null");
+          }
 
-      return {
-        id: doc.id,
-        description: data.description, // แปลง Timestamp ให้เป็นวันที่
-        quantity: data.quantity,
-        pickupdate: data.pickupdate,
-        product_id: data.product_id,
-        cart_id: data.cart_id,
-        optionitem_id: data.optionitem_id,
-      };
-    }));
+          const productSnap = await getDoc(productRef);
 
-    return cartItems;
+          if (!productSnap.exists()) {
+            throw new Error("product not found");
+          }
+
+          const productData = productSnap.data();
+          data.product_id = {
+            id: productRef.id,
+            ...productData || {},
+          };
+
+          // ---------------- cart ----------------
+          const cartRef = data.cart_id;
+          const cartSnap = await getDoc(cartRef);
+
+          if (!cartSnap.exists()) {
+            throw new Error("cart not found");
+          }
+
+          const cartData = cartSnap.data();
+          data.cart_id = {
+            id: cartRef.id,
+            ...cartData || {},
+          };
+
+          // ---------------- option items ----------------
+          const optionItemRef = data.optionitem_id;
+
+          if (optionItemRef && Array.isArray(optionItemRef)) {
+            const optionItems = await Promise.all(
+              optionItemRef.map(async (optionRef: any) => {
+                const optionItemSnap = await getDoc(optionRef);
+
+                if (!optionItemSnap.exists()) {
+                  throw new Error("optionItem not found");
+                }
+
+                const optionItemData = optionItemSnap.data();
+
+                return {
+                  id: optionRef.id,
+                  ...optionItemData || {},
+                };
+              })
+            );
+
+            data.optionitem_id = optionItems;
+          } else {
+            data.optionitem_id = [];
+          }
+
+          return {
+            id: docSnap.id,
+            description: data.description,
+            quantity: data.quantity,
+            pickupdate: data.pickupdate,
+            product_id: data.product_id,
+            cart_id: data.cart_id,
+            optionitem_id: data.optionitem_id,
+          };
+
+        } catch (err) {
+          return null;
+        }
+      })
+    );
+
+    return cartItems.filter(Boolean); // ลบ null ออก
   } catch (error) {
-    ;
     return [];
   }
 };
 
-// ฟังก์ชันเพื่ออัปเดตข้อมูลสต็อก
+
 export const updateStatusOrderByID = async (
   orderId: string,
-  updatedStatusPayment: string,  // ข้อมูลที่ได้รับจากแบบฟอร์ม
+  updatedStatusPayment: string, 
 
 ) => {
   try {
-    // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
     const orderRef = doc(db, "orders", orderId);
     const orderSnapshot = await getDoc(orderRef);
 
@@ -289,20 +318,19 @@ export const updateStatusOrderByID = async (
       await updateDoc(orderRef, { statusOrder: updatedStatusPayment });
     }
 
-    return { success: true, message: "Stock updated and details added successfully" };
+    return { success: true, message: "Status order updated successfully" };
   } catch (error) {
     ;
-    return { success: false, message: "Failed to update stock or add details", error };
+    return { success: false, message: "Failed to update status order", error };
   }
 };
 
 export const updateStatusPaymentByID = async (
   orderId: string,
-  updatedStatusPayment: string,  // ข้อมูลที่ได้รับจากแบบฟอร์ม
+  updatedStatusPayment: string,  
 
 ) => {
   try {
-    // ตรวจสอบว่า Stock ที่ระบุมีอยู่ในฐานข้อมูลหรือไม่
     const orderRef = doc(db, "orders", orderId);
     const orderSnapshot = await getDoc(orderRef);
 
@@ -330,9 +358,9 @@ export const updateStatusPaymentByID = async (
       }
 
     }
-    return { success: true, message: "Stock updated and details added successfully" };
+    return { success: true, message: "Status payment updated successfully" };
   } catch (error) {
     ;
-    return { success: false, message: "Failed to update stock or add details", error };
+    return { success: false, message: "Failed to update status payment", error };
   }
 };
