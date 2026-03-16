@@ -196,7 +196,7 @@ export default function Home() {
       >
         <OwlCarousel
           items={3}
-          
+
           autoplay={true}
           responsive={{
             0: {
@@ -236,7 +236,7 @@ export default function Home() {
           Order now
         </button>
       </section>
-      <section className="mt-20  bg-[url('/assets/greenscreen.png')] bg-cover bg-center pb-[100px] font-playfair">
+      <section className="mt-20  bg-[url('/assets/greenscreen.png')] bg-cover bg-center font-playfair">
         <div className="container mx-auto text-white w-full">
           <div className="flex flex-col text-[22px] md:text-[50px] lg:text-[96px] w-full">
             <div className="flex flex-col justify-center gap-2">
