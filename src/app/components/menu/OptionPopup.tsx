@@ -40,8 +40,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
   >({});
   const [description, setDescription] = useState<string>("");
 
-
-  const router = useRouter()
+  const router = useRouter();
 
   const handleIncrease = () => {
     setQuantity((prev) => prev + 1);
@@ -57,21 +56,22 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
 
   const handleAddToCart = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     if (!user || !product) {
       alert("Please log in or select a product.");
       return;
     }
-  
-    const action = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
-  
+
+    const action = (e.nativeEvent as SubmitEvent)
+      .submitter as HTMLButtonElement;
+
     let cart = await fetchCartByUserId(user.id); // ดึง cart ที่ status: true
-    
+
     if (!cart) {
       const cartId = await createCart(user.id);
       cart = { id: cartId, user_id: user.id, status: true }; // mock ข้อมูล cart ใหม่
     }
-  
+
     const cartItem = {
       cart_id: cart.id,
       product_id: product.id!,
@@ -79,13 +79,13 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
       optionitem_ids: Object.values(selectedOptions),
       description,
     };
-  
+
     const existingCartItem = await checkExistingCartItem(
       cart.id,
       product.id!,
       selectedOptions
     );
-  
+
     if (existingCartItem) {
       const updatedQuantity = existingCartItem.cartItem.quantity + quantity;
       const cartItemRef = doc(db, "cartItems", existingCartItem.id);
@@ -95,14 +95,16 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
       await addCartItem(cartItem);
       alert("Added to cart successfully!");
     }
-  
+
     if (action.value === "add_to_cart") {
       onClose();
     } else if (action.value === "buy_now") {
       router.push("/user/cart");
     }
   };
-  
+
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -122,15 +124,11 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
     fetchData();
   }, [productId]);
 
-  ;
-  ;
-  ;
-
   return (
     <>
       {/* Overlay ด้านหลัง */}
       <div className="fixed inset-0 bg-black bg-opacity-50 z-40" />
-  
+
       {/* Popup ที่แสดงตรงกลาง */}
       <div className="fixed inset-0 flex justify-center items-center z-50 w-full px-4">
         <div className="bg-white border border-1 p-4 rounded-3xl shadow-lg w-full sm:w-[80%] md:w-[50%] lg:w-[35%] max-h-[90vh] overflow-y-auto grid grid-cols-1 grid-rows-[auto,1fr]">
@@ -141,22 +139,27 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
               onClick={onClose}
             />
           </div>
-  
+
           {/* เนื้อหา Popup */}
           <div className="flex flex-col gap-y-2">
             <div>
-            <h1 className="text-center text-xl font-bold">{product?.name}</h1>
-            <h1 className="text-center text-sm ">{product?.calorie} Calories</h1>
-
+              <h1 className="text-center text-xl font-bold">{product?.name}</h1>
+              <h1 className="text-center text-sm ">
+                {product?.calorie} Calories
+              </h1>
             </div>
 
-  
             <form onSubmit={handleAddToCart}>
               {/* ตัวเลือกสินค้า */}
               <div>
                 {options.map((option: any) => (
                   <div key={option.id}>
-                    <h3 className="font-bold">{option.name} {option.require && <span className="font-normal">(ต้องเลือก)</span>}</h3>
+                    <h3 className="font-bold">
+                      {option.name}{" "}
+                      {option.require && (
+                        <span className="font-normal">(ต้องเลือก)</span>
+                      )}
+                    </h3>
                     <ul>
                       {groupedOptionItems[option.id]?.map((item) => (
                         <li key={item.id} className="flex items-center gap-2">
@@ -166,7 +169,9 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                             name={`option-${option.id}`}
                             value={item.id}
                             required={option.require}
-                            onChange={() => handleOptionChange(option.id, item.id)}
+                            onChange={() =>
+                              handleOptionChange(option.id, item.id)
+                            }
                           />
                           <label htmlFor={item.id}>
                             {item.name} (+฿{item.priceModifier})
@@ -177,7 +182,7 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                   </div>
                 ))}
               </div>
-  
+
               {/* รายละเอียดเพิ่มเติม */}
               <div className="flex flex-col mt-4">
                 <label htmlFor="description">รายละเอียดเพิ่มเติม</label>
@@ -189,17 +194,20 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
-  
+
               {/* ปุ่มเพิ่มลดจำนวน + ราคา */}
               <div className="flex justify-between items-center mt-4">
                 <div className="flex px-3 border border-black rounded-2xl gap-x-3 items-center">
-                  <FaMinus className="cursor-pointer" onClick={handleDecrease} />
+                  <FaMinus
+                    className="cursor-pointer"
+                    onClick={handleDecrease}
+                  />
                   <h3>{quantity}</h3>
                   <FaPlus className="cursor-pointer" onClick={handleIncrease} />
                 </div>
                 <h3 className="text-lg font-bold">${product?.price}</h3>
               </div>
-  
+
               {/* ปุ่มกด Add to Cart & Buy Now */}
               <div className="flex flex-col sm:flex-row justify-between gap-2 mt-4">
                 <button
@@ -225,5 +233,4 @@ export default function OptionPopup({ onClose, productId }: OptionPopupProps) {
       </div>
     </>
   );
-  
 }

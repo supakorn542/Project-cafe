@@ -211,7 +211,7 @@ const Cart = () => {
                   return {
                     id: optionId,
                     name: optionData.name || "Unknown",
-                    pricemodifier: optionData.pricemodifier || 0,
+                    priceModifier: optionData.priceModifier || 0,
                   };
                 }
               );
@@ -224,7 +224,7 @@ const Cart = () => {
 
             const totalOptionPrice = optionItemsForItem.reduce(
               (sum, option) =>
-                sum + option.pricemodifier * (item.quantity || 1),
+                sum + option.priceModifier * (item.quantity || 1),
               0
             );
 

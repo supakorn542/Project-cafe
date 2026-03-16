@@ -27,7 +27,7 @@ export const getOptionItemsByOptionId = async (optionId: string): Promise<Option
 
 
 // อัปเดตข้อมูล Option Item
-export const updateOptionItem = async (optionId: string, itemId: string, data: Partial<{ name: string; pricemodifier: number }>) => {
+export const updateOptionItem = async (optionId: string, itemId: string, data: Partial<{ name: string; priceModifier: number }>) => {
   const itemRef = doc(db, `options/${optionId}/items`, itemId);
   await updateDoc(itemRef, data);
 };
